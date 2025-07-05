@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { useTheme } from "../theme/ThemeContext";
 import { SvgXml } from "react-native-svg";
 
@@ -12,7 +12,7 @@ const logoLightSvg = `<svg width="632" height="210" viewBox="0 0 632 210" fill="
 
 export const SplashScreenSchoolway = () => {
     const { theme } = useTheme();
-
+    
     const styles = StyleSheet.create({
         container: {
             flex: 1,
@@ -38,5 +38,8 @@ export const SplashScreenSchoolway = () => {
         </View>
     );
 };
+
+
+
 
 export default SplashScreenSchoolway;
