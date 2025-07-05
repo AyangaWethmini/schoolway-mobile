@@ -1,6 +1,5 @@
 import { StyleSheet } from "react-native";
 
-
 //Defining the theme typess
 export interface Theme {
     colors : {

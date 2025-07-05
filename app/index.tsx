@@ -26,12 +26,12 @@ export default function Index() {
     { label: 'Trinity College - Kandy', value: 'trinity-college' },
   ];
 
-  console.log('Selected values:', { selectedAge, selectedSchool, code }); // Using the state values
+  console.log('Selected values:', { selectedAge, selectedSchool, code }); 
 
   return (
     <ScrollView style={styles.scrollContainer}>
       <View style={styles.container}>
-        <Text style={styles.title}>Components Showcase</Text>
+        <Text style={styles.title}>Components</Text>
         
         {/* Input Components Section */}
         <View style={styles.section}>

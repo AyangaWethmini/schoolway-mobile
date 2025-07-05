@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { 
     TextInput, 
     View, 
@@ -9,6 +10,7 @@ import {
     Modal,
     FlatList
 } from "react-native";
+
 import { useTheme } from "../theme/ThemeContext";
 
 // Base Input Props
