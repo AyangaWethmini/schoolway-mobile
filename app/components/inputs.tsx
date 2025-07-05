@@ -33,6 +33,7 @@ export const TextInputComponent = ({
     ...props
 }: TextInputComponentProps) => {
     const { theme } = useTheme();
+    const [isFocused, setIsFocused] = useState(false);
     
     const inputStyles = StyleSheet.create({
         container: {
@@ -46,7 +47,9 @@ export const TextInputComponent = ({
         },
         input: {
             borderWidth: 1,
-            borderColor: error ? theme.colors.error : theme.colors.primary,
+            borderColor: error ? theme.colors.error : 
+                        isFocused ? theme.colors.primary : 
+                        theme.colors.textgreylight,
             borderRadius: theme.borderRadius.medium,
             padding: theme.spacing.sm,
             fontSize: theme.fontSizes.medium,
@@ -69,6 +72,8 @@ export const TextInputComponent = ({
                 placeholder={placeholder}
                 placeholderTextColor={theme.colors.textgreylight}
                 editable={!disabled}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 {...props}
             />
             {error && <Text style={inputStyles.error}>{error}</Text>}
@@ -91,6 +96,7 @@ export const PasswordInput = ({
 }: PasswordInputProps) => {
     const { theme } = useTheme();
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
     
     const inputStyles = StyleSheet.create({
         container: {
@@ -107,7 +113,9 @@ export const PasswordInput = ({
         },
         input: {
             borderWidth: 1,
-            borderColor: error ? theme.colors.error : theme.colors.primary,
+            borderColor: error ? theme.colors.error : 
+                        isFocused ? theme.colors.primary : 
+                        theme.colors.textgreylight,
             borderRadius: theme.borderRadius.medium,
             padding: theme.spacing.sm,
             paddingRight: showPasswordToggle ? 50 : theme.spacing.sm,
@@ -143,6 +151,8 @@ export const PasswordInput = ({
                     placeholderTextColor={theme.colors.textgreylight}
                     secureTextEntry={!isPasswordVisible}
                     editable={!disabled}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
                     {...props}
                 />
                 {showPasswordToggle && (
@@ -180,6 +190,7 @@ export const DropdownInput = ({
 }: DropdownInputProps) => {
     const { theme } = useTheme();
     const [isVisible, setIsVisible] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
     
     const selectedOption = options.find(option => option.value === selectedValue);
     
@@ -195,7 +206,9 @@ export const DropdownInput = ({
         },
         input: {
             borderWidth: 1,
-            borderColor: error ? theme.colors.error : theme.colors.primary,
+            borderColor: error ? theme.colors.error : 
+                        isFocused ? theme.colors.primary : 
+                        theme.colors.textgreylight,
             borderRadius: theme.borderRadius.medium,
             padding: theme.spacing.sm,
             fontSize: theme.fontSizes.medium,
@@ -226,6 +239,24 @@ export const DropdownInput = ({
             width: '80%',
             maxHeight: '50%',
         },
+        modalHeader: {
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: theme.spacing.md,
+        },
+        modalTitle: {
+            fontSize: theme.fontSizes.medium,
+            fontWeight: '600',
+            color: theme.colors.textblack,
+        },
+        closeButton: {
+            padding: theme.spacing.xs,
+        },
+        closeButtonText: {
+            fontSize: 18,
+            color: theme.colors.textgreydark,
+        },
         option: {
             padding: theme.spacing.md,
             borderBottomWidth: 1,
@@ -242,7 +273,12 @@ export const DropdownInput = ({
             {label && <Text style={inputStyles.label}>{label}</Text>}
             <TouchableOpacity
                 style={inputStyles.input}
-                onPress={() => !disabled && setIsVisible(true)}
+                onPress={() => {
+                    if (!disabled) {
+                        setIsVisible(true);
+                        setIsFocused(true);
+                    }
+                }}
                 disabled={disabled}
             >
                 <Text style={inputStyles.inputText}>
@@ -255,10 +291,38 @@ export const DropdownInput = ({
                 visible={isVisible}
                 transparent={true}
                 animationType="fade"
-                onRequestClose={() => setIsVisible(false)}
+                onRequestClose={() => {
+                    setIsVisible(false);
+                    setIsFocused(false);
+                }}
             >
-                <View style={inputStyles.modal}>
-                    <View style={inputStyles.modalContent}>
+                <TouchableOpacity 
+                    style={inputStyles.modal}
+                    activeOpacity={1}
+                    onPress={() => {
+                        setIsVisible(false);
+                        setIsFocused(false);
+                    }}
+                >
+                    <TouchableOpacity 
+                        style={inputStyles.modalContent}
+                        activeOpacity={1}
+                        onPress={() => {}} // Prevent modal from closing when tapping content
+                    >
+                        <View style={inputStyles.modalHeader}>
+                            <Text style={inputStyles.modalTitle}>
+                                {label || 'Select an option'}
+                            </Text>
+                            <TouchableOpacity 
+                                style={inputStyles.closeButton}
+                                onPress={() => {
+                                    setIsVisible(false);
+                                    setIsFocused(false);
+                                }}
+                            >
+                                <Text style={inputStyles.closeButtonText}>✕</Text>
+                            </TouchableOpacity>
+                        </View>
                         <FlatList
                             data={options}
                             keyExtractor={(item) => item.value.toString()}
@@ -268,14 +332,15 @@ export const DropdownInput = ({
                                     onPress={() => {
                                         onSelect(item.value);
                                         setIsVisible(false);
+                                        setIsFocused(false);
                                     }}
                                 >
                                     <Text style={inputStyles.optionText}>{item.label}</Text>
                                 </TouchableOpacity>
                             )}
                         />
-                    </View>
-                </View>
+                    </TouchableOpacity>
+                </TouchableOpacity>
             </Modal>
         </View>
     );
@@ -374,6 +439,7 @@ export const MultilineTextInput = ({
     ...props
 }: MultilineTextInputProps) => {
     const { theme } = useTheme();
+    const [isFocused, setIsFocused] = useState(false);
     
     const inputStyles = StyleSheet.create({
         container: {
@@ -387,7 +453,9 @@ export const MultilineTextInput = ({
         },
         input: {
             borderWidth: 1,
-            borderColor: error ? theme.colors.error : theme.colors.primary,
+            borderColor: error ? theme.colors.error : 
+                        isFocused ? theme.colors.primary : 
+                        theme.colors.textgreylight,
             borderRadius: theme.borderRadius.medium,
             padding: theme.spacing.sm,
             fontSize: theme.fontSizes.medium,
@@ -413,6 +481,8 @@ export const MultilineTextInput = ({
                 multiline={true}
                 numberOfLines={numberOfLines}
                 editable={!disabled}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
                 {...props}
             />
             {error && <Text style={inputStyles.error}>{error}</Text>}
