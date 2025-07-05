@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
-import { ThemeProvider } from './theme/ThemeContext';
-import { SplashScreenSchoolway } from './components/SplashScreen';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import React, { useEffect, useState } from 'react';
+import { SplashScreenSchoolway } from './components/SplashScreen';
+import { ThemeProvider } from './theme/ThemeContext';
 
 
 SplashScreen.preventAutoHideAsync(); // Prevent native splash screen from auto-hiding
@@ -37,7 +37,8 @@ export default function RootLayout() {
     <ThemeProvider>
       {isReady ? (
         <Stack>
-          <Stack.Screen name="index" />
+          <Stack.Screen name="index" options={{headerShown: false}}/>
+          <Stack.Screen name="(signup)/signup" options={{headerShown: false}}/>
         </Stack>
       ) : (
         <SplashScreenSchoolway />

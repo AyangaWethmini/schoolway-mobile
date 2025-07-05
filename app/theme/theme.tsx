@@ -34,6 +34,10 @@ export interface Theme {
         medium : number;
         large : number;
     };
+
+    link: {
+        color: string;
+    }
 };
 
 
@@ -72,7 +76,11 @@ export const lightTheme: Theme = {
         small: 4,
         medium: 8,
         large: 16,
-    }
+    },
+
+    link: {
+        color: "#006FFD"
+    },
 }
 
 
@@ -92,6 +100,9 @@ export const baseStyles = StyleSheet.create({
         borderRadius : lightTheme.borderRadius.medium,
         padding : lightTheme.spacing.sm,
         fontSize : lightTheme.fontSizes.medium,
+    },
+    link: {
+        color: lightTheme.link.color,
     }
 
 

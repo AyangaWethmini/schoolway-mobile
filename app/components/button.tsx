@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, Text, StyleSheet, PressableProps } from "react-native";
+import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
 import { baseStyles } from "../theme/theme";
 import { useTheme } from "../theme/ThemeContext";
 
@@ -40,12 +40,15 @@ export const Button = ({title, varient = 'primary', disabled = false, ...props} 
     });
 
     return (
-        <Pressable 
-            style={buttonStyles.button}
+        <Pressable
+            style={({ pressed }) => [
+            buttonStyles.button,
+            pressed && { opacity: 0.7 },
+            ]}
             disabled={disabled}
             {...props}
         >
-            <Text style={buttonStyles.text}>{title}</Text>
+            <Text style={[buttonStyles.text, { fontWeight: 'bold' }]}>{title}</Text>
         </Pressable>
     );
 }

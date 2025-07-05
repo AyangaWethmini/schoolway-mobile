@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
-import { 
-    TextInput, 
-    View, 
-    Text, 
-    StyleSheet, 
-    TextInputProps, 
-    TouchableOpacity,
+import {
+    FlatList,
     Modal,
-    FlatList
+    StyleSheet,
+    Text,
+    TextInput,
+    TextInputProps,
+    TouchableOpacity,
+    View
 } from "react-native";
 
 import { useTheme } from "../theme/ThemeContext";
@@ -19,17 +19,20 @@ interface BaseInputProps extends TextInputProps {
     placeholder?: string;
     error?: string;
     disabled?: boolean;
+    passstyle?: object; // Allows passing additional styles
 }
 
 // Text Input Component
 interface TextInputComponentProps extends BaseInputProps {
     variant?: 'default' | 'outlined';
+    passstyle?: object; // Allows passing additional styles
 }
 
 export const TextInputComponent = ({
     label,
     placeholder,
     error,
+    passstyle,
     disabled = false,
     variant = 'outlined',
     ...props
@@ -67,10 +70,10 @@ export const TextInputComponent = ({
     });
 
     return (
-        <View style={inputStyles.container}>
+        <View style={[inputStyles.container, { justifyContent: 'center' }]}>
             {label && <Text style={inputStyles.label}>{label}</Text>}
             <TextInput
-                style={inputStyles.input}
+                style={[inputStyles.input, passstyle]}
                 placeholder={placeholder}
                 placeholderTextColor={theme.colors.textgreylight}
                 editable={!disabled}
@@ -92,6 +95,7 @@ export const PasswordInput = ({
     label,
     placeholder,
     error,
+    passstyle,
     disabled = false,
     showPasswordToggle = true,
     ...props

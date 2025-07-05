@@ -1,13 +1,14 @@
-import { Text, View, StyleSheet, ScrollView } from "react-native";
-import { Button } from "./components/button";
-import { 
-  TextInputComponent, 
-  PasswordInput, 
-  DropdownInput, 
-  CodeInput, 
-  MultilineTextInput 
-} from "./components/inputs";
+import { Link } from "expo-router";
 import { useState } from "react";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Button } from "./components/button";
+import {
+  CodeInput,
+  DropdownInput,
+  MultilineTextInput,
+  PasswordInput,
+  TextInputComponent
+} from "./components/inputs";
 
 export default function Index() {
   const [selectedAge, setSelectedAge] = useState<string | number>('');
@@ -33,6 +34,7 @@ export default function Index() {
       <View style={styles.container}>
         <Text style={styles.title}>Components</Text>
         
+        <Link href="/signup" style={{ marginBottom: 20 }}>Signup</Link>
         {/* Input Components Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
