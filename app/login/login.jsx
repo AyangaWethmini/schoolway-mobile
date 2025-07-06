@@ -24,7 +24,7 @@ const LoginScreen = ({ navigation }) => {
     setIsLoading(true);
     
     try {
-      const result = await AuthService.signInWithCredentials("email", "password");
+      const result = await AuthService.signInWithCredentials(email, password);
       
       if (result.success) {
         // Navigate to your main app screen
