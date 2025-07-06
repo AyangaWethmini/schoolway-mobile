@@ -5,8 +5,12 @@ import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import Spacer from '../../components/Spacer';
 import TextHeader from '../../components/TextHeader';
 import TextLink from '../../components/TextLink';
+import { useRouter } from 'expo-router';
 
 const PersonalInfoStep = ({ formData, onChange, onNext }) => {
+
+  const router = useRouter();
+
   // Check if passwords match
   const passwordsMatch = formData.password && formData.confirmPassword && 
                         formData.password === formData.confirmPassword;
@@ -63,7 +67,11 @@ const PersonalInfoStep = ({ formData, onChange, onNext }) => {
         />
         <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
           <Text style={{ paddingLeft:0, marginBottom: 30, color: '#666', fontSize: 12 }}>
-            Already have an account? <TextLink href="/privacy">Login</TextLink>.
+            Already have an account? 
+            <Text 
+              style={{ color: '#007AFF' }} 
+              onPress={() => router.push('../../login/login')}
+            > Log in</Text>
           </Text>
         </View>
       </View>
