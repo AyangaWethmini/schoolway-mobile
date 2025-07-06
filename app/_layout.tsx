@@ -38,6 +38,7 @@ export default function RootLayout() {
       {isReady ? (
         <Stack>
           <Stack.Screen name="index" options={{headerShown: false}}/>
+          <Stack.Screen name="login/login" options={{headerShown: false}}/>
           <Stack.Screen name="(signup)/signup" options={{headerShown: false}}/>
         </Stack>
       ) : (

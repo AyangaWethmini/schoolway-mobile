@@ -1,12 +1,14 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 
-const API_BASE_URL = 'http://192.168.1.62:3000'; 
+const API_BASE_URL = 'http://192.168.1.62:3000'; // Replace with your actual backend URL to web server
 
 class AuthService {
-  // Sign in function
+  // Sign in function - uses custom mobile endpoint
   async signIn(email, password) {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/callback/credentials`, {
+      console.log('Signing in with email:', email);
+      const response = await fetch(`${API_BASE_URL}/api/mobileAuth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -14,53 +16,32 @@ class AuthService {
         body: JSON.stringify({
           email,
           password,
-          redirect: false,
         }),
-      });
-
+      });      console.log('Response status:', response.status);
       const data = await response.json();
-
-      if (response.ok && data.ok) {
+      console.log('Response data:', data);
+      
+      if (response.ok && (data.success || data.session)) {
         // Store session data
-        await AsyncStorage.setItem('user_session', JSON.stringify(data));
-        return { success: true, data };
+        await AsyncStorage.setItem('user_session', JSON.stringify(data.session));
+        return { success: true, data: data.session };
       } else {
         return { success: false, error: data.error || 'Authentication failed' };
       }
     } catch (error) {
-      return { success: false, error: error.message || 'Network error' };
+      console.error('Sign in error:', error);
+      return { success: false, error: 'Network error' };
     }
   }
 
-  // Alternative approach using NextAuth's signin endpoint
-  async signInWithCredentials(email, password) {
+  // Get stored session from local storage
+  async getStoredSession() {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/[...nextauth]/route.ts`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        //   callbackUrl: `${API_BASE_URL}/dashboard`, // or wherever you want to redirect
-        }),
-      });
-
-      const data = await response.json();
-      
-      if (response.ok) {
-        // Store session info
-        await AsyncStorage.setItem('user_session', JSON.stringify(data));
-        return { success: true, data };
-      } else {
-        
-        console.log('Error during sign-in is :', error);
-        return { success: false, error: data.error || 'Authentication failed' };
-      }
+      const session = await AsyncStorage.getItem('user_session');
+      console.log('Accessing Stored session:', session);
+      return session ? JSON.parse(session) : null;
     } catch (error) {
-        console.log('Error during sign-in:', error);
-      return { success: false, error: error.message || 'Network error' };
+      return null;
     }
   }
 
@@ -91,28 +72,21 @@ class AuthService {
   // Sign out
   async signOut() {
     try {
-      await fetch(`${API_BASE_URL}/api/auth/signout`, {
-        method: 'POST',
-        credentials: 'include',
-      });
+      // mightbe needed for push notifications to clear any device tokens
+      // await fetch(`${API_BASE_URL}/api/mobileAuth/signout`, {
+      //   method: 'POST',
+      //   credentials: 'include',
+      // });
       
       // Clear local storage
+      console.log('Signing out, clearing local storage');
       await AsyncStorage.removeItem('user_session');
-      return { success: true };
+      // return { success: true };
+      router.replace('/login/login'); // Redirect to login page after sign out
     } catch (error) {
       // Still clear local storage even if network request fails
       await AsyncStorage.removeItem('user_session');
       return { success: false, error: 'Network error' };
-    }
-  }
-
-  // Get stored session from local storage
-  async getStoredSession() {
-    try {
-      const session = await AsyncStorage.getItem('user_session');
-      return session ? JSON.parse(session) : null;
-    } catch (error) {
-      return null;
     }
   }
 

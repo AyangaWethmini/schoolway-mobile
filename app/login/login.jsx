@@ -1,16 +1,17 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  ActivityIndicator,
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import AuthService from '../auth/AuthService';
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,15 +25,20 @@ const LoginScreen = ({ navigation }) => {
     setIsLoading(true);
     
     try {
-      const result = await AuthService.signInWithCredentials(email, password);
+      const result = await AuthService.signIn(email, password);
       
+      console.log('Login result:', result);
       if (result.success) {
-        // Navigate to your main app screen
-        navigation.replace('Home'); // or wherever you want to navigate
+        console.log('Login successful, attempting navigation...');
+        // Navigate to your main app screen (index page)
+        router.replace('/');
+        // console.log('Navigation completed');
       } else {
+        console.log('Login failed:', result.error);
         Alert.alert('Login Failed', result.error);
       }
     } catch (error) {
+      console.error('Login error caught:', error);
       Alert.alert('Error', 'Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
