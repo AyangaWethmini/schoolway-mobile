@@ -507,12 +507,16 @@ interface RadioButtonProps {
     
 }
 
+
+
+//this component is basically styled for the select role page component so if using in other places add stlyes to reduce the size
 export const RadioButtonGroup = ({
     options,
     selectedValue,
     onSelect,
     label,
     error,
+    ...Props
 }: RadioButtonProps) => {
     const { theme } = useTheme();
     
@@ -529,8 +533,8 @@ export const RadioButtonGroup = ({
         optionContainer: {
             flexDirection: 'row',
             alignItems: 'flex-start',
-            marginBottom: theme.spacing.sm,
-            padding: theme.spacing.sm,
+            marginBottom: theme.spacing.lg,
+            padding: theme.spacing.lg,
             borderRadius: theme.borderRadius.medium,
             borderWidth: 1,
             borderColor: theme.colors.textgreylight,
@@ -568,7 +572,7 @@ export const RadioButtonGroup = ({
             marginBottom: theme.spacing.xs,
         },
         optionDescription: {
-            fontSize: theme.fontSizes.small,
+            fontSize: 14,
             color: theme.colors.textgreydark,
             lineHeight: 18,
         },
