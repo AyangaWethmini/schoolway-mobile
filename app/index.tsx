@@ -35,6 +35,8 @@ export default function Index() {
         <Text style={styles.title}>Components</Text>
         
         <Link href="/signup" style={{ marginBottom: 20 }}>Signup</Link>
+        
+        <Link href="/login/login" style={{ marginBottom: 20 }}>Login form</Link>
         {/* Input Components Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
