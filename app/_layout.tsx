@@ -2,6 +2,9 @@ import * as Font from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+import KeyboardAvoidingView from './components/KeyboardAvoidingView.jsx';
+import SafeAreaView from './components/SafeAreaView.jsx';
 import { SplashScreenSchoolway } from './components/SplashScreen';
 import { ThemeProvider } from './theme/ThemeContext';
 
@@ -34,16 +37,26 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ThemeProvider>
-      {isReady ? (
-        <Stack>
-          <Stack.Screen name="index" options={{headerShown: false}}/>
-          <Stack.Screen name="login/login" options={{headerShown: false}}/>
-          <Stack.Screen name="(signup)/signup" options={{headerShown: false}}/>
-        </Stack>
-      ) : (
-        <SplashScreenSchoolway />
-      )}
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider>
+        <SafeAreaView backgroundColor="#FAF8F8" style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
+          <KeyboardAvoidingView 
+            style={{ flex: 1 }} 
+            backgroundColor="#FAF8F8"
+            scrollEnabled={true}
+            dismissKeyboardOnTap={true}
+          >
+            {isReady ? (
+              <Stack>
+                <Stack.Screen name="index" options={{headerShown: false}}/>
+                <Stack.Screen name="(signup)/signup" options={{headerShown: false}}/>
+              </Stack>
+            ) : (
+              <SplashScreenSchoolway />
+            )}
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }

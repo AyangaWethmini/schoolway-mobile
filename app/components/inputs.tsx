@@ -372,6 +372,7 @@ export const CodeInput = ({
     const inputStyles = StyleSheet.create({
         container: {
             marginBottom: theme.spacing.md,
+            marginTop: theme.spacing.lg
         },
         label: {
             fontSize: theme.fontSizes.small,
@@ -389,8 +390,8 @@ export const CodeInput = ({
             borderWidth: 2,
             borderColor: theme.colors.primary,
             borderRadius: theme.borderRadius.medium,
-            width: 50,
-            height: 50,
+            width: 60,
+            height: 60,
             textAlign: 'center',
             fontSize: theme.fontSizes.large,
             color: theme.colors.textblack,
@@ -491,6 +492,329 @@ export const MultilineTextInput = ({
                 onBlur={() => setIsFocused(false)}
                 {...props}
             />
+            {error && <Text style={inputStyles.error}>{error}</Text>}
+        </View>
+    );
+};
+
+// Radio Button Group Component
+interface RadioButtonProps {
+    options: { label: string; value: string; description?: string }[];
+    selectedValue?: string;
+    onSelect: (value: string) => void;
+    label?: string;
+    error?: string;
+    
+}
+
+
+
+//this component is basically styled for the select role page component so if using in other places add stlyes to reduce the size
+export const RadioButtonGroup = ({
+    options,
+    selectedValue,
+    onSelect,
+    label,
+    error,
+    ...Props
+}: RadioButtonProps) => {
+    const { theme } = useTheme();
+    
+    const inputStyles = StyleSheet.create({
+        container: {
+            marginBottom: theme.spacing.md,
+        },
+        label: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.textblack,
+            marginBottom: theme.spacing.sm,
+            fontWeight: '600',
+        },
+        optionContainer: {
+            flexDirection: 'row',
+            alignItems: 'flex-start',
+            marginBottom: theme.spacing.lg,
+            padding: theme.spacing.lg,
+            borderRadius: theme.borderRadius.medium,
+            borderWidth: 1,
+            borderColor: theme.colors.textgreylight,
+        },
+        selectedOption: {
+            borderColor: theme.colors.primary,
+            backgroundColor: theme.colors.primary + '10',
+        },
+        radioButton: {
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            borderWidth: 2,
+            borderColor: theme.colors.textgreylight,
+            marginRight: theme.spacing.sm,
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        radioButtonSelected: {
+            borderColor: theme.colors.primary,
+        },
+        radioButtonInner: {
+            width: 10,
+            height: 10,
+            borderRadius: 5,
+            backgroundColor: theme.colors.primary,
+        },
+        optionContent: {
+            flex: 1,
+        },
+        optionLabel: {
+            fontSize: theme.fontSizes.medium,
+            color: theme.colors.textblack,
+            fontWeight: '600',
+            marginBottom: theme.spacing.xs,
+        },
+        optionDescription: {
+            fontSize: 14,
+            color: theme.colors.textgreydark,
+            lineHeight: 18,
+        },
+        error: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.error,
+            marginTop: theme.spacing.xs,
+        },
+    });
+
+    return (
+        <View style={inputStyles.container}>
+            {label && <Text style={inputStyles.label}>{label}</Text>}
+            {options.map((option) => (
+                <TouchableOpacity
+                    key={option.value}
+                    style={[
+                        inputStyles.optionContainer,
+                        selectedValue === option.value && inputStyles.selectedOption,
+                    ]}
+                    onPress={() => onSelect(option.value)}
+                >
+                    <View style={[
+                        inputStyles.radioButton,
+                        selectedValue === option.value && inputStyles.radioButtonSelected,
+                    ]}>
+                        {selectedValue === option.value && (
+                            <View style={inputStyles.radioButtonInner} />
+                        )}
+                    </View>
+                    <View style={inputStyles.optionContent}>
+                        <Text style={inputStyles.optionLabel}>{option.label}</Text>
+                        {option.description && (
+                            <Text style={inputStyles.optionDescription}>
+                                {option.description}
+                            </Text>
+                        )}
+                    </View>
+                </TouchableOpacity>
+            ))}
+            {error && <Text style={inputStyles.error}>{error}</Text>}
+        </View>
+    );
+};
+
+// Phone Number Input Component
+interface PhoneNumberInputProps extends BaseInputProps {
+    countryCode?: string;
+    onCountryCodeChange?: (code: string) => void;
+}
+
+export const PhoneNumberInput = ({
+    label,
+    placeholder = "Add number",
+    error,
+    disabled = false,
+    countryCode = "+1",
+    onCountryCodeChange,
+    ...props
+}: PhoneNumberInputProps) => {
+    const { theme } = useTheme();
+    const [isFocused, setIsFocused] = useState(false);
+    
+    const inputStyles = StyleSheet.create({
+        container: {
+            marginBottom: theme.spacing.md,
+        },
+        label: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.textblack,
+            marginBottom: theme.spacing.xs,
+            fontWeight: '600',
+        },
+        inputContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: error ? theme.colors.error : 
+                        isFocused ? theme.colors.primary : 
+                        theme.colors.textgreylight,
+            borderRadius: theme.borderRadius.medium,
+            backgroundColor: disabled ? theme.colors.textgreylight : theme.colors.backgroud,
+            minHeight: 50,
+        },
+        countryCodeContainer: {
+            paddingHorizontal: theme.spacing.sm,
+            borderRightWidth: 1,
+            borderRightColor: theme.colors.textgreylight,
+        },
+        countryCodeText: {
+            fontSize: theme.fontSizes.medium,
+            color: theme.colors.textblack,
+        },
+        input: {
+            flex: 1,
+            padding: theme.spacing.sm,
+            fontSize: theme.fontSizes.medium,
+            color: theme.colors.textblack,
+        },
+        addButton: {
+            paddingHorizontal: theme.spacing.sm,
+        },
+        addButtonText: {
+            fontSize: 20,
+            color: theme.colors.textgreydark,
+        },
+        error: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.error,
+            marginTop: theme.spacing.xs,
+        },
+    });
+
+    return (
+        <View style={inputStyles.container}>
+            {label && <Text style={inputStyles.label}>{label}</Text>}
+            <View style={inputStyles.inputContainer}>
+                <View style={inputStyles.countryCodeContainer}>
+                    <Text style={inputStyles.countryCodeText}>{countryCode}</Text>
+                </View>
+                <TextInput
+                    style={inputStyles.input}
+                    placeholder={placeholder}
+                    placeholderTextColor={theme.colors.textgreylight}
+                    keyboardType="phone-pad"
+                    editable={!disabled}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    {...props}
+                />
+                <TouchableOpacity style={inputStyles.addButton}>
+                    <Text style={inputStyles.addButtonText}>➕</Text>
+                </TouchableOpacity>
+            </View>
+            {error && <Text style={inputStyles.error}>{error}</Text>}
+        </View>
+    );
+};
+
+// File Upload Component
+interface FileUploadProps extends BaseInputProps {
+    onFileSelect?: (file: any) => void;
+    fileType?: 'image' | 'document' | 'any';
+    selectedFile?: any;
+}
+
+export const FileUpload = ({
+    label,
+    placeholder = "Add Photo",
+    error,
+    onFileSelect,
+    fileType = 'image',
+    selectedFile,
+    disabled = false,
+}: FileUploadProps) => {
+    const { theme } = useTheme();
+    
+    const inputStyles = StyleSheet.create({
+        container: {
+            marginBottom: theme.spacing.md,
+        },
+        label: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.textblack,
+            marginBottom: theme.spacing.xs,
+            fontWeight: '600',
+        },
+        uploadContainer: {
+            borderWidth: 1,
+            borderColor: theme.colors.textgreylight,
+            borderRadius: theme.borderRadius.medium,
+            borderStyle: 'dashed',
+            padding: theme.spacing.md,
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: disabled ? theme.colors.textgreylight : theme.colors.backgroud,
+            minHeight: 80,
+        },
+        uploadContainerSelected: {
+            borderColor: theme.colors.primary,
+            backgroundColor: theme.colors.primary + '10',
+        },
+        uploadButton: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
+        uploadIcon: {
+            fontSize: 24,
+            color: theme.colors.textgreydark,
+            marginRight: theme.spacing.xs,
+        },
+        uploadText: {
+            fontSize: theme.fontSizes.medium,
+            color: theme.colors.textgreydark,
+        },
+        selectedFileText: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.primary,
+            marginTop: theme.spacing.xs,
+        },
+        error: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.error,
+            marginTop: theme.spacing.xs,
+        },
+    });
+
+    const handleFileSelect = () => {
+        if (disabled) return;
+        
+        // This is a placeholder - in a real app, you'd use a library like
+        // react-native-document-picker or react-native-image-picker
+        console.log('File selection would be handled here');
+        if (onFileSelect) {
+            onFileSelect({ name: 'selected_file.jpg', type: fileType });
+        }
+    };
+
+    return (
+        <View style={inputStyles.container}>
+            {label && <Text style={inputStyles.label}>{label}</Text>}
+            <TouchableOpacity
+                style={[
+                    inputStyles.uploadContainer,
+                    selectedFile && inputStyles.uploadContainerSelected,
+                ]}
+                onPress={handleFileSelect}
+                disabled={disabled}
+            >
+                <View style={inputStyles.uploadButton}>
+                    <Text style={inputStyles.uploadIcon}>
+                        {fileType === 'image' ? '📷' : '📄'}
+                    </Text>
+                    <Text style={inputStyles.uploadText}>{placeholder}</Text>
+                </View>
+                {selectedFile && (
+                    <Text style={inputStyles.selectedFileText}>
+                        {selectedFile.name || 'File selected'}
+                    </Text>
+                )}
+            </TouchableOpacity>
             {error && <Text style={inputStyles.error}>{error}</Text>}
         </View>
     );

@@ -36,7 +36,11 @@ export default function Index() {
         
         <Link href="/signup" style={{ marginBottom: 20 }}>Signup</Link>
         <Link href="/usersession" style={{ marginBottom: 20 }}>userData</Link>
+        <Link href="/otp" style={{ marginBottom: 20 }}>otp</Link>
+        
         <Link href="/login/login" style={{ marginBottom: 20 }}>Login form</Link>
+
+        <Link href="/parent/register" style={{ marginBottom: 20 }}>Perent reg form</Link>
         {/* Input Components Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
