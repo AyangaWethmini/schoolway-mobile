@@ -10,7 +10,7 @@ import { SvgXml } from 'react-native-svg';
 import AuthService from '../auth/AuthService';
 import { Button } from '../components/button';
 import TextInputComponent from '../components/inputs';
-
+import Spacer from '../components/Spacer';
 
 
 
@@ -61,10 +61,11 @@ const LoginScreen = () => {
     <View style={styles.container}>
       <SvgXml 
         xml={logoLightSvg} 
-        width={150} 
+        width={250} 
         height={67} 
         style={styles.logo}
       />
+      <Spacer/>
       <Text style={styles.title}>Welcome Back!</Text>
 
       <TextInputComponent
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 30,

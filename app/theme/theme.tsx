@@ -38,6 +38,18 @@ export interface Theme {
     link: {
         color: string;
     }
+
+    navbar: {
+        headerBg: string;
+        // backgroundColor: string;
+        // textColor: string;
+        // iconColor: string;
+        iconActive: string;
+        iconInactive: string;
+        iconActiveBg: string;
+        iconActiveBlack: string;
+        iconActiveBlue: string;
+    }
 };
 
 
@@ -81,6 +93,16 @@ export const lightTheme: Theme = {
     link: {
         color: "#006FFD"
     },
+    navbar:{
+        headerBg:'#FFC825',
+
+        iconInactive: '#AAA', // Yellow for active icons
+        iconActive: '#FFC825', // Dark Blue for inactive icons
+        iconActiveBg: '#F0F0F0', // Light Gray for active icon background
+        iconActiveBlack: '#000', // Black for active icons in light mode
+        iconActiveBlue: '#2B3674', // Dark Blue for active icons in light mode
+
+    }
 }
 
 

@@ -47,10 +47,13 @@ export default function RootLayout() {
             dismissKeyboardOnTap={true}
           >
             {isReady ? (
-              <Stack>
-                <Stack.Screen name="index" options={{headerShown: false}}/>
-                <Stack.Screen name="(signup)/signup" options={{headerShown: false}}/>
-              </Stack>
+                <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="(signup)" />
+                <Stack.Screen name="login/login" />
+                <Stack.Screen name="(driver)" />
+                <Stack.Screen name="(signup)/steps/[...catchAll]" />
+                </Stack>
             ) : (
               <SplashScreenSchoolway />
             )}
