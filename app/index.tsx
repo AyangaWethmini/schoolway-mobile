@@ -8,7 +8,7 @@ import {
   MultilineTextInput,
   PasswordInput,
   TextInputComponent
-} from "./components/inputs";
+} from "./components/Inputs";
 import Spacer from "./components/Spacer";
 
 export default function Index() {
@@ -40,9 +40,9 @@ export default function Index() {
         <Link href="/otp" style={{ marginBottom: 20 }}>otp</Link>
         
         <Link href="/login/login" style={{ marginBottom: 20 }}>Login form</Link>
-        <Link href='profile'>Driver Profile</Link>
-        <Link href="/parent/register" style={{ marginBottom: 20 }}>Perent reg form</Link>
-        {/* Input Components Section */}
+        <Link href='/profile' style={{ marginBottom: 20 }}>Driver Profile</Link>
+              
+
 
         <Spacer/>
         <Link href='/steps/step2'>Step 2</Link>

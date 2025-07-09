@@ -9,7 +9,7 @@ import {
 import { SvgXml } from 'react-native-svg';
 import AuthService from '../auth/AuthService';
 import { Button } from '../components/button';
-import TextInputComponent from '../components/inputs';
+import TextInputComponent from '../components/Inputs';
 import Spacer from '../components/Spacer';
 
 
