@@ -65,7 +65,7 @@ export const lightTheme: Theme = {
         backgroud: "#FAF8F8",
         textblack: "#090A0A",
         textwhite : "#ffffff",
-        textgreydark: "#71727A",
+        textgreydark: "#5E5F66",
         textgreylight: "#8F9098",
         error: "#FF0000"
     },
