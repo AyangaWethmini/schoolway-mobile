@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const API_BASE_URL = 'http://192.168.1.62:3000'; // Replace with your actual backend URL to web server
+const API_BASE_URL = 'http://192.168.23.222:3000'; // Replace with your actual backend URL to web server
 
 class AuthService {
   // Sign in function - uses custom mobile endpoint

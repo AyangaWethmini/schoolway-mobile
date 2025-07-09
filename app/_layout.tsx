@@ -1,7 +1,9 @@
 import * as Font from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+
 import React, { useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import KeyboardAvoidingView from './components/KeyboardAvoidingView.jsx';
 import SafeAreaView from './components/SafeAreaView.jsx';
@@ -38,6 +40,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
+      <StatusBar barStyle={'default'}/>
       <ThemeProvider>
         <SafeAreaView backgroundColor="#FAF8F8" style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
           <KeyboardAvoidingView 

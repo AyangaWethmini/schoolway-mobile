@@ -1,0 +1,378 @@
+import { useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import TextHeader from '../components/TextHeader';
+import { Button } from "../components/button";
+
+
+const Dashboard = () => {
+  // Mock data for parent's children
+  const [children, setChildren] = useState([
+    {
+      id: 1,
+      name: 'Emma Johnson',
+      grade: '5th Grade',
+      vanNumber: 'VAN-001',
+      pickupTime: '7:30 AM',
+      dropoffTime: '3:45 PM',
+      status: 'On the way',
+      driver: 'John Smith',
+      contact: '+1 234-567-8901',
+      isAssigned: true
+    },
+    {
+      id: 2,
+      name: 'Liam Johnson',
+      grade: '3rd Grade',
+      vanNumber: 'VAN-001',
+      pickupTime: '7:30 AM',
+      dropoffTime: '3:45 PM',
+      status: 'In School',
+      driver: 'John Smith',
+      contact: '+1 234-567-8901',
+      isAssigned: true
+    },
+    {
+      id: 3,
+      name: 'Sophie Johnson',
+      grade: '1st Grade',
+      vanNumber: null,
+      pickupTime: null,
+      dropoffTime: null,
+      status: 'Not Assigned',
+      driver: null,
+      contact: null,
+      isAssigned: false
+    },
+    {
+      id: 4,
+      name: 'Oliver Johnson',
+      grade: '2nd Grade',
+      vanNumber: null,
+      pickupTime: null,
+      dropoffTime: null,
+      status: 'Not Assigned',
+      driver: null,
+      contact: null,
+      isAssigned: false
+    }
+  ])
+
+  const getStatusColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'on the way':
+        return '#FFA500'
+      case 'in school':
+        return '#4CAF50'
+      case 'at home':
+        return '#2196F3'
+      case 'not assigned':
+        return '#757575'
+      default:
+        return '#757575'
+    }
+  }
+
+  const getStatusBackgroundColor = (status) => {
+    switch (status.toLowerCase()) {
+      case 'on the way':
+        return '#FFF3E0'
+      case 'in school':
+        return '#E8F5E8'
+      case 'at home':
+        return '#E3F2FD'
+      case 'not assigned':
+        return '#F5F5F5'
+      default:
+        return '#F5F5F5'
+    }
+  }
+
+  return (
+    <View style={styles.container}>      
+      <ScrollView style={styles.scrollContainer}>
+        <View style={styles.section}>
+          <TextHeader>Your Children</TextHeader>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={styles.cardsContainer}>
+              {children.map((child) => (
+                <View key={child.id} style={styles.card}>
+                  <View style={styles.cardHeader}>
+                    <Text style={styles.childName}>{child.name}</Text>
+                    <View style={styles.gradeContainer}>
+                      <Text style={styles.childGrade}>{child.grade}</Text>
+                    </View>
+                  </View>
+                  
+                  <View style={styles.cardContent}>
+                    {child.isAssigned ? (
+                      <View style={styles.assignmentInfo}>
+                        <View style={styles.vanInfoContainer}>
+                          <Text style={styles.vanLabel}>Van</Text>
+                          <Text style={styles.vanNumber}>{child.vanNumber}</Text>
+                        </View>
+                      </View>
+                    ) : (
+                      <View style={styles.notAssignedContainer}>
+                        <Text style={styles.notAssignedText}>Not assigned to any van</Text>
+                      </View>
+                    )}
+                  </View>
+                  
+                  <View style={styles.buttonContainer}>
+                    <Button 
+                      title="View Details" 
+                      varient="outlined-black"
+                      onPress={() => console.log('Outlined Black pressed')}
+                    />
+                    
+                    {!child.isAssigned && (
+                      <Button 
+                        title="Assign to Van" 
+                        varient="secondary"
+                        onPress={() => console.log('Secondary pressed')}
+                      />
+                    )}
+                  </View>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
+
+        <View style={styles.section}>
+          <TextHeader>Current Status</TextHeader>
+          <View style={styles.table}>
+
+            <View style={styles.tableHeader}>
+              <Text style={[styles.tableHeaderText, styles.nameColumn]}>Name</Text>
+              <Text style={[styles.tableHeaderText, styles.timeColumn]}>Time</Text>
+              <Text style={[styles.tableHeaderText, styles.statusColumn]}>Status</Text>
+            </View>
+            
+            {children.map((child, index) => (
+              <View key={child.id} style={[styles.tableRow, index % 2 === 0 ? styles.evenRow : styles.oddRow]}>
+                <Text style={[styles.tableCell, styles.nameColumn]}>{child.name}</Text>
+                <Text style={[styles.tableCell, styles.timeColumn]}>{child.pickupTime || 'N/A'}</Text>
+                <View style={[styles.tableCell, styles.statusColumn]}>
+                  <View style={[
+                    styles.statusTag,
+                    { backgroundColor: getStatusBackgroundColor(child.status) }
+                  ]}>
+                    <Text style={[
+                      styles.statusTagText,
+                      { color: getStatusColor(child.status) }
+                    ]}>
+                      {child.status}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </View>
+  )
+}
+
+export default Dashboard
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  scrollContainer: {
+    flex: 1,
+    padding: 16,
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#333',
+  },
+  cardsContainer: {
+    flexDirection: 'row',
+    paddingRight: 16,
+  },
+  card: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    marginRight: 12,
+    marginVertical: 10,
+    width: 300,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#f0f0f0',
+  },
+  
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: 16,
+  },
+  
+  childName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    flex: 1,
+    marginRight: 8,
+  },
+  
+  gradeContainer: {
+    backgroundColor: '#f8f9fa',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e9ecef',
+  },
+  
+  childGrade: {
+    fontSize: 12,
+    color: '#6c757d',
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  
+  cardContent: {
+    marginBottom: 20,
+  },
+  
+  assignmentInfo: {
+    gap: 12,
+  },
+  
+  vanInfoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f8f9fa',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+
+  },
+  
+  vanLabel: {
+    fontSize: 14,
+    color: '#6c757d',
+    marginRight: 8,
+    fontWeight: '500',
+  },
+  
+  vanNumber: {
+    fontSize: 14,
+    color: '#007bff',
+    fontWeight: '600',
+  },
+  
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  
+  statusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
+  
+  statusIndicator: {
+    width: 3,
+    height: 10,
+    borderRadius: 3,
+    marginRight: 6,
+  },
+  
+  statusText: {
+    fontSize: 13,
+    fontWeight: '600',
+    textTransform: 'capitalize',
+  },
+  
+  notAssignedContainer: {
+    backgroundColor: '#fff3cd',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  
+  notAssignedText: {
+    fontSize: 14,
+    color: '#856404',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',   
+    justifyContent: 'space-between', 
+    alignItems: 'center',         
+  },
+  table: {
+    overflow: 'hidden',
+    borderRadius: 4,
+  },
+  tableHeader: {
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+
+  },
+  tableHeaderText: {
+    color: '#00000',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  tableRow: {
+    backgroundColor:'#ffffff',
+    flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f0f0f0',
+  },
+  tableCell: {
+    fontSize: 14,
+    color: '#333',
+  },
+  nameColumn: {
+    flex: 2,
+  },
+  gradeColumn: {
+    flex: 1,
+  },
+  timeColumn: {
+    flex: 1,
+  },
+  statusColumn: {
+    flex: 1.5,
+  },
+  statusTag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+    alignSelf: 'flex-start',
+  },
+  statusTagText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+})

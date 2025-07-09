@@ -41,6 +41,7 @@ export default function Index() {
         
         <Link href="/login/login" style={{ marginBottom: 20 }}>Login form</Link>
         <Link href='profile'>Driver Profile</Link>
+        <Link href='/parent/dashboard' style={{ marginBottom: 10 ,marginTop: 10 }}>Parent Ui</Link>
         <Link href="/parent/register" style={{ marginBottom: 20 }}>Perent reg form</Link>
         {/* Input Components Section */}
 
