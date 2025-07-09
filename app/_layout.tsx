@@ -54,7 +54,7 @@ export default function RootLayout() {
                 <Stack.Screen name="index" />
                 <Stack.Screen name="(signup)" />
                 <Stack.Screen name="login/login" />
-                <Stack.Screen name="(driver)" />
+                <Stack.Screen name="driver" />
                 <Stack.Screen name="(signup)/steps/[...catchAll]" />
                 </Stack>
             ) : (

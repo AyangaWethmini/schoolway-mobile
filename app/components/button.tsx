@@ -8,10 +8,11 @@ interface ButtonProps extends PressableProps {
     title : string;
     varient : 'primary' | 'secondary' | 'outlined-yellow' | 'outlined-black';
     disabled? : boolean;
+    passstyles? : object | null; 
 }
 
 
-export const Button = ({title, varient = 'primary', disabled = false, ...props} : ButtonProps) => {
+export const Button = ({title, varient = 'primary', passstyles=null, disabled = false, ...props} : ButtonProps) => {
     
     const { theme } = useTheme();
 
@@ -43,7 +44,7 @@ export const Button = ({title, varient = 'primary', disabled = false, ...props} 
         <Pressable
             style={({ pressed }) => [
             buttonStyles.button,
-            pressed && { opacity: 0.7 },
+            pressed && { opacity: 0.7 }, passstyles 
             ]}
             disabled={disabled}
             {...props}
