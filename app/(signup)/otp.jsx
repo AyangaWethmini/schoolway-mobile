@@ -5,7 +5,7 @@ import {
     View,
 } from 'react-native';
 import { Button } from '../components/button';
-import { CodeInput } from '../components/inputs';
+import { CodeInput } from '../components/Inputs';
 import { useRouter } from 'expo-router';
 
 

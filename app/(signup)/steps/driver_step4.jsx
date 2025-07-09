@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Button } from '../../components/button';
-import { TextInputComponent } from '../../components/inputs';
+import { TextInputComponent } from '../../components/Inputs';
 import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import SafeAreaView from '../../components/SafeAreaView';
 import TextHeader from '../../components/TextHeader';

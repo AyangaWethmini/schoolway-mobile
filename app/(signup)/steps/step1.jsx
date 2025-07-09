@@ -1,7 +1,7 @@
 import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/button';
-import { PasswordInput, TextInputComponent } from '../../components/inputs';
+import { PasswordInput, TextInputComponent } from '../../components/Inputs';
 import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import Spacer from '../../components/Spacer';
 import TextHeader from '../../components/TextHeader';
