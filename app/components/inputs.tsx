@@ -11,6 +11,7 @@ import {
     View
 } from "react-native";
 
+import Icon from "react-native-vector-icons/MaterialIcons";
 import { useTheme } from "../theme/ThemeContext";
 
 // Base Input Props
@@ -179,177 +180,194 @@ export const PasswordInput = ({
 
 // Dropdown/Select Input Component
 interface DropdownInputProps extends BaseInputProps {
-    options: { label: string; value: string | number }[];
-    selectedValue?: string | number;
-    onSelect: (value: string | number) => void;
+  options: { label: string; value: string | number }[];
+  selectedValue?: string | number;
+  onSelect: (value: string | number) => void;
 }
 
 export const DropdownInput = ({
-    label,
-    placeholder,
-    error,
-    disabled = false,
-    options,
-    selectedValue,
-    onSelect,
-    ...props
+  label,
+  placeholder,
+  error,
+  disabled = false,
+  options,
+  selectedValue,
+  onSelect,
+  ...props
 }: DropdownInputProps) => {
-    const { theme } = useTheme();
-    const [isVisible, setIsVisible] = useState(false);
-    const [isFocused, setIsFocused] = useState(false);
-    
-    const selectedOption = options.find(option => option.value === selectedValue);
-    
-    const inputStyles = StyleSheet.create({
-        container: {
-            marginBottom: theme.spacing.md,
-        },
-        label: {
-            fontSize: theme.fontSizes.small,
-            color: theme.colors.textblack,
-            marginBottom: theme.spacing.xs,
-            fontWeight: '600',
-        },
-        input: {
-            borderWidth: 1,
-            borderColor: error ? theme.colors.error : 
-                        isFocused ? theme.colors.primary : 
-                        theme.colors.textgreylight,
-            borderRadius: theme.borderRadius.medium,
-            padding: theme.spacing.sm,
-            fontSize: theme.fontSizes.medium,
-            backgroundColor: disabled ? theme.colors.textgreylight : theme.colors.backgroud,
-            color: theme.colors.textblack,
-            minHeight: 50,
-            justifyContent: 'center',
-        },
-        inputText: {
-            fontSize: theme.fontSizes.medium,
-            color: selectedOption ? theme.colors.textblack : theme.colors.textgreylight,
-        },
-        error: {
-            fontSize: theme.fontSizes.small,
-            color: theme.colors.error,
-            marginTop: theme.spacing.xs,
-        },
-        modal: {
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0,0,0,0.5)',
-        },
-        modalContent: {
-            backgroundColor: theme.colors.backgroud,
-            borderRadius: theme.borderRadius.medium,
-            padding: theme.spacing.md,
-            width: '80%',
-            maxHeight: '50%',
-        },
-        modalHeader: {
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: theme.spacing.md,
-        },
-        modalTitle: {
-            fontSize: theme.fontSizes.medium,
-            fontWeight: '600',
-            color: theme.colors.textblack,
-        },
-        closeButton: {
-            padding: theme.spacing.xs,
-        },
-        closeButtonText: {
-            fontSize: 18,
-            color: theme.colors.textgreydark,
-        },
-        option: {
-            padding: theme.spacing.md,
-            borderBottomWidth: 1,
-            borderBottomColor: theme.colors.textgreylight,
-        },
-        optionText: {
-            fontSize: theme.fontSizes.medium,
-            color: theme.colors.textblack,
-        },
-    });
+  const { theme } = useTheme();
+  const [isVisible, setIsVisible] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
 
-    return (
-        <View style={inputStyles.container}>
-            {label && <Text style={inputStyles.label}>{label}</Text>}
-            <TouchableOpacity
-                style={inputStyles.input}
+  const selectedOption = options.find((option) => option.value === selectedValue);
+
+  const inputStyles = StyleSheet.create({
+    container: {
+      marginBottom: theme.spacing.md,
+    },
+    label: {
+      fontSize: theme.fontSizes.small,
+      color: theme.colors.textblack,
+      marginBottom: theme.spacing.xs,
+      fontWeight: "600",
+    },
+    input: {
+      borderWidth: 1,
+      borderColor: error
+        ? theme.colors.error
+        : isFocused
+        ? theme.colors.primary
+        : theme.colors.textgreylight,
+      borderRadius: theme.borderRadius.medium,
+      padding: theme.spacing.sm,
+      fontSize: theme.fontSizes.medium,
+      backgroundColor: disabled
+        ? theme.colors.textgreylight
+        : theme.colors.backgroud,
+      color: theme.colors.textblack,
+      minHeight: 50,
+      justifyContent: "space-between", // Changed to space-between
+      flexDirection: "row", // Added to align text and icon
+      alignItems: "center", // Align items vertically
+    },
+    inputText: {
+      fontSize: theme.fontSizes.medium,
+      color: selectedOption ? theme.colors.textblack : theme.colors.textgreylight,
+      flex: 1, // Allow text to take available space
+    },
+    error: {
+      fontSize: theme.fontSizes.small,
+      color: theme.colors.error,
+      marginTop: theme.spacing.xs,
+    },
+    modal: {
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0,0,0,0.5)",
+    },
+    modalContent: {
+      backgroundColor: theme.colors.backgroud,
+      borderRadius: theme.borderRadius.medium,
+      padding: theme.spacing.md,
+      width: "80%",
+      maxHeight: "50%",
+    },
+    modalHeader: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      marginBottom: theme.spacing.md,
+    },
+    modalTitle: {
+      fontSize: theme.fontSizes.medium,
+      fontWeight: "600",
+      color: theme.colors.textblack,
+    },
+    closeButton: {
+      padding: theme.spacing.xs,
+    },
+    closeButtonText: {
+      fontSize: 18,
+      color: theme.colors.textgreydark,
+    },
+    option: {
+      padding: theme.spacing.md,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.colors.textgreylight,
+    },
+    optionText: {
+      fontSize: theme.fontSizes.medium,
+      color: theme.colors.textblack,
+    },
+    chevronIcon: {
+      marginLeft: theme.spacing.sm, // Add some space between text and icon
+    },
+  });
+
+  return (
+    <View style={inputStyles.container}>
+      {label && <Text style={inputStyles.label}>{label}</Text>}
+      <TouchableOpacity
+        style={inputStyles.input}
+        onPress={() => {
+          if (!disabled) {
+            setIsVisible(true);
+            setIsFocused(true);
+          }
+        }}
+        disabled={disabled}
+      >
+        <Text style={inputStyles.inputText}>
+          {selectedOption ? selectedOption.label : placeholder}
+        </Text>
+        {/* Add the chevron icon here */}
+        <Icon
+          name="keyboard-arrow-down" // Name of the icon (e.g., 'chevron-down', 'arrow-drop-down')
+          size={24} // Size of the icon
+          color={theme.colors.textgreydark} // Color of the icon
+          style={inputStyles.chevronIcon}
+        />
+      </TouchableOpacity>
+      {error && <Text style={inputStyles.error}>{error}</Text>}
+
+      <Modal
+        visible={isVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => {
+          setIsVisible(false);
+          setIsFocused(false);
+        }}
+      >
+        <TouchableOpacity
+          style={inputStyles.modal}
+          activeOpacity={1}
+          onPress={() => {
+            setIsVisible(false);
+            setIsFocused(false);
+          }}
+        >
+          <TouchableOpacity
+            style={inputStyles.modalContent}
+            activeOpacity={1}
+            onPress={() => {}} // Prevent modal from closing when tapping content
+          >
+            <View style={inputStyles.modalHeader}>
+              <Text style={inputStyles.modalTitle}>
+                {label || "Select an option"}
+              </Text>
+              <TouchableOpacity
+                style={inputStyles.closeButton}
                 onPress={() => {
-                    if (!disabled) {
-                        setIsVisible(true);
-                        setIsFocused(true);
-                    }
+                  setIsVisible(false);
+                  setIsFocused(false);
                 }}
-                disabled={disabled}
-            >
-                <Text style={inputStyles.inputText}>
-                    {selectedOption ? selectedOption.label : placeholder}
-                </Text>
-            </TouchableOpacity>
-            {error && <Text style={inputStyles.error}>{error}</Text>}
-            
-            <Modal
-                visible={isVisible}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={() => {
+              >
+                <Text style={inputStyles.closeButtonText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              data={options}
+              keyExtractor={(item) => item.value.toString()}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={inputStyles.option}
+                  onPress={() => {
+                    onSelect(item.value);
                     setIsVisible(false);
                     setIsFocused(false);
-                }}
-            >
-                <TouchableOpacity 
-                    style={inputStyles.modal}
-                    activeOpacity={1}
-                    onPress={() => {
-                        setIsVisible(false);
-                        setIsFocused(false);
-                    }}
+                  }}
                 >
-                    <TouchableOpacity 
-                        style={inputStyles.modalContent}
-                        activeOpacity={1}
-                        onPress={() => {}} // Prevent modal from closing when tapping content
-                    >
-                        <View style={inputStyles.modalHeader}>
-                            <Text style={inputStyles.modalTitle}>
-                                {label || 'Select an option'}
-                            </Text>
-                            <TouchableOpacity 
-                                style={inputStyles.closeButton}
-                                onPress={() => {
-                                    setIsVisible(false);
-                                    setIsFocused(false);
-                                }}
-                            >
-                                <Text style={inputStyles.closeButtonText}>✕</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <FlatList
-                            data={options}
-                            keyExtractor={(item) => item.value.toString()}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    style={inputStyles.option}
-                                    onPress={() => {
-                                        onSelect(item.value);
-                                        setIsVisible(false);
-                                        setIsFocused(false);
-                                    }}
-                                >
-                                    <Text style={inputStyles.optionText}>{item.label}</Text>
-                                </TouchableOpacity>
-                            )}
-                        />
-                    </TouchableOpacity>
+                  <Text style={inputStyles.optionText}>{item.label}</Text>
                 </TouchableOpacity>
-            </Modal>
-        </View>
-    );
+              )}
+            />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+    </View>
+  );
 };
 
 // Code Input Component (for OTP/Verification)

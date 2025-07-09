@@ -5,6 +5,8 @@ import AddButton from '../../components/AddButton';
 import TextHeading from '../../components/TextHeading';
 import { Button } from "../../components/button";
 import { useTheme } from "../../theme/ThemeContext";
+import { baseStyles } from "../../theme/theme";
+
 
 
 const Dashboard = () => {
@@ -44,7 +46,7 @@ const Dashboard = () => {
       vanNumber: null,
       pickupTime: null,
       dropoffTime: null,
-      status: 'Not Assigned',
+      status: 'at home',
       driver: null,
       contact: null,
       isAssigned: false
@@ -64,32 +66,33 @@ const Dashboard = () => {
   ])
 
   const getStatusColor = (status) => {
+    const {theme} = useTheme();
     switch (status.toLowerCase()) {
       case 'on the way':
-        return '#FFA500'
+        return theme.colors.statusorange
       case 'in school':
-        return '#4CAF50'
+        return theme.colors.statusgreen
       case 'at home':
-        return '#2196F3'
+        return theme.colors.statusblue
       case 'not assigned':
-        return '#757575'
+        return theme.colors.statusgrey
       default:
-        return '#757575'
+        return theme.colors.statusgrey
     }
   }
 
   const getStatusBackgroundColor = (status) => {
     switch (status.toLowerCase()) {
       case 'on the way':
-        return '#FFF3E0'
+        return theme.colors.statusbackgroundorange
       case 'in school':
-        return '#E8F5E8'
+        return theme.colors.statusbackgroundgreen
       case 'at home':
-        return '#E3F2FD'
+        return theme.colors.statusbackgroundblue
       case 'not assigned':
-        return '#F5F5F5'
+        return theme.colors.statusbackgroundgrey
       default:
-        return '#F5F5F5'
+        return theme.colors.statusbackgroundgrey
     }
   }
 
@@ -122,7 +125,7 @@ const Dashboard = () => {
                       <View style={styles.assignmentInfo}>
                         <View style={styles.vanInfoContainer}>
                           <Text style={styles.vanLabel}>Van</Text>
-                          <Text style={styles.vanNumber}>{child.vanNumber}</Text>
+                          <Text style={[styles.vanNumber, { color : theme.colors.accentblue }]}>{child.vanNumber}</Text>
                         </View>
                       </View>
                     ) : (
@@ -250,20 +253,11 @@ const styles = StyleSheet.create({
   },
   
   gradeContainer: {
-    backgroundColor: '#f8f9fa',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#e9ecef',
+    ...baseStyles.smalltagcontainer
   },
   
   childGrade: {
-    fontSize: 12,
-    color: '#6c757d',
-    fontWeight: '500',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    ...baseStyles.smalltagcontent
   },
   
   cardContent: {
@@ -293,7 +287,6 @@ const styles = StyleSheet.create({
   
   vanNumber: {
     fontSize: 14,
-    color: '#007bff',
     fontWeight: '600',
   },
   
