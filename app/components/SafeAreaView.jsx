@@ -19,8 +19,8 @@ const SafeAreaView = ({
   };
 
   return (
-    <View style={[styles.container, { backgroundColor }, style]} {...props}>
-      {/* <View style={[styles.innerContainer, paddingStyle]}> */}
+    <View style={[styles.container, { backgroundColor }, style,styles.innerContainer, paddingStyle]} {...props}>
+      {/* <View style={}> */}
         {children}
       {/* </View> */}
     </View>
