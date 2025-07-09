@@ -5,13 +5,19 @@ export const FormContext = createContext();
 
 export const FormProvider = ({ children }) => {
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
+    confirmPassword: '',
+    role: '',
+    firstname: '',
+    lastname: '',
+    address: '',
     nic: '',
-    license: '',
-    serviceType: '',
-    // Add more fields as needed
+    birthDate: '',
+    licenseId: '',
+    licenceExpiry: '',
+    licenseFront: '',
+    licenseBack: '',
   });
 
   const updateFormData = (key, value) => {

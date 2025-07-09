@@ -40,11 +40,15 @@ export default function Index() {
         <Link href="/otp" style={{ marginBottom: 20 }}>otp</Link>
         
         <Link href="/login/login" style={{ marginBottom: 20 }}>Login form</Link>
-        <Link href='profile'>Driver Profile</Link>
+        <Link href='driver/profile'>Driver Profile</Link>
         <Link href="/parent/register" style={{ marginBottom: 20 }}>Perent reg form</Link>
         {/* Input Components Section */}
 
         <Spacer/>
+        
+        <Link href='/steps/step3'>Parent Step 3</Link>
+        
+        <Link href='/steps/driver_step4'>driver Step 3</Link>
         <Link href='/steps/step2'>Step 2</Link>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
