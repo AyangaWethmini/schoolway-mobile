@@ -1,0 +1,297 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+import { Button } from "../components/button";
+import { useTheme } from "../theme/ThemeContext";
+
+
+import {
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import TextHeading from '../components/TextHeading';
+
+
+const SchoolVanScreen = ({ navigation }) => {
+  const [pickup, setPickup] = useState('Araliya Ave.');
+  const [dropoff, setDropoff] = useState('Good Shep.');
+
+  const { theme } = useTheme();
+
+  const schoolVans = [
+    {
+      id: 1,
+      name: 'Nimsara School Service',
+      time: 'Weekdays 7:00 AM',
+      route: 'Galle to Mathara',
+      drivers: [
+        { id: 1, initial: 'J' },
+        { id: 2, initial: 'M' },
+      ],
+      rating: 4.8,
+    },
+    {
+      id: 2,
+      name: 'SafeRide School Service',
+      time: 'Weekdays 6:30 AM',
+      route: 'Hendala to Colombo 13',
+      drivers: [
+        { id: 3, initial: 'S' },
+        { id: 4, initial: 'R' },
+      ],
+      rating: 4.9,
+    },
+  ];
+
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const handleRequest = (vanId) => {
+    console.log(`Requesting van with ID: ${vanId}`);
+  };
+
+  const renderDriverImages = (drivers) => {
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'];
+    
+    return (
+      <View style={styles.driversContainer}>
+        {drivers.map((driver, index) => (
+          <View
+            key={driver.id}
+            style={[
+              styles.driverAvatar,
+              { 
+                marginLeft: index > 0 ? -8 : 0,
+                backgroundColor: colors[driver.id % colors.length]
+              },
+            ]}
+          >
+            <Text style={styles.driverInitial}>{driver.initial}</Text>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+
+        <View style={[styles.header, { backgroundColor : theme.colors.primary } ]}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>School Van Booking</Text>
+        </View>
+
+        <View style={styles.locationSection}>
+          <View style={styles.locationRow}>
+            <View style={styles.locationItem}>
+              <Text style={styles.locationLabel}>Pickup</Text>
+              <TouchableOpacity style={styles.dropdown}>
+                <Text style={styles.dropdownText}>{pickup}</Text>
+                <Ionicons name="chevron-down" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.locationItem}>
+              <Text style={styles.locationLabel}>Drop-off</Text>
+              <TouchableOpacity style={styles.dropdown}>
+                <Text style={styles.dropdownText}>{dropoff}</Text>
+                <Ionicons name="chevron-down" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <Button
+              title="Find School Vans"
+              varient="outlined-black"
+          />
+        </View>
+
+        <View style={styles.pickedSection}>
+          <TextHeading> Picked For You </TextHeading>
+          
+          {schoolVans.map((van) => (
+            <View key={van.id} style={styles.vanCard}>
+              <View style={styles.vanHeader}>
+                <Text style={styles.vanName}>{van.name}</Text>
+                {renderDriverImages(van.drivers)}
+              </View>
+              
+              <View style={styles.vanDetails}>
+                <View style={styles.detailRow}>
+                  <Ionicons name="time-outline" size={16} color="#666" />
+                  <Text style={styles.detailText}>{van.time}</Text>
+                </View>
+                <View style={styles.detailRow}>
+                  <Ionicons name="location-outline" size={16} color="#666" />
+                  <Text style={styles.detailText}>{van.route}</Text>
+                </View>
+              </View>
+
+              <Button
+                title="Request"
+                varient="secondary"
+              />
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  backButton: {
+    padding: 5,
+    marginRight: 15,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight:'bold',
+    color: '#000',
+  },
+  locationSection: {
+    backgroundColor: '#fff',
+    padding: 20,
+    marginBottom: 20,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+  },
+  locationItem: {
+    flex: 0.48,
+  },
+  locationLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+  },
+  dropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    backgroundColor: '#fff',
+  },
+  dropdownText: {
+    fontSize: 16,
+    color: '#000',
+  },
+  findButton: {
+    backgroundColor: '#000',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  findButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  pickedSection: {
+    paddingHorizontal: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#000',
+    marginBottom: 15,
+  },
+  vanCard: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    marginBottom: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  vanHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 15,
+  },
+  vanName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+    flex: 1,
+  },
+  driversContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  driverAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#fff',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  driverInitial: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  vanDetails: {
+    marginBottom: 15,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  detailText: {
+    fontSize: 14,
+    color: '#666',
+    marginLeft: 8,
+  },
+  requestButton: {
+    backgroundColor: '#000',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  requestButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+});
+
+export default SchoolVanScreen;

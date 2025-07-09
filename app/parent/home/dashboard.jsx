@@ -1,15 +1,21 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import TextHeader from '../components/TextHeader';
-import { Button } from "../components/button";
+import AddButton from '../../components/AddButton';
+import TextHeading from '../../components/TextHeading';
+import { Button } from "../../components/button";
+import { useTheme } from "../../theme/ThemeContext";
 
 
 const Dashboard = () => {
   // Mock data for parent's children
+  const router = useRouter();  
+  const {theme} = useTheme();
+
   const [children, setChildren] = useState([
     {
       id: 1,
-      name: 'Emma Johnson',
+      name: 'Duleepa',
       grade: '5th Grade',
       vanNumber: 'VAN-001',
       pickupTime: '7:30 AM',
@@ -21,7 +27,7 @@ const Dashboard = () => {
     },
     {
       id: 2,
-      name: 'Liam Johnson',
+      name: 'Lehan',
       grade: '3rd Grade',
       vanNumber: 'VAN-001',
       pickupTime: '7:30 AM',
@@ -33,7 +39,7 @@ const Dashboard = () => {
     },
     {
       id: 3,
-      name: 'Sophie Johnson',
+      name: 'Ayanga',
       grade: '1st Grade',
       vanNumber: null,
       pickupTime: null,
@@ -45,7 +51,7 @@ const Dashboard = () => {
     },
     {
       id: 4,
-      name: 'Oliver Johnson',
+      name: 'Dineth',
       grade: '2nd Grade',
       vanNumber: null,
       pickupTime: null,
@@ -87,11 +93,16 @@ const Dashboard = () => {
     }
   }
 
+
+
   return (
     <View style={styles.container}>      
       <ScrollView style={styles.scrollContainer}>
         <View style={styles.section}>
-          <TextHeader>Your Children</TextHeader>
+          <View style={styles.Headingview}>
+            <TextHeading>Your Children</TextHeading>
+            <AddButton text={'Add Child'}/>
+          </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.cardsContainer}>
               {children.map((child) => (
@@ -119,17 +130,17 @@ const Dashboard = () => {
                   </View>
                   
                   <View style={styles.buttonContainer}>
-                    <Button 
-                      title="View Details" 
+                    <Button
+                      title="View Details"
                       varient="outlined-black"
                       onPress={() => console.log('Outlined Black pressed')}
+                      passstyles={child.isAssigned ? { flex: 1 } : null}
                     />
-                    
                     {!child.isAssigned && (
-                      <Button 
-                        title="Assign to Van" 
+                      <Button
+                        title="Assign to Van"
                         varient="secondary"
-                        onPress={() => console.log('Secondary pressed')}
+                        onPress={() => router.push('/parent/vansearch')}
                       />
                     )}
                   </View>
@@ -140,7 +151,7 @@ const Dashboard = () => {
         </View>
 
         <View style={styles.section}>
-          <TextHeader>Current Status</TextHeader>
+          <TextHeading>Current Status</TextHeading>
           <View style={styles.table}>
 
             <View style={styles.tableHeader}>
@@ -195,9 +206,14 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: '#333',
   },
+  Headingview:{
+    flexDirection: 'row',
+    justifyContent:'space-between'
+  }
+  ,
   cardsContainer: {
     flexDirection: 'row',
-    paddingRight: 16,
+    paddingHorizontal: 4,
   },
   card: {
     backgroundColor: '#fff',
@@ -320,9 +336,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    flexDirection: 'row',   
-    justifyContent: 'space-between', 
-    alignItems: 'center',         
+    flexDirection: 'row',      
+    justifyContent: 'space-between',
   },
   table: {
     overflow: 'hidden',
@@ -354,16 +369,16 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   nameColumn: {
-    flex: 2,
-  },
-  gradeColumn: {
     flex: 1,
   },
   timeColumn: {
     flex: 1,
   },
   statusColumn: {
-    flex: 1.5,
+    flex: 1,
+    textAlign:'center',
+    flexDirection:'row',
+    justifyContent:'center'
   },
   statusTag: {
     paddingHorizontal: 8,
