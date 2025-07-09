@@ -8,7 +8,7 @@ import {
   MultilineTextInput,
   PasswordInput,
   TextInputComponent
-} from "./components/Inputs";
+} from "./components/inputs";
 import Spacer from "./components/Spacer";
 
 export default function Index() {
@@ -61,6 +61,14 @@ export default function Index() {
           <Text>Driver Step 3</Text>
         </TouchableOpacity>
         <Link href='/steps/step2'>Step 2</Link>
+
+        <TouchableOpacity 
+          style={{ margin: 20  }}
+          onPress={() => router.push('/parent/home/dashboard' as any)}
+        >
+          <Text style={{ color: '#008080' }}>Parent Dashboard</Text>
+        </TouchableOpacity>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
           

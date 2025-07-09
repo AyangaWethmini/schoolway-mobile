@@ -101,7 +101,10 @@ const Dashboard = () => {
         <View style={styles.section}>
           <View style={styles.Headingview}>
             <TextHeading>Your Children</TextHeading>
-            <AddButton text={'Add Child'}/>
+            <AddButton 
+              text={'Add Child'}
+              onPress={() => router.push('/parent/addChild')}
+            />
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.cardsContainer}>

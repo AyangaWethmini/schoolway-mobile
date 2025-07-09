@@ -57,6 +57,7 @@ export default function RootLayout() {
                 <Stack.Screen name="driver" />
                 <Stack.Screen name="(signup)/steps/[...catchAll]" />
                 <Stack.Screen name="/parent/vansearch" />
+                <Stack.Screen name="/parent/addChild" />
                 </Stack>
             ) : (
               <SplashScreenSchoolway />
