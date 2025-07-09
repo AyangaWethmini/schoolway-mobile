@@ -13,14 +13,15 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
   const [selectedDate, setSelectedDate] = useState('');
   const showDatePicker = () => setDatePickerVisibility(true);
   const hideDatePicker = () => setDatePickerVisibility(false);
-  const [imageUri, setImageUri] = useState(null);
+  const [frontImageUri, setFrontImageUri] = useState(null);
+  const [backImageUri, setBackImageUri] = useState(null);
 
   const handleConfirm = (date) => {
     setSelectedDate(date.toDateString());
     hideDatePicker();
   };
 
-  const pickImage = async () => {
+  const pickImage = async (imageType) => {
     // Ask permission
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
@@ -35,7 +36,11 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
     });
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
-      setImageUri(result.assets[0].uri);
+      if (imageType === 'front') {
+        setFrontImageUri(result.assets[0].uri);
+      } else {
+        setBackImageUri(result.assets[0].uri);
+      }
     }
   };
 
@@ -50,7 +55,7 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
     >
       <View style={styles.form}>
        <TextHeader>
-        Personal Information
+        Driving License Information
        </TextHeader>
         
         <DateTimePickerModal
@@ -59,37 +64,20 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
           onConfirm={handleConfirm}
           onCancel={hideDatePicker}
         />
-    
+        
         <TextInputComponent
-          placeholder="first name"
-          label="Full Name"
-          // value={formData.name}
-          // onChangeText={(val) => onChange('name', val)}
-        />
-        <TextInputComponent
-          placeholder="last name"
-          // value={formData.lastname}
-          // onChangeText={(val) => onChange('lastname', val)}
-        />
-        <TextInputComponent
-          placeholder="your current living address"
-          label='Address'
+          placeholder="id in your driving license"
+          label='License ID number'
+          keyboardType='numeric'
           // value={formData.address}
           // onChangeText={(val) => onChange('address', val)}
         />
-        <TextInputComponent
-          placeholder="your NIC or Passport number"
-          label='National Identification Number'
-          // value={formData.address}
-          // onChangeText={(val) => onChange('address', val)}
-        />
-
         {/* Date of Birth Input */}
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
           <View style={{ flex: 1 }}>
             <TextInputComponent
-              placeholder="date of birth"
-              label="Birth date"
+              placeholder="select expiry date"
+              label="License Expiry Date"
               value={selectedDate}
               // onChangeText={(val) => onChange('name', val)}
             />
@@ -109,52 +97,89 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
         </View>
         
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
-          <View style={{ flex: 1,alignContent: 'center', justifyContent: 'center', flexDirection: 'row'  }}>
-            {imageUri ? (
-              <TouchableOpacity
-                onPress={pickImage}
-                style={{
-                  marginLeft: 0,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  // height: 48, 
-                  width: "70%",
-                }}
-              >
-                <Image source={{ uri: imageUri }} style={styles.image} />
-              </TouchableOpacity>
-            ) : (
-              <View>
+          <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <TextHeader style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
+              Upload License Images
+            </TextHeader>
+            
+            {/* Front Image */}
+            <View style={{ marginBottom: 20 }}>
+              <TextHeader style={{ fontSize: 14, textAlign: 'center', marginBottom: 10 }}>
+                Front Side
+              </TextHeader>
+              {frontImageUri ? (
                 <TouchableOpacity
-                  onPress={pickImage}
+                  onPress={() => pickImage('front')}
                   style={{
-                    marginLeft: 0,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    height: 48, 
                     width: "100%",
                   }}
                 >
-                  <Ionicons name="camera-outline" size={35} color="#000" />
+                  <Image source={{ uri: frontImageUri }} style={styles.image} />
                 </TouchableOpacity>
-                <TextHeader style={{ fontSize: 14, textAlign: 'center', marginTop: 10 }}>
-                  Tap to upload your NIC or Passport photo
-                </TextHeader>
-              </View>
-            )}
+              ) : (
+                <TouchableOpacity
+                  onPress={() => pickImage('front')}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 100,
+                    width: "100%",
+                    backgroundColor: '#F5F5F5',
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: '#DDD',
+                    borderStyle: 'dashed',
+                  }}
+                >
+                  <Ionicons name="camera-outline" size={35} color="#666" />
+                  <TextHeader style={{ fontSize: 12, textAlign: 'center', marginTop: 5, color: '#666' }}>
+                    Tap to upload front side
+                  </TextHeader>
+                </TouchableOpacity>
+              )}
+            </View>
+
+            {/* Back Image */}
+            <View style={{ marginBottom: 20 }}>
+              <TextHeader style={{ fontSize: 14, textAlign: 'center', marginBottom: 10 }}>
+                Back Side
+              </TextHeader>
+              {backImageUri ? (
+                <TouchableOpacity
+                  onPress={() => pickImage('back')}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: "100%",
+                  }}
+                >
+                  <Image source={{ uri: backImageUri }} style={styles.image} />
+                </TouchableOpacity>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => pickImage('back')}
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 100,
+                    width: "100%",
+                    backgroundColor: '#F5F5F5',
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    borderColor: '#DDD',
+                    borderStyle: 'dashed',
+                  }}
+                >
+                  <Ionicons name="camera-outline" size={35} color="#666" />
+                  <TextHeader style={{ fontSize: 12, textAlign: 'center', marginTop: 5, color: '#666' }}>
+                    Tap to upload back side
+                  </TextHeader>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
-          {/* <TouchableOpacity
-            onPress={pickImage}
-            style={{
-              marginLeft: 8,
-              alignItems: 'center',
-              justifyContent: 'center',
-              height: 48, 
-              width: 48,
-            }}
-          >
-            <Ionicons name="camera-outline" size={35} color="#000" />
-          </TouchableOpacity> */}
         </View>
         <Button 
           title="Create Account"
@@ -193,8 +218,8 @@ const styles = StyleSheet.create({
   },
   image: { 
     width: "100%", 
-    aspectRatio: 1, // Makes the image square and responsive
-    marginTop: 20, 
+    aspectRatio: 1.6, // Makes the image rectangular for license card aspect ratio
+    marginTop: 10, 
     backgroundColor:'#DDD', 
     borderRadius: 10,
     resizeMode: 'contain', // Ensures the whole image is visible

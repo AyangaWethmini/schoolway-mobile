@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/button';
 import { PasswordInput, TextInputComponent } from '../../components/Inputs';
@@ -5,7 +6,6 @@ import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import Spacer from '../../components/Spacer';
 import TextHeader from '../../components/TextHeader';
 import TextLink from '../../components/TextLink';
-import { useRouter } from 'expo-router';
 
 const PersonalInfoStep = ({ formData, onChange, onNext }) => {
 
@@ -27,7 +27,7 @@ const PersonalInfoStep = ({ formData, onChange, onNext }) => {
         </TextHeader>
         <Text style={{ marginBottom: 20, color:'#666' }}>Create an account to get started</Text>
         <Spacer/>
-        <TextInputComponent
+        {/* <TextInputComponent
           placeholder="First Name"
           label="Full Name"
           value={formData.name}
@@ -37,7 +37,7 @@ const PersonalInfoStep = ({ formData, onChange, onNext }) => {
           placeholder="Last Name"
           value={formData.lastname}
           onChangeText={(val) => onChange('lastname', val)}
-        />
+        /> */}
         <TextInputComponent
           placeholder="Email"
           label="Email Address"
@@ -56,6 +56,7 @@ const PersonalInfoStep = ({ formData, onChange, onNext }) => {
           value={formData.confirmPassword}
           onChange={(val) => onChange('confirmPassword', val)}
         />
+        {/* // add an input to get the birth date as a date picker */}
         <Text style={{ paddingLeft:0, marginBottom: 30, color: '#666', fontSize: 12 }}>
           By signing up, you agree to our <TextLink href="/terms">Terms of Service</TextLink> and <TextLink href="/privacy">Privacy Policy</TextLink>.
         </Text>

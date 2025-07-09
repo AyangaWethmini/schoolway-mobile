@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import SafeAreaView from '../components/SafeAreaView';
 import PersonalInfoStep from './steps/step1';
-import VerificationStep from './steps/step2';
-import SummaryStep from './steps/step3';
+import SummaryStep from './steps/step2';
+import VerificationStep from './steps/step3';
 
 const SignUpScreen = () => {
   const [step, setStep] = useState(0);

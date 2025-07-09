@@ -87,6 +87,7 @@ const LoginScreen = () => {
       <Button 
         title="Continue"
         varient="primary"
+        passstyles={{ marginTop: 20 }}
         onPress={handleLogin}
         disabled={isLoading}
       />
@@ -125,6 +126,7 @@ const styles = StyleSheet.create({
     color: '#339CFF',
     fontWeight: 'bold',
     marginBottom: 12,
+    fontSize: 14,
   },
   signuplink: { 
     color: '#339CFF', 
@@ -132,8 +134,8 @@ const styles = StyleSheet.create({
   },
   signupText: {
     textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
+    marginTop: 25,
+    fontSize: 14,
     color: '#666',
   }
 });

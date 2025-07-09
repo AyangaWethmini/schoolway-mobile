@@ -45,6 +45,10 @@ export default function Index() {
 
 
         <Spacer/>
+        
+        <Link href='/steps/step3'>Parent Step 3</Link>
+        
+        <Link href='/steps/driver_step4'>driver Step 3</Link>
         <Link href='/steps/step2'>Step 2</Link>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
