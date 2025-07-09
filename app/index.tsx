@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
 import { Button } from "./components/button";
 import {
   CodeInput,
@@ -12,6 +13,7 @@ import {
 import Spacer from "./components/Spacer";
 
 export default function Index() {
+  const router = useRouter();
   const [selectedAge, setSelectedAge] = useState<string | number>('');
   const [selectedSchool, setSelectedSchool] = useState<string | number>('');
   const [code, setCode] = useState('');
@@ -40,7 +42,12 @@ export default function Index() {
         <Link href="/otp" style={{ marginBottom: 20 }}>otp</Link>
         
         <Link href="/login/login" style={{ marginBottom: 20 }}>Login form</Link>
-        <Link href='/profile' style={{ marginBottom: 20 }}>Driver Profile</Link>
+        <TouchableOpacity 
+          style={{ marginBottom: 20 }}
+          onPress={() => router.push('/driver' as any)}
+        >
+          <Text style={{ color: '#2e78b7' }}>Driver Dashboard</Text>
+        </TouchableOpacity>
               
 
 
@@ -48,7 +55,12 @@ export default function Index() {
         
         <Link href='/steps/step3'>Parent Step 3</Link>
         
-        <Link href='/steps/driver_step4'>driver Step 3</Link>
+        <TouchableOpacity 
+          style={{ marginBottom: 20 }}
+          onPress={() => router.push('/steps/driver_step4' as any)}
+        >
+          <Text>Driver Step 3</Text>
+        </TouchableOpacity>
         <Link href='/steps/step2'>Step 2</Link>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
