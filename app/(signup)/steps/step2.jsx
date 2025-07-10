@@ -1,36 +1,46 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useContext, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import SafeAreaView from '../../components/SafeAreaView';
 import { Button } from '../../components/button';
 import { lightTheme } from '../../theme/theme';
+import { FormContext } from '../../utils/FormContext';
 
 const roles = [
   {
-    key: 'vehicleOwner',
+    key: 'SERVICE',
     title: 'Vehicle Owner',
     description: 'If you have one or more vehicles to hire, find drivers, and provide transportation, register as a vehicle owner.\n\n*Currenlty available only on Web : SchoolWay.lk ',
   },
   {
-    key: 'driver',
+    key: 'DRIVER',
     title: 'Driver',
     description: 'If you are a driver, or want to enroll in a van service in SchoolWay, register as a driver and continue your work.',
   },
   {
-    key: 'parent',
+    key: 'PARENT',
     title: 'Parent',
     description: 'If you want to track your child, and manage transportation with live updates register as a parent.',
   },
 ];
 
-export default function RoleSelectionScreen({ navigation }) {
-  const [selectedRole, setSelectedRole] = useState(null);
+const RoleSelectionScreen = ({}) => {
+  const { formData, updateFormData } = useContext(FormContext);
+  const [selectedRole, setSelectedRole] = useState('');
+  const router = useRouter();
 
   const handleProceed = () => {
     if (!selectedRole) return;
     // navigation.navigate('NextScreen', { role: selectedRole });
     console.log('Proceed with:', selectedRole);
   };
+
+  const onClick = () => {
+    console.log('Selected Role:', selectedRole);
+    console.log('Proceeding to next step...', formData);
+    router.push('./step3');
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -42,14 +52,14 @@ export default function RoleSelectionScreen({ navigation }) {
             key={role.key}
             style={[
               styles.card,
-              selectedRole === role.key && styles.selectedCard,
+              formData.role === role.key && styles.selectedCard,
             ]}
-            onPress={() => setSelectedRole(role.key)}
+            onPress={() => updateFormData('role',role.key)}
             activeOpacity={0.8}
           >
             <View style={styles.radioRow}>
               <Text style={styles.cardTitle}>{role.title}</Text>
-              {selectedRole === role.key ? (
+              {formData.role === role.key ? (
                 <Ionicons name="radio-button-on" size={24} color={lightTheme.colors.primary} />
               ) : (
                 <Ionicons name="radio-button-off" size={24} color="#ccc" />
@@ -75,13 +85,15 @@ export default function RoleSelectionScreen({ navigation }) {
           title="Proceed"
           varient="primary"
           passstyles={{ marginTop: 20 }}
-          // onPress={passwordsMatch ? onNext : undefined}
+          onPress={onClick }
           // disabled={!passwordsMatch}
         />
       </ScrollView>
     </SafeAreaView>
   );
 }
+
+export default RoleSelectionScreen;
 
 const styles = StyleSheet.create({
   container: { 

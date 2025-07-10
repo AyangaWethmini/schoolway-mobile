@@ -1,4 +1,5 @@
 import { useRouter } from 'expo-router';
+import { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/button';
 import { PasswordInput, TextInputComponent } from '../../components/inputs';
@@ -6,14 +7,20 @@ import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import Spacer from '../../components/Spacer';
 import TextHeader from '../../components/TextHeader';
 import TextLink from '../../components/TextLink';
+import { FormContext } from '../../utils/FormContext';
 
-const PersonalInfoStep = ({ formData, onChange, onNext }) => {
-
+const PersonalInfoStep = ({}) => {
+  const {formData , updateFormData} = useContext(FormContext);
   const router = useRouter();
 
   // Check if passwords match
   const passwordsMatch = formData.password && formData.confirmPassword && 
                         formData.password === formData.confirmPassword;
+
+  const onNext = () => {
+    console.log('Form Data:', formData);
+    router.push('./steps/step2');
+  };
   
   return (
     <KeyboardAwareScrollView 
@@ -42,19 +49,19 @@ const PersonalInfoStep = ({ formData, onChange, onNext }) => {
           placeholder="Email"
           label="Email Address"
           value={formData.email}
-          onChangeText={(val) => onChange('email', val)}
+          onChangeText={(val) => updateFormData('email', val)}
         />
         <PasswordInput
           label="Password"
           placeholder="Create a password"
           value={formData.password}
-          onChange={(val) => onChange('password', val)}
+          onChangeText={(val) => updateFormData('password', val)}
         />
         <PasswordInput
-          // label="Confirm Password"
+          label="Confirm Password"
           placeholder="Confirm password"
           value={formData.confirmPassword}
-          onChange={(val) => onChange('confirmPassword', val)}
+          onChangeText={(val) => updateFormData('confirmPassword', val)}
         />
         {/* // add an input to get the birth date as a date picker */}
         <Text style={{ paddingLeft:0, marginBottom: 30, color: '#666', fontSize: 12 }}>

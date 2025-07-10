@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useContext, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Button } from '../../components/button';
@@ -8,15 +9,21 @@ import { TextInputComponent } from '../../components/inputs';
 import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import SafeAreaView from '../../components/SafeAreaView';
 import TextHeader from '../../components/TextHeader';
-const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
+import { FormContext } from '../../utils/FormContext';
+
+const VerificationStep = ({}) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const {formData, updateFormData} = useContext(FormContext);
   const [selectedDate, setSelectedDate] = useState('');
   const showDatePicker = () => setDatePickerVisibility(true);
   const hideDatePicker = () => setDatePickerVisibility(false);
   const [imageUri, setImageUri] = useState(null);
-
+  const [nextStep, setNextStep] = useState(formData.role === 'DRIVER' ? true : false);
+  const router = useRouter();
+  
   const handleConfirm = (date) => {
     setSelectedDate(date.toDateString());
+    updateFormData('birthDate', date.toISOString().split('T')[0]); // Store date in YYYY-MM-DD format
     hideDatePicker();
   };
 
@@ -36,9 +43,21 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
 
     if (!result.canceled && result.assets && result.assets.length > 0) {
       setImageUri(result.assets[0].uri);
+      updateFormData('nic_img', result.assets[0].uri); 
     }
   };
 
+  const onNext = () => {
+    console.log('Form Data:', formData);
+    router.push('./driver_step4');
+  };
+
+  const onSubmit = () => {
+    console.log('Form Data:', formData);
+    // router.push('./steps/driver_step3');
+    // Here you would typically handle form submission, e.g., send data to your backend
+    alert('Account created successfully!');
+  };
 
 
  return ( 
@@ -63,25 +82,25 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
         <TextInputComponent
           placeholder="first name"
           label="Full Name"
-          // value={formData.name}
-          // onChangeText={(val) => onChange('name', val)}
+          value={formData.firstname}
+          onChangeText={(val) => updateFormData('firstname', val)}
         />
         <TextInputComponent
           placeholder="last name"
-          // value={formData.lastname}
-          // onChangeText={(val) => onChange('lastname', val)}
+          value={formData.lastname}
+          onChangeText={(val) => updateFormData('lastname', val)}
         />
         <TextInputComponent
           placeholder="your current living address"
           label='Address'
-          // value={formData.address}
-          // onChangeText={(val) => onChange('address', val)}
+          value={formData.address}
+          onChangeText={(val) => updateFormData('address', val)}
         />
         <TextInputComponent
           placeholder="your NIC or Passport number"
-          label='National Identification Number'
-          // value={formData.address}
-          // onChangeText={(val) => onChange('address', val)}
+          label='Identification Number'
+          value={formData.nic}
+          onChangeText={(val) => updateFormData('nic', val)}
         />
 
         {/* Date of Birth Input */}
@@ -157,10 +176,10 @@ const VerificationStep = ({ formData, onChange, onNext, onBack }) => {
           </TouchableOpacity> */}
         </View>
         <Button 
-          title="Create Account"
+          title={formData.role==='DRIVER'? "Proceed" : "Create Account"}
           varient="primary"
           passstyles={{ marginTop: 20 }}
-          // onPress={passwordsMatch ? onNext : undefined}
+          onPress={nextStep ? onNext : onSubmit}
           // disabled={!passwordsMatch}
         />
       
