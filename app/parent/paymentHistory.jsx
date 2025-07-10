@@ -25,7 +25,7 @@ const PaymentHistory = ({ navigation }) => {
       {
         id: 1,
         childName: 'Ayanga',
-        amount: 150,
+        amount: 4500,
         date: '2025-06-15',
         status: 'successful',
         vanService: 'Sunshine Express',
@@ -34,7 +34,7 @@ const PaymentHistory = ({ navigation }) => {
       {
         id: 2,
         childName: 'Lehan',
-        amount: 120,
+        amount: 3200,
         date: '2025-06-18',
         status: 'successful',
         vanService: 'Safe Journey Kids',
@@ -43,7 +43,7 @@ const PaymentHistory = ({ navigation }) => {
       {
         id: 3,
         childName: 'Ayanga',
-        amount: 150,
+        amount: 4500,
         date: '2025-05-15',
         status: 'failed',
         vanService: 'Sunshine Express',

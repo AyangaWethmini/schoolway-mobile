@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Spacer from '../../components/Spacer';
 import Button from '../../components/button';
+import { useTheme } from "../../theme/ThemeContext";
 
 const Payments = () => {
 
+  const { theme } = useTheme();
+  
   const router = useRouter();  
   
   const [refreshing, setRefreshing] = useState(false)
@@ -17,7 +20,7 @@ const Payments = () => {
       grade: 'Grade 5',
       vanService: 'Sunshine Express',
       route: 'Route A - Downtown',
-      monthlyFee: 150,
+      monthlyFee: 4500,
       isPaid: true,
       dueDate: '2025-07-15',
       avatar: 'person-outline'
@@ -28,7 +31,7 @@ const Payments = () => {
       grade: 'Grade 3',
       vanService: 'Safe Journey Kids',
       route: 'Route B - Suburbs',
-      monthlyFee: 120,
+      monthlyFee: 5200,
       isPaid: false,
       dueDate: '2025-07-20',
       avatar: 'person-outline'
@@ -147,7 +150,7 @@ const Payments = () => {
           
           <TouchableOpacity style={styles.summaryItem} activeOpacity={0.7}>
             <View style={styles.iconContainer}>
-              <Ionicons name="people" size={20} color="#27AE60" />
+              <Ionicons name="people" size={20} style={{color : theme.colors.primary}} />
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.summaryLabel}>Children</Text>
@@ -491,7 +494,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   gradientButton: {
-    backgroundColor: '#667eea',
+    backgroundColor: 'black',
     borderRadius: 12,
     paddingVertical: 16,
     paddingHorizontal: 20,

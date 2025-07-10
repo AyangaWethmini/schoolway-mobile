@@ -23,7 +23,7 @@ return (
                     paddingTop: 10,
                     height: 80,
                 },
-                tabBarActiveTintColor: theme.iconActive,
+                tabBarActiveTintColor: theme.iconActiveBlue,
                 tabBarInactiveTintColor: theme.iconInactive,
             }}
         >
