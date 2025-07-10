@@ -1,7 +1,6 @@
 import * as Font from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -22,9 +21,8 @@ export default function RootLayout() {
         // Load fonts or other resources here
         await Font.loadAsync({
           // Example: Add custom fonts if needed
-          'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-          'UberMove-medium': require('../../assets/fonts/UberMoveMedium.otf'),
-          'UberMove-bold': require('../../assets/fonts/UberMoveBold.otf')
+          // 'UberMoveMedium': require('../../assets/fonts/UberMoveMedium.otf'),
+          // 'UberMoveBold': require('../../assets/fonts/UberMoveBold.otf')
         });
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
