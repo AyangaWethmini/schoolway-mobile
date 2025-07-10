@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Button } from '../../components/button';
+import ErrorText from '../../components/ErrorText';
 import { TextInputComponent } from '../../components/inputs';
 import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import SafeAreaView from '../../components/SafeAreaView';
@@ -18,11 +19,40 @@ const VerificationStep = ({}) => {
   const hideDatePicker = () => setDatePickerVisibility(false);
   const [frontImageUri, setFrontImageUri] = useState(null);
   const [backImageUri, setBackImageUri] = useState(null);
+  const [proceed, setProceed] = useState(false);
+  const [Error, setError] = useState(null);
+  const [isloading, setIsLoading] = useState(false);
 
+  useEffect(() => {
+    if (formData.licenseId && formData.licenseExpiry && frontImageUri && backImageUri) {
+      const isExpiryValid = chekExpiry(formData.licenseExpiry);
+      if (!isExpiryValid) {
+        setError(null);
+        setProceed(true);
+        return;
+      }
+      setProceed(true);
+    } else {
+      setProceed(false);
+    }
+  }, [formData.licenseExpiry, frontImageUri, backImageUri]);
+
+  const chekExpiry = (date) => {
+    const today = new Date();
+    const selected = new Date(date);
+    console.log('Selected Date:', selected, today);
+    if (selected < today || today - selected <  10 * 365 * 24 * 60 * 60 * 1000) {
+      setError('Please select a valid date of expiry.');
+      return false;
+    }else {
+      return true;
+    }
+
+  }
 
   const handleConfirm = (date) => {
     setSelectedDate(date.toDateString());
-    updateFormData('licenceExpiry', date.toISOString().split('T')[0]); // Store date in YYYY-MM-DD format
+    updateFormData('licenseExpiry', date.toISOString().split('T')[0]); // Store date in YYYY-MM-DD format
     hideDatePicker();
   };
 
@@ -59,7 +89,7 @@ const onSubmit = async () => {
   // Append all text fields from formData
   Object.keys(formData).forEach((key) => {
     // Skip image URIs, because we append them as files below
-    if (key !== 'licenseFront' && key !== 'licenseBack') {
+    if (key !== 'licenseFront' && key !== 'licenseBack' && key !== 'nic_img') {
       payload.append(key, formData[key]);
     }
   });
@@ -90,13 +120,11 @@ const onSubmit = async () => {
     });
   }
   console.log('Final payload (FormData):', payload);
-
+  setIsLoading(true);
+  
   try {
     const response = await fetch('http://192.168.1.62:3000/api/mobileAuth/signup', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
       body: payload, // ✅ Use payload with all fields + images
     });
 
@@ -113,6 +141,8 @@ const onSubmit = async () => {
     console.error('Error:', error);
     alert('An error occurred while signing up.');
   }
+  // Reset form data after submission
+  setIsLoading(false);
 };
 
 
@@ -129,6 +159,12 @@ const onSubmit = async () => {
        <TextHeader>
         Driving License Information
        </TextHeader>
+
+       {
+          Error &&
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+          <ErrorText Error={Error}></ErrorText>
+        </View>}
         
         <DateTimePickerModal
           isVisible={isDatePickerVisible}
@@ -176,7 +212,7 @@ const onSubmit = async () => {
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 10 }}>
           <View style={{ flex: 1, alignContent: 'center', justifyContent: 'center', flexDirection: 'column' }}>
             <TextHeader style={{ fontSize: 16, textAlign: 'center', marginBottom: 10 }}>
-              Upload License Images
+              Images of Both sides of License
             </TextHeader>
             
             {/* Front Image */}
@@ -259,10 +295,11 @@ const onSubmit = async () => {
           </View>
         </View>
         <Button 
-          title="Create Account"
+          title={isloading ? "processing" : "Create Account"}
           varient="primary"
           passstyles={{ marginTop: 20 }}
           onPress={onSubmit}
+          disabled={!proceed || isloading}
         />
       
     </View>

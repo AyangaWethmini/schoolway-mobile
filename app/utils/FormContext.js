@@ -16,7 +16,7 @@ export const FormProvider = ({ children }) => {
     nic_img: '',
     birthDate: '',
     licenseId: '',
-    licenceExpiry: '',
+    licenseExpiry: '',
     licenseFront: '',
     licenseBack: '',
   });

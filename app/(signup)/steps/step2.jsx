@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import SafeAreaView from '../../components/SafeAreaView';
 import { Button } from '../../components/button';
@@ -29,6 +29,14 @@ const RoleSelectionScreen = ({}) => {
   const { formData, updateFormData } = useContext(FormContext);
   const [selectedRole, setSelectedRole] = useState('');
   const router = useRouter();
+  const [proceed, setProceed] = useState(false);
+
+  useEffect(() => {
+    if (formData.role) {
+      setSelectedRole(formData.role);
+      setProceed(true);
+    }
+  }, [formData.role]);
 
   const handleProceed = () => {
     if (!selectedRole) return;
@@ -84,8 +92,9 @@ const RoleSelectionScreen = ({}) => {
         <Button 
           title="Proceed"
           varient="primary"
+          disabled={!proceed}
           passstyles={{ marginTop: 20 }}
-          onPress={onClick }
+          onPress={proceed ? onClick : undefined}
           // disabled={!passwordsMatch}
         />
       </ScrollView>

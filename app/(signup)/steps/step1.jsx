@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Button } from '../../components/button';
+import ErrorText from '../../components/ErrorText';
 import { PasswordInput, TextInputComponent } from '../../components/inputs';
 import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import Spacer from '../../components/Spacer';
@@ -11,11 +12,35 @@ import { FormContext } from '../../utils/FormContext';
 
 const PersonalInfoStep = ({}) => {
   const {formData , updateFormData} = useContext(FormContext);
+  const [proceed, setProceed] = useState(false);
+  const [Error, setError] = useState(null);
   const router = useRouter();
 
-  // Check if passwords match
-  const passwordsMatch = formData.password && formData.confirmPassword && 
-                        formData.password === formData.confirmPassword;
+  useEffect(() => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isEmailValid = emailRegex.test(formData.email);
+  const isPasswordStrong = formData.password && formData.password.length >= 6;
+  const doPasswordsMatch = formData.password === formData.confirmPassword;
+
+  if (isEmailValid && isPasswordStrong && doPasswordsMatch) {
+    setProceed(true);
+    setError(null);
+  } else {
+    setProceed(false);
+    if(formData.email && formData.password && formData.confirmPassword) {
+      if (!isEmailValid) {
+        setError('Please enter a valid email address.');
+      } else if (!isPasswordStrong) {
+        setError('Password must be at least 6 characters long.');
+      } else if (!doPasswordsMatch) {
+        setError('Passwords do not match.');
+        console.log('Passwords do not match:', formData.password, formData.confirmPassword);
+      } else {
+        setError(null);
+      }
+    }
+  }
+}, [formData.email, formData.password, formData.confirmPassword]);
 
   const onNext = () => {
     console.log('Form Data:', formData);
@@ -33,7 +58,14 @@ const PersonalInfoStep = ({}) => {
           Sign Up
         </TextHeader>
         <Text style={{ marginBottom: 20, color:'#666' }}>Create an account to get started</Text>
+        {
+          Error &&
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
+          <ErrorText Error={Error}></ErrorText>
+        </View>}
+        
         <Spacer/>
+        
         {/* <TextInputComponent
           placeholder="First Name"
           label="Full Name"
@@ -61,7 +93,7 @@ const PersonalInfoStep = ({}) => {
           label="Confirm Password"
           placeholder="Confirm password"
           value={formData.confirmPassword}
-          onChangeText={(val) => updateFormData('confirmPassword', val)}
+          onChangeText={(val) => updateFormData('confirmPassword',val)}
         />
         {/* // add an input to get the birth date as a date picker */}
         <Text style={{ paddingLeft:0, marginBottom: 30, color: '#666', fontSize: 12 }}>
@@ -70,8 +102,8 @@ const PersonalInfoStep = ({}) => {
         <Button 
           title="Continue"
           varient="primary"
-          onPress={passwordsMatch ? onNext : undefined}
-          disabled={!passwordsMatch}
+          onPress={proceed ? onNext : undefined}
+          disabled={!proceed}
         />
         <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
           <Text style={{ paddingLeft:0, marginBottom: 30, color: '#666', fontSize: 12 }}>
