@@ -1,9 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Button } from "../components/button";
-import { useTheme } from "../theme/ThemeContext";
-
-
 import {
   SafeAreaView,
   ScrollView,
@@ -12,12 +8,16 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import { Button } from "../components/button";
+import { DropdownInput } from '../components/inputs';
 import TextHeading from '../components/TextHeading';
+import { useTheme } from "../theme/ThemeContext";
 
 
 const SchoolVanScreen = ({ navigation }) => {
-  const [pickup, setPickup] = useState('Araliya Ave.');
-  const [dropoff, setDropoff] = useState('Good Shep.');
+
+  const [pickupLocation, setPickupLocation] = useState('');
+  const [dropoffLocation, setDropoffLocation] = useState('');
 
   const { theme } = useTheme();
 
@@ -92,17 +92,34 @@ const SchoolVanScreen = ({ navigation }) => {
           <View style={styles.locationRow}>
             <View style={styles.locationItem}>
               <Text style={styles.locationLabel}>Pickup</Text>
-              <TouchableOpacity style={styles.dropdown}>
-                <Text style={styles.dropdownText}>{pickup}</Text>
-                <Ionicons name="chevron-down" size={20} color="#666" />
-              </TouchableOpacity>
+              <DropdownInput
+                placeholder="Pickup location"
+                options={[
+                  { label: 'Borella', value: 'borella' },
+                  { label: 'Wellawatte', value: 'wellawatte' },
+                  { label: 'Rajagiriya', value: 'rajagiriya' },
+                  { label: 'Kiribathgoda', value: 'kiribathgoda' },
+                  { label: 'Kollupitiya', value: 'kollupitiya' },
+                ]}
+                selectedValue={pickupLocation}
+                onSelect={(value) => setPickupLocation(value)}
+              />
+              
             </View>
             <View style={styles.locationItem}>
               <Text style={styles.locationLabel}>Drop-off</Text>
-              <TouchableOpacity style={styles.dropdown}>
-                <Text style={styles.dropdownText}>{dropoff}</Text>
-                <Ionicons name="chevron-down" size={20} color="#666" />
-              </TouchableOpacity>
+              <DropdownInput
+                placeholder="Drop-Off location"
+                options={[
+                  { label: 'Royal College', value: 'Royal college' },
+                  { label: 'Ananda College', value: 'Ananda College' },
+                  { label: 'Nalanda College', value: 'Nalanda College' },
+                  { label: 'Visakha College', value: 'Visakha College' },
+                  { label: 'Musaeus College', value: 'musaeus College' },
+                ]}
+                selectedValue={dropoffLocation}
+                onSelect={(value) => setDropoffLocation(value)}
+              />
             </View>
           </View>
 
