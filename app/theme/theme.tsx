@@ -60,6 +60,11 @@ export interface Theme {
         iconActiveBlack: string;
         iconActiveBlue: string;
     }
+
+    fontFamily : {
+        regular : string;
+        bold : string;
+    }
 };
 
 
@@ -68,6 +73,8 @@ export interface Theme {
 
 
 export const lightTheme: Theme = {
+    
+    
     colors : {
         primary: "#FFC825",
         secondary: "#030303",
@@ -88,6 +95,11 @@ export const lightTheme: Theme = {
         statusbackgroundgreen :  "#E8F5E8",
         statusgrey : "#757575",
         statusbackgroundgrey : "#F5F5F5" 
+    },
+
+    fontFamily : {
+        regular: 'UberMove-medium',
+        bold: 'UberMove-medium', // or another variant if you have one
     },
 
     spacing: {

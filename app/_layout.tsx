@@ -22,7 +22,9 @@ export default function RootLayout() {
         // Load fonts or other resources here
         await Font.loadAsync({
           // Example: Add custom fonts if needed
-          // 'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+          'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
+          'UberMove-medium': require('../../assets/fonts/UberMoveMedium.otf'),
+          'UberMove-bold': require('../../assets/fonts/UberMoveBold.otf')
         });
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
