@@ -37,7 +37,13 @@ export interface Theme {
 
     link: {
         color: string;
-    }
+    },
+    fonts: {
+        regular: string;
+        // mono: string;
+        uberBold: string;
+        uberMedium: string;
+    };
 
     navbar: {
         headerBg: string;
@@ -92,6 +98,12 @@ export const lightTheme: Theme = {
 
     link: {
         color: "#006FFD"
+    },
+    fonts: {
+        regular: "Inter",
+        // mono: "SpaceMono",
+        uberBold: "UberMove-Bold",
+        uberMedium: "UberMove-Medium",
     },
     navbar:{
         headerBg:'#FFC825',

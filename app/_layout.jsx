@@ -7,23 +7,33 @@ import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import KeyboardAvoidingView from './components/KeyboardAvoidingView.jsx';
 import SafeAreaView from './components/SafeAreaView.jsx';
-import { SplashScreenSchoolway } from './components/SplashScreen';
-import { ThemeProvider } from './theme/ThemeContext';
+import { SplashScreenSchoolway } from './components/SplashScreen.tsx';
+import { ThemeProvider } from './theme/ThemeContext.tsx';
 
 
 SplashScreen.preventAutoHideAsync(); // Prevent native splash screen from auto-hiding
 
 export default function RootLayout() {
-  const [isReady, setIsReady] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     async function prepare() {
       try {
         // Load fonts or other resources here
         await Font.loadAsync({
-          // Example: Add custom fonts if needed
-          // 'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+          'Inter': require('../assets/fonts/Inter-VariableFont_opsz,wght.ttf'),
+          // 'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+          'UberMove-Bold': require('../assets/fonts/UberMoveBold.otf'),
+          'UberMove-Medium': require('../assets/fonts/UberMoveMedium.otf'),
         });
+
+        // Set default font for all Text components globally
+        // // @ts-ignore - TypeScript doesn't recognize defaultProps but it works at runtime
+        // if (Text.defaultProps == null) Text.defaultProps = {};
+        // // @ts-ignore
+        // Text.defaultProps.style = {
+        //   fontFamily: 'UberMove-Medium',
+        // };
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
         await new Promise(resolve => setTimeout(resolve, 2000));
