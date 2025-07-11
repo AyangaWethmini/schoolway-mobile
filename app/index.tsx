@@ -1,6 +1,6 @@
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "./components/button";
 import {
   CodeInput,
@@ -12,6 +12,7 @@ import {
 import Spacer from "./components/Spacer";
 
 export default function Index() {
+  const router = useRouter();
   const [selectedAge, setSelectedAge] = useState<string | number>('');
   const [selectedSchool, setSelectedSchool] = useState<string | number>('');
   const [code, setCode] = useState('');
@@ -40,16 +41,34 @@ export default function Index() {
         <Link href="/otp" style={{ marginBottom: 20 }}>otp</Link>
         
         <Link href="/login/login" style={{ marginBottom: 20 }}>Login form</Link>
-        <Link href='driver/profile'>Driver Profile</Link>
-        <Link href="/parent/register" style={{ marginBottom: 20 }}>Perent reg form</Link>
-        {/* Input Components Section */}
+        <TouchableOpacity 
+          style={{ marginBottom: 20 }}
+          onPress={() => router.push('/driver' as any)}
+        >
+          <Text style={{ color: '#2e78b7' }}>Driver Dashboard</Text>
+        </TouchableOpacity>
+              
+
 
         <Spacer/>
         
         <Link href='/steps/step3'>Parent Step 3</Link>
         
-        <Link href='/steps/driver_step4'>driver Step 3</Link>
+        <TouchableOpacity 
+          style={{ marginBottom: 20 }}
+          onPress={() => router.push('/steps/driver_step4' as any)}
+        >
+          <Text>Driver Step 3</Text>
+        </TouchableOpacity>
         <Link href='/steps/step2'>Step 2</Link>
+
+        <TouchableOpacity 
+          style={{ margin: 20  }}
+          onPress={() => router.push('/parent/home/dashboard' as any)}
+        >
+          <Text style={{ color: '#008080' }}>Parent Dashboard</Text>
+        </TouchableOpacity>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
           
@@ -185,3 +204,4 @@ const styles = StyleSheet.create({
     gap: 15,
   },
 });
+

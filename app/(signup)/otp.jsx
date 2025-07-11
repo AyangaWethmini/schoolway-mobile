@@ -1,12 +1,12 @@
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    StyleSheet,
-    Text,
-    View,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
 import { Button } from '../components/button';
 import { CodeInput } from '../components/inputs';
-import { useRouter } from 'expo-router';
 
 
 
