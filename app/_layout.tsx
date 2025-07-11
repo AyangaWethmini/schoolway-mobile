@@ -23,10 +23,16 @@ export default function RootLayout() {
         // Load fonts or other resources here
         await Font.loadAsync({
           // Example: Add custom fonts if needed
-          // 'UberMoveMedium': require('../../assets/fonts/UberMoveMedium.otf'),
-          // 'UberMoveBold': require('../../assets/fonts/UberMoveBold.otf')
+          // 'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
+          // 'UberMove-medium': require('../../assets/fonts/UberMoveMedium.otf'),
+          // 'UberMove-bold': require('../../assets/fonts/UberMoveBold.otf')
         });
         
+
+        // if (Text.defaultProps == null) Text.defaultProps = {};
+        //   Text.defaultProps.style = {
+        //     fontFamily: 'UberMove-medium',
+        // };
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
         await new Promise(resolve => setTimeout(resolve, 2000));
