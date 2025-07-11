@@ -85,7 +85,7 @@ const LoginScreen = () => {
       <Text style={styles.forgotpw}>Forgot Password?</Text>
       
       <Button 
-        title="Continue"
+        title={isLoading ? "Logging in..." :"Continue"}
         varient="primary"
         passstyles={{ marginTop: 20 }}
         onPress={handleLogin}

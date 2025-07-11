@@ -314,11 +314,11 @@ const onSubmit = async () => {
         </View>
         <Spacer/>
         <Button 
-          title={formData.role==='DRIVER'? "Proceed" : "Create Account"}
+          title={formData.role==='DRIVER'? "Proceed" : isLoading ? "Processing..." : "Create Account"}
           varient="primary"
           passstyles={{ marginTop: 20 }}
           onPress={nextStep ? onNext : onSubmit}
-          disabled={!proceed}
+          disabled={!proceed || isLoading}
         />
       
     </View>

@@ -83,50 +83,57 @@ const VerificationStep = ({}) => {
 
 const onSubmit = async () => {
   console.log('Form Data:', formData);
-
-  const payload = new FormData();
-
-  // Append all text fields from formData
-  Object.keys(formData).forEach((key) => {
-    // Skip image URIs, because we append them as files below
-    if (key !== 'licenseFront' && key !== 'licenseBack' && key !== 'nic_img') {
-      payload.append(key, formData[key]);
-    }
-  });
-
-  // Append image files (if available)
-  if (frontImageUri) {
-    payload.append('licenseFront', {
-      uri: frontImageUri,
-      name: 'license_front.jpg',
-      type: 'image/jpeg',
-    });
-  }
-
-  if (backImageUri) {
-    payload.append('licenseBack', {
-      uri: backImageUri,
-      name: 'license_back.jpg',
-      type: 'image/jpeg',
-    });
-  }
-
-  if (formData.nic_img) {
-    console.log('Appending NIC image:', formData.nic_img);
-    payload.append('nic_img', {
-      uri: formData.nic_img,
-      name: 'nic_img.jpg',
-      type: 'image/jpeg',
-    });
-  }
-  console.log('Final payload (FormData):', payload);
   setIsLoading(true);
-  
+  setError(null);
   try {
+    // Create fresh FormData inside the try block
+    const payload = new FormData();
+
+    // Append all text fields from formData
+    Object.keys(formData).forEach((key) => {
+      if (key !== 'licenseFront' && key !== 'licenseBack' && key !== 'nic_img') {
+        payload.append(key, formData[key]);
+      }
+    });
+
+    // Append image files (if available)
+    if (frontImageUri) {
+      payload.append('licenseFront', {
+        uri: frontImageUri,
+        name: 'license_front.jpg',
+        type: 'image/jpeg',
+      });
+    }
+
+    if (backImageUri) {
+      payload.append('licenseBack', {
+        uri: backImageUri,
+        name: 'license_back.jpg',
+        type: 'image/jpeg',
+      });
+    }
+
+    if (formData.nic_img) {
+      console.log('Appending NIC image:', formData.nic_img);
+      payload.append('nic_img', {
+        uri: formData.nic_img,
+        name: 'nic_img.jpg',
+        type: 'image/jpeg',
+      });
+    }
+
+    console.log('Final payload (FormData):', payload);
+    
     const response = await fetch('http://192.168.1.62:3000/api/mobileAuth/signup', {
       method: 'POST',
-      body: payload, // ✅ Use payload with all fields + images
+      body: payload,  
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      },
     });
+
+    console.log('Response Status:', response.status);
 
     if (response.ok) {
       const data = await response.json();
@@ -140,11 +147,11 @@ const onSubmit = async () => {
   } catch (error) {
     console.error('Error:', error);
     alert('An error occurred while signing up.');
+  } finally {
+    // Always reset loading state
+    setIsLoading(false);
   }
-  // Reset form data after submission
-  setIsLoading(false);
 };
-
 
 
 
@@ -295,7 +302,7 @@ const onSubmit = async () => {
           </View>
         </View>
         <Button 
-          title={isloading ? "processing" : "Create Account"}
+          title={isloading ? "Processing..." : "Create Account"}
           varient="primary"
           passstyles={{ marginTop: 20 }}
           onPress={onSubmit}
