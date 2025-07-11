@@ -1,6 +1,7 @@
 import * as Font from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -11,6 +12,7 @@ import { ThemeProvider } from './theme/ThemeContext';
 
 
 SplashScreen.preventAutoHideAsync(); // Prevent native splash screen from auto-hiding
+SystemUI.setBackgroundColorAsync('black');
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState<boolean>(false);
@@ -24,6 +26,7 @@ export default function RootLayout() {
           // 'UberMoveMedium': require('../../assets/fonts/UberMoveMedium.otf'),
           // 'UberMoveBold': require('../../assets/fonts/UberMoveBold.otf')
         });
+        
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -41,6 +44,7 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={'default'}/>
+    
       <ThemeProvider>
         <SafeAreaView backgroundColor="#FAF8F8" style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
           <KeyboardAvoidingView 

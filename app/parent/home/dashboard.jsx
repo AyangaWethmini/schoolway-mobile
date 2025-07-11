@@ -139,7 +139,7 @@ const Dashboard = () => {
                     <Button
                       title="View Details"
                       varient="outlined-black"
-                      onPress={() => console.log('Outlined Black pressed')}
+                      onPress={() => router.push('/parent/childView')}
                       passstyles={child.isAssigned ? { flex: 1 } : null}
                     />
                     {!child.isAssigned && (
