@@ -19,8 +19,9 @@ return (
             headerTitleStyle: { fontWeight: 'bold' }, 
             tabBarStyle: { 
                 backgroundColor: '#ffffff',
-                paddingTop: 10,
-                height: 80,
+                paddingTop: 5,
+                paddingBottom: 0,
+                height: 60,
             },
             tabBarActiveTintColor: theme.iconActiveBlue,
             tabBarInactiveTintColor: theme.iconInactive,

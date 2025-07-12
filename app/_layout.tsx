@@ -9,7 +9,7 @@ import KeyboardAvoidingView from './components/KeyboardAvoidingView.jsx';
 import SafeAreaView from './components/SafeAreaView.jsx';
 import { SplashScreenSchoolway } from './components/SplashScreen';
 import { ThemeProvider } from './theme/ThemeContext';
-
+import { FormProvider } from './utils/FormContext';
 
 SplashScreen.preventAutoHideAsync(); // Prevent native splash screen from auto-hiding
 SystemUI.setBackgroundColorAsync('black');
@@ -59,19 +59,18 @@ export default function RootLayout() {
             scrollEnabled={true}
             dismissKeyboardOnTap={true}
           >
-            {isReady ? (
-                <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="index" />
-                <Stack.Screen name="(signup)" />
-                <Stack.Screen name="login/login" />
-                <Stack.Screen name="driver" />
-                <Stack.Screen name="(signup)/steps/[...catchAll]" />
-                <Stack.Screen name="/parent/vansearch" />
-                <Stack.Screen name="/parent/addChild" />
-                </Stack>
-            ) : (
-              <SplashScreenSchoolway />
-            )}
+            <FormProvider>
+              {isReady ? (
+                  <Stack screenOptions={{ headerShown: false }}>
+                  <Stack.Screen name="index" />
+                  <Stack.Screen name="(signup)/steps" />
+                  <Stack.Screen name="login/login" />
+                  <Stack.Screen name="driver" />
+                  </Stack>
+              ) : (
+                <SplashScreenSchoolway />
+              )}
+            </FormProvider>
           </KeyboardAvoidingView>
         </SafeAreaView>
       </ThemeProvider>
