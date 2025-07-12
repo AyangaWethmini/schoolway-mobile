@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 
-const API_BASE_URL = 'http://192.168.1.62:3000'; // Replace with your actual backend URL to web server
+const API_BASE_URL = 'http://192.168.137.1:3000'; // Replace with your actual backend URL to web server
 
 class AuthService {
   // Sign in function - uses custom mobile endpoint
@@ -17,7 +17,8 @@ class AuthService {
           email,
           password,
         }),
-      });      console.log('Response status:', response.status);
+      });      
+      console.log('Response status:', response.status);
       const data = await response.json();
       console.log('Response data:', data);
       
@@ -41,6 +42,7 @@ class AuthService {
       console.log('Accessing Stored session:', session);
       return session ? JSON.parse(session) : null;
     } catch (error) {
+      console.error('Error retrieving stored session:', error);
       return null;
     }
   }
