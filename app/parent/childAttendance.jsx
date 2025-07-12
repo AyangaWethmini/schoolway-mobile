@@ -62,8 +62,16 @@ const SchoolVanScreen = ({ navigation }) => {
       const dateStr = date.toISOString().split('T')[0];
       const status = attendanceHistory[dateStr];
       if (status === 'present') return theme.colors.backgroundLightGreen;
-      if (status === 'absent') return theme.colors.backgroundLightRed;
+      if (status === 'absent') return theme.colors.statusbackgroundred;
       return '#f0f0f0';
+    };
+
+    const getAttendanceTextColor = (date) => {
+      const dateStr = date.toISOString().split('T')[0];
+      const status = attendanceHistory[dateStr];
+      if (status === 'present') return theme.colors.statusgreen;
+      if (status === 'absent') return theme.colors.statusred;
+      return theme.colors.accentblue;
     };
   
     const getMonthName = (date) => {
@@ -105,12 +113,12 @@ const SchoolVanScreen = ({ navigation }) => {
                   key={index}
                   style={[
                     styles.calendarDay,
-                    { backgroundColor: getAttendanceColor(date) },
+                    { backgroundColor: getAttendanceColor(date)},
                     isToday && styles.today
                   ]}
                 >
                   <Text style={[
-                    styles.dayText,
+                    styles.dayText, { color : getAttendanceTextColor(date) } ,
                     !isCurrentMonth && styles.otherMonthText,
                     isToday && styles.todayText
                   ]}>
@@ -212,18 +220,15 @@ const styles = StyleSheet.create({
   },
   dayText: {
     fontSize: 14,
-    color: '#333',
   },
   otherMonthText: {
     color: '#ccc',
   },
   today: {
     borderWidth: 2,
-    borderColor: '#2196F3',
   },
   todayText: {
     fontWeight: 'bold',
-    color: '#2196F3',
   },
   legend: {
     flexDirection: 'row',
