@@ -2,6 +2,7 @@ import * as Font from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import React, { useEffect, useState } from 'react';
+import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import KeyboardAvoidingView from './components/KeyboardAvoidingView.jsx';
 import SafeAreaView from './components/SafeAreaView.jsx';
@@ -20,8 +21,15 @@ export default function RootLayout() {
         // Load fonts or other resources here
         await Font.loadAsync({
           // Example: Add custom fonts if needed
-          // 'Inter-Regular': require('./assets/fonts/Inter-Regular.ttf'),
+          // 'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
+          // 'UberMove-medium': require('../../assets/fonts/UberMoveMedium.otf'),
+          // 'UberMove-bold': require('../../assets/fonts/UberMoveBold.otf')
         });
+
+        // if (Text.defaultProps == null) Text.defaultProps = {};
+        //   Text.defaultProps.style = {
+        //     fontFamily: 'UberMove-medium',
+        // };
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -38,6 +46,7 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
+      <StatusBar barStyle={'default'}/>
       <ThemeProvider>
         <SafeAreaView backgroundColor="#FAF8F8" style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
           <KeyboardAvoidingView 

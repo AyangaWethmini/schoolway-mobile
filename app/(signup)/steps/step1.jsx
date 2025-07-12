@@ -105,13 +105,17 @@ const PersonalInfoStep = ({}) => {
           onPress={proceed ? onNext : undefined}
           disabled={!proceed}
         />
-        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
+        <View style={{ justifyContent: 'center', alignItems: 'center', marginTop: 15 }}>
           <Text style={{ paddingLeft:0, marginBottom: 30, color: '#666', fontSize: 12 }}>
             Already have an account? 
-            <Text 
+            {/* <Text 
               style={{ color: '#007AFF' }} 
               onPress={() => router.push('../../login/login')}
-            > Log in</Text>
+            > Log in</Text> */}
+            <TextLink 
+              href="/login/login"
+              passstyle={{ fontSize:14}} 
+            > Log in</TextLink>
           </Text>
         </View>
       </View>
