@@ -10,7 +10,7 @@ import { baseStyles } from "../../theme/theme";
 
 
 const Dashboard = () => {
-  // Mock data for parent's children
+
   const router = useRouter();  
   const {theme} = useTheme();
 
@@ -46,7 +46,7 @@ const Dashboard = () => {
       vanNumber: null,
       pickupTime: null,
       dropoffTime: null,
-      status: 'at home',
+      status: 'At home',
       driver: null,
       contact: null,
       isAssigned: false
