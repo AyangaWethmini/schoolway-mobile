@@ -9,9 +9,9 @@ import {
 import { SvgXml } from 'react-native-svg';
 import AuthService from '../auth/AuthService';
 import { Button } from '../components/button';
-import TextInputComponent from '../components/Inputs';
+import TextInputComponent from '../components/inputs';
 import Spacer from '../components/Spacer';
-
+import TextLink from '../components/TextLink';
 
 
 const logoLightSvg = `<svg width="632" height="210" viewBox="0 0 632 210" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -85,7 +85,7 @@ const LoginScreen = () => {
       <Text style={styles.forgotpw}>Forgot Password?</Text>
       
       <Button 
-        title="Continue"
+        title={isLoading ? "Logging in..." :"Continue"}
         varient="primary"
         passstyles={{ marginTop: 20 }}
         onPress={handleLogin}
@@ -94,12 +94,15 @@ const LoginScreen = () => {
 
       <Text style={styles.signupText}>
         Do not have an account?{' '}
-        <Text
+        {/* <Text
           style={styles.signuplink}
           onPress={() => router.push('/signup')}
         >
           Sign up
-        </Text>
+        </Text> */}
+        <TextLink href='/signup' passstyle={fontSize=14}>
+          Sign up
+        </TextLink>
       </Text>
     </View>
   );
@@ -134,8 +137,8 @@ const styles = StyleSheet.create({
   },
   signupText: {
     textAlign: 'center',
-    marginTop: 25,
-    fontSize: 14,
+    marginTop: 15,
+    fontSize: 12,
     color: '#666',
   }
 });

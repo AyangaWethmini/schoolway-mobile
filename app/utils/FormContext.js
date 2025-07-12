@@ -13,9 +13,10 @@ export const FormProvider = ({ children }) => {
     lastname: '',
     address: '',
     nic: '',
+    nic_img: '',
     birthDate: '',
     licenseId: '',
-    licenceExpiry: '',
+    licenseExpiry: '',
     licenseFront: '',
     licenseBack: '',
   });

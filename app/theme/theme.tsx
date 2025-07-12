@@ -12,6 +12,16 @@ export interface Theme {
         textgreydark : string;
         textgreylight : string;
         error : string;
+
+        // status tag colors
+        statusorange : string;
+        statusbackgroundorange : string;
+        statusblue : string;
+        statusbackgroundblue : string;
+        statusgreen : string;
+        statusbackgroundgreen : string;
+        statusgrey : string;
+        statusbackgroundgrey : string;
     };
 
     spacing: {
@@ -56,6 +66,11 @@ export interface Theme {
         iconActiveBlack: string;
         iconActiveBlue: string;
     }
+
+    fontFamily : {
+        regular : string;
+        bold : string;
+    }
 };
 
 
@@ -64,6 +79,8 @@ export interface Theme {
 
 
 export const lightTheme: Theme = {
+    
+    
     colors : {
         primary: "#FFC825",
         secondary: "#030303",
@@ -71,9 +88,24 @@ export const lightTheme: Theme = {
         backgroud: "#FAF8F8",
         textblack: "#090A0A",
         textwhite : "#ffffff",
-        textgreydark: "#5E5F66",
+        textgreydark: "#71727A",
         textgreylight: "#8F9098",
-        error: "#FF0000"
+        error: "#FF0000",
+
+
+        statusorange : "#FFA500",
+        statusbackgroundorange : "#FFF3E0",
+        statusblue : "#2195f3",
+        statusbackgroundblue : "#E8F5E8", 
+        statusgreen : "#4CAF50", 
+        statusbackgroundgreen :  "#E8F5E8",
+        statusgrey : "#757575",
+        statusbackgroundgrey : "#F5F5F5" 
+    },
+
+    fontFamily : {
+        regular: 'UberMove-medium',
+        bold: 'UberMove-medium', // or another variant if you have one
     },
 
     spacing: {
@@ -137,7 +169,26 @@ export const baseStyles = StyleSheet.create({
     },
     link: {
         color: lightTheme.link.color,
-    }
+    },
+
+    // uppercase small tag styles (this is used in parent dashboard UI in a card which displays the grade of the child).
+
+    smalltagcontainer:{
+        backgroundColor: '#f8f9fa',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#e9ecef',
+    },
+
+    smalltagcontent:{
+        fontSize: 12,
+        color: '#6c757d',
+        fontWeight: '500',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
 
 
 })

@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 // import { Colors } from '../../constants/Colors';
-import { lightTheme } from '../theme/theme';
+import { lightTheme } from '../../theme/theme';
 // import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 
@@ -11,7 +11,6 @@ const DashboardLayout = () => {
     const theme = lightTheme.navbar;
 
 return (
-   
         <Tabs 
             screenOptions={{
                 headerShown: true,
@@ -20,10 +19,11 @@ return (
                 headerTitleStyle: { fontWeight: 'bold' }, 
                 tabBarStyle: { 
                     backgroundColor: '#ffffff',
-                    paddingTop: 10,
-                    height: 80,
+                    paddingTop: 5,
+                    paddingBottom: 0,
+                    height: 60,
                 },
-                tabBarActiveTintColor: theme.iconActive,
+                tabBarActiveTintColor: theme.iconActiveBlue,
                 tabBarInactiveTintColor: theme.iconInactive,
             }}
         >
@@ -41,6 +41,11 @@ return (
                 )
             }} />
             <Tabs.Screen name="profile" options={{ title: 'Profile', 
+                tabBarIcon: ({focused}) => (
+                    <Ionicons name={"person"} size={24} color={focused? theme.iconActiveBlack : theme.iconInactive} />
+                )
+            }} />
+            <Tabs.Screen name="vansearch" options={{ title: 'Van search', 
                 tabBarIcon: ({focused}) => (
                     <Ionicons name={"person"} size={24} color={focused? theme.iconActiveBlack : theme.iconInactive} />
                 )

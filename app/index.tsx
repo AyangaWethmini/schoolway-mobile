@@ -1,7 +1,6 @@
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { ScrollView, StyleSheet, Text, View, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Button } from "./components/button";
 import {
   CodeInput,
@@ -9,7 +8,7 @@ import {
   MultilineTextInput,
   PasswordInput,
   TextInputComponent
-} from "./components/Inputs";
+} from "./components/inputs";
 import Spacer from "./components/Spacer";
 import SWText from "./components/SWText";
 
@@ -63,6 +62,14 @@ export default function Index() {
           <Text>Driver Step 3</Text>
         </TouchableOpacity>
         <Link href='/steps/step2'>Step 2</Link>
+
+        <TouchableOpacity 
+          style={{ margin: 20  }}
+          onPress={() => router.push('/parent/home/dashboard' as any)}
+        >
+          <Text style={{ color: '#008080' }}>Parent Dashboard</Text>
+        </TouchableOpacity>
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Input Components</Text>
           
