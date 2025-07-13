@@ -1,9 +1,9 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Link } from 'expo-router';
 import { useState } from 'react';
 import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../auth/AuthContext';
-import AuthService from '../auth/AuthService';
 import { useTheme } from "../theme/ThemeContext";
 //----------------------------------------------REUSABLE DOCUMENT ITEM COMPONENT------------------------//
 const DocumentItem = ({ 
@@ -84,10 +84,10 @@ const DocumentItem = ({
 //----------------------------------------------COMPONENT FOT THE PROFILE SECTION ON THE TOP------------------------//
 const DriverProfileOverview = () => {
   const {logout} = useAuth();
-  const logouts = () => {
-    AuthService.signOut();
-    console.log('Logout pressed');
-  }
+  // const logouts = () => {
+  //   AuthService.signOut();
+  //   console.log('Logout pressed');
+  // }
 
   const { theme } = useTheme();
   
@@ -213,7 +213,7 @@ const DriverProfileOverview = () => {
       <TouchableOpacity style={styles.editButton} onPress={() => console.log('Edit profile')}>
         <FontAwesome6 name="pencil" size={20} color="black" />
       </TouchableOpacity>
-      
+      <Link href="/allindex" > see font type</Link>
         <Ionicons name="log-out-outline" size = {24} onPress={logout}></Ionicons>
       <View style={styles.section}>
         <View style={styles.profileHeader}>

@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useAuth } from '../../auth/AuthContext';
 import Button from '../../components/button';
 import PasswordInput from '../../components/inputs';
 import Spacer from '../../components/Spacer';
 import TextHeading from '../../components/TextHeading';
 
 const Profile = () => {
+  const {logout} = useAuth();
   const [activeTab, setActiveTab] = useState('Personal Info');
 
   const [currentPassword, setCurrentPassword] = useState('');
@@ -51,7 +53,7 @@ const Profile = () => {
           <>
             <View style={styles.avatarContainer}>
               <View style={styles.avatarCircle} />
-              <TouchableOpacity style={styles.editIcon}>
+              <TouchableOpacity style={styles.editIcon} onPress={() => logout()}>
                 <Ionicons name="create-outline" size={16} color="#000" />
               </TouchableOpacity>
             </View>
