@@ -25,12 +25,19 @@ function AppNavigator() {
       try {
         // Load fonts or other resources here
         await Font.loadAsync({
-          // Example: Add custom fonts if needed
-          // 'Inter-Regular': require('../../assets/fonts/Inter-Regular.ttf'),
-          // 'UberMove-medium': require('../../assets/fonts/UberMoveMedium.otf'),
-          // 'UberMove-bold': require('../../assets/fonts/UberMoveBold.otf')
+          'Inter': require('../assets/fonts/Inter-VariableFont_opsz,wght.ttf'),
+          // 'SpaceMono': require('../assets/fonts/SpaceMono-Regular.ttf'),
+          'UberMove-Bold': require('../assets/fonts/UberMoveBold.otf'),
+          'UberMove-Medium': require('../assets/fonts/UberMoveMedium.otf'),
         });
-        
+
+        // Set default font for all Text components globally
+        // // @ts-ignore - TypeScript doesn't recognize defaultProps but it works at runtime
+        // if (Text.defaultProps == null) Text.defaultProps = {};
+        // // @ts-ignore
+        // Text.defaultProps.style = {
+        //   fontFamily: 'UberMove-Medium',
+        // };
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
         await new Promise(resolve => setTimeout(resolve, 2000));

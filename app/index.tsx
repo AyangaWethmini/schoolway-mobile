@@ -40,5 +40,4 @@ export const SplashScreenSchoolway = () => {
 
 
 
-
 export default SplashScreenSchoolway;
