@@ -22,6 +22,12 @@ export interface Theme {
         statusbackgroundgreen : string;
         statusgrey : string;
         statusbackgroundgrey : string;
+        statusred : string;
+        statusbackgroundred : string;
+    
+
+        backgroundLightGreen: String,
+        backgroundLightRed: String,
     };
 
     spacing: {
@@ -94,7 +100,14 @@ export const lightTheme: Theme = {
         statusgreen : "#4CAF50", 
         statusbackgroundgreen :  "#E8F5E8",
         statusgrey : "#757575",
-        statusbackgroundgrey : "#F5F5F5" 
+        statusbackgroundgrey : "#F5F5F5",
+        statusred: "#F44336",               
+        statusbackgroundred: "#FFEBEE",
+
+
+        //for calendar
+        backgroundLightGreen: "#83f28f",
+        backgroundLightRed: "#ee6b6e",
     },
 
     fontFamily : {

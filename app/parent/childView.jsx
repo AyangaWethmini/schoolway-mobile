@@ -1,0 +1,459 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import {
+  Alert,
+  Dimensions,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
+import { Button } from "../components/button";
+import { useTheme } from "../theme/ThemeContext";
+
+const { width } = Dimensions.get('window');
+
+const ChildView = ({ navigation, route }) => {
+  const { theme } = useTheme();
+  const router = useRouter();  
+  
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showAttendanceModal, setShowAttendanceModal] = useState(false);
+  const [attendanceStatus, setAttendanceStatus] = useState('');
+
+  // Student data state
+  const [studentData, setStudentData] = useState({
+    name: 'Duleepa Edirisinghe',
+    age: '8',
+    grade: 'Grade 3',
+    school: 'St. Mary\'s Elementary',
+    pickupAddress: '123 Main Street, Colombo 03',
+    dropoffAddress: 'St. Mary\'s Elementary, Colombo 05',
+    parentContact: '+94 77 123 4567',
+    emergencyContact: '+94 71 987 6543',
+    specialNotes: 'No known allergies',
+    vanNumber: 'VAN-001',
+    vanRoute: 'Route A - Morning',
+    monthlyFee: 'Rs. 15,000'
+  });
+
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const handleEdit = () => {
+    setIsEditMode(!isEditMode);
+  };
+
+  const handleSave = () => {
+    setIsEditMode(false);
+    Alert.alert('Success', 'Student details updated successfully!');
+  };
+
+  const handleMarkAttendance = () => {
+    setShowAttendanceModal(true);
+  };
+
+  const submitAttendance = () => {
+    const today = new Date().toISOString().split('T')[0];
+    setAttendanceHistory(prev => ({
+      ...prev,
+      [today]: attendanceStatus
+    }));
+    setShowAttendanceModal(false);
+    setAttendanceStatus('');
+    Alert.alert('Success', `Attendance marked as ${attendanceStatus}`);
+  };
+
+ 
+  const InfoRow = ({ label, value, field }) => (
+    <View style={styles.infoRow}>
+      <Text style={styles.infoLabel}>{label}:</Text>
+      {isEditMode ? (
+        <TextInput
+          style={styles.editInput}
+          value={value}
+          onChangeText={(text) => setStudentData(prev => ({ ...prev, [field]: text }))}
+          multiline={field === 'pickupAddress' || field === 'dropoffAddress' || field === 'specialNotes'}
+        />
+      ) : (
+        <Text style={styles.infoValue}>{value}</Text>
+      )}
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+        {/* Header */}
+        <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="#000" />
+          </TouchableOpacity>
+          <Text style={styles.headerTitle}>Student Details</Text>
+          <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
+            <Ionicons name={isEditMode ? "close" : "create"} size={24} color="#000" />
+          </TouchableOpacity>
+        </View>
+
+        {/* Student Profile Card */}
+        <View style={styles.profileCard}>
+          <View style={styles.avatarContainer}>
+            <Ionicons name="person-circle" size={80} color={'grey'} />
+          </View>
+          <Text style={styles.studentName}>{studentData.name}</Text>
+          <Text style={styles.studentGrade}>{studentData.grade} • {studentData.school}</Text>
+        </View>
+
+        {/* Quick Actions */}
+        <View style={styles.quickActions}>
+          <TouchableOpacity style={styles.actionButton} onPress={handleMarkAttendance}>
+            <Ionicons name="checkmark-circle" size={24} color={theme.colors.backgroundLightGreen} />
+            <Text style={styles.actionText}>Mark Attendance</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/parent/childAttendance')}>
+            <Ionicons name="calendar" size={24} color={theme.colors.accentblue} />
+            <Text style={styles.actionText}>View Calendar</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Student Information */}
+        <View style={styles.infoCard}>
+          <Text style={styles.sectionTitle}>Personal Information</Text>
+          <InfoRow label="Full Name" value={studentData.name} field="name" />
+          <InfoRow label="Age" value={studentData.age} field="age" />
+          <InfoRow label="Grade" value={studentData.grade} field="grade" />
+          <InfoRow label="School" value={studentData.school} field="school" />
+          <InfoRow label="Special Notes" value={studentData.specialNotes} field="specialNotes" />
+        </View>
+
+        {/* Transport Information */}
+        <View style={styles.infoCard}>
+          <Text style={styles.sectionTitle}>Transport Information</Text>
+          <InfoRow label="Pickup Address" value={studentData.pickupAddress} field="pickupAddress" />
+          <InfoRow label="Drop-off Address" value={studentData.dropoffAddress} field="dropoffAddress" />
+          { !(!studentData.vanNumber || studentData.vanNumber.trim() === '') &&
+          <>
+            <InfoRow label="Van Number" value={studentData.vanNumber} field="vanNumber" />
+            <InfoRow label="Van Route" value={studentData.vanRoute} field="vanRoute" />
+            <InfoRow label="Monthly Fee" value={studentData.monthlyFee} field="monthlyFee" />
+              <Button
+                title="Resign"
+                varient="secondary"
+                onPress={() => router.push('/parent/vansearch')}
+              />
+          </>
+          }
+          {   (!studentData.vanNumber || studentData.vanNumber.trim() === '') &&
+            <Button
+              title="Assign to Van"
+              varient="secondary"
+              onPress={() => router.push('/parent/vansearch')}
+            />
+          }
+        </View>
+
+        <View style={styles.infoCard}>
+          <Text style={styles.sectionTitle}>Contact Information</Text>
+          <InfoRow label="Parent Contact" value={studentData.parentContact} field="parentContact" />
+          <InfoRow label="Emergency Contact" value={studentData.emergencyContact} field="emergencyContact" />
+        </View>
+
+        {isEditMode && (
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.saveButtonText}>Save Changes</Text>
+          </TouchableOpacity>
+        )}
+      </ScrollView>
+
+      {/* Attendance Modal */}
+      <Modal
+        visible={showAttendanceModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowAttendanceModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Mark Toommorw's Attendance</Text>
+            <Text style={styles.modalSubtitle}>for {studentData.name}</Text>
+            
+            <View style={styles.attendanceOptions}>
+              <TouchableOpacity
+                style={[
+                  styles.attendanceOption,
+                  attendanceStatus === 'present' && styles.selectedOption
+                ]}
+                onPress={() => setAttendanceStatus('present')}
+              >
+                <Ionicons name="checkmark-circle" size={30} color={theme.colors.backgroundLightGreen} />
+                <Text style={styles.optionText}>Present</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={[
+                  styles.attendanceOption,
+                  attendanceStatus === 'absent' && styles.selectedOption
+                ]}
+                onPress={() => setAttendanceStatus('absent')}
+              >
+                <Ionicons name="close-circle" size={30} color={theme.colors.backgroundLightRed} />
+                <Text style={styles.optionText}>Absent</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={styles.modalButtons}>
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => setShowAttendanceModal(false)}
+              >
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.confirmButton, {backgroundColor : theme.colors.secondary} ,!attendanceStatus && styles.disabledButton]}
+                onPress={submitAttendance}
+                disabled={!attendanceStatus}
+              >
+                <Text style={styles.confirmButtonText}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    </SafeAreaView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  backButton: {
+    padding: 5,
+  },
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000',
+    flex: 1,
+    textAlign: 'center',
+    marginLeft: -29, // Compensate for edit button
+  },
+  editButton: {
+    padding: 5,
+  },
+  profileCard: {
+    backgroundColor: '#fff',
+    margin: 20,
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  avatarContainer: {
+    marginBottom: 10,
+  },
+  studentName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 5,
+  },
+  studentGrade: {
+    fontSize: 16,
+    color: '#666',
+  },
+  quickActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginHorizontal: 20,
+    marginBottom: 20,
+  },
+  actionButton: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    flex: 1,
+    marginHorizontal: 5,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  actionText: {
+    marginTop: 5,
+    fontSize: 12,
+    color: '#333',
+    fontWeight: '600',
+  },
+  infoCard: {
+    backgroundColor: '#fff',
+    margin: 20,
+    marginTop: 0,
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 15,
+  },
+  infoRow: {
+    marginBottom: 15,
+  },
+  infoLabel: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 5,
+    fontWeight: '600',
+  },
+  infoValue: {
+    fontSize: 16,
+    color: '#333',
+  },
+  editInput: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 10,
+    fontSize: 16,
+    color: '#333',
+    backgroundColor: '#f9f9f9',
+  },
+  saveButton: {
+    backgroundColor: '#4CAF50',
+    margin: 20,
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    width: width * 0.9,
+    maxWidth: 400,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 5,
+    color: '#333',
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#666',
+  },
+  attendanceOptions: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  attendanceOption: {
+    alignItems: 'center',
+    padding: 15,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    flex: 1,
+    marginHorizontal: 5,
+  },
+  selectedOption: {
+    borderColor: '#0351bdff',
+    backgroundColor: '#fafdffff',
+  },
+  optionText: {
+    marginTop: 5,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  cancelButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  cancelButtonText: {
+    color: '#666',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  confirmButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  confirmButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  disabledButton: {
+    backgroundColor: '#ccc',
+  },
+});
+
+export default ChildView;

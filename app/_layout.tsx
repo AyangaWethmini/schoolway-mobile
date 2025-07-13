@@ -1,6 +1,7 @@
 import * as Font from 'expo-font';
 import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
+import * as SystemUI from 'expo-system-ui';
 import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -12,6 +13,7 @@ import { ThemeProvider } from './theme/ThemeContext';
 import { FormProvider } from './utils/FormContext';
 
 SplashScreen.preventAutoHideAsync(); // Prevent native splash screen from auto-hiding
+SystemUI.setBackgroundColorAsync('black');
 
 // Separate component that uses the auth context
 function AppNavigator() {
@@ -28,6 +30,7 @@ function AppNavigator() {
           // 'UberMove-medium': require('../../assets/fonts/UberMoveMedium.otf'),
           // 'UberMove-bold': require('../../assets/fonts/UberMoveBold.otf')
         });
+        
 
         // Simulate other async tasks (e.g., API calls) for demo only !!
         await new Promise(resolve => setTimeout(resolve, 2000));

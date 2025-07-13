@@ -10,7 +10,7 @@ import { baseStyles } from "../../theme/theme";
 
 
 const Dashboard = () => {
-  // Mock data for parent's children
+
   const router = useRouter();  
   const {theme} = useTheme();
 
@@ -46,7 +46,7 @@ const Dashboard = () => {
       vanNumber: null,
       pickupTime: null,
       dropoffTime: null,
-      status: 'at home',
+      status: 'At home',
       driver: null,
       contact: null,
       isAssigned: false
@@ -139,7 +139,7 @@ const Dashboard = () => {
                     <Button
                       title="View Details"
                       varient="outlined-black"
-                      onPress={() => console.log('Outlined Black pressed')}
+                      onPress={() => router.push('/parent/childView')}
                       passstyles={child.isAssigned ? { flex: 1 } : null}
                     />
                     {!child.isAssigned && (
