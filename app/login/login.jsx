@@ -1,5 +1,5 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   StyleSheet,
@@ -7,7 +7,7 @@ import {
   View
 } from 'react-native';
 import { SvgXml } from 'react-native-svg';
-import AuthService from '../auth/AuthService';
+import { useAuth } from '../auth/AuthContext';
 import { Button } from '../components/button';
 import TextInputComponent from '../components/inputs';
 import Spacer from '../components/Spacer';
@@ -22,28 +22,55 @@ const logoLightSvg = `<svg width="632" height="210" viewBox="0 0 632 210" fill="
 
 
 const LoginScreen = () => {
+  const {login} = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [proceed, setProceed] = useState(false);
 
   const router = useRouter();
 
-  const handleLogin = async () => {
-    // if (!email || !password) {
-    //   Alert.alert('Error', 'Please enter both email and password');
-    //   return;
-    // }
+  const checkEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+  const checkPassword = (password) => {
+    return password.length >= 6;
+  };
 
+  useEffect(() => {
+    const isEmailValid = checkEmail(email);
+    const isPasswordValid = checkPassword(password);
+    
+    if (isEmailValid && isPasswordValid) {
+      console.log('Email and password are valid');
+      setProceed(true);
+    } else {
+      console.log('Invalid email or password');
+      setProceed(false);
+    }
+  }, [email, password]);
+
+  const handleLogin = async () => {
+    
     setIsLoading(true);
     
     try {
-      const result = await AuthService.signIn(email, password);
+      // const result = await AuthService.signIn(email, password);
+      const result = await login(email, password);
       
       console.log('Login result:', result);
       if (result.success) {
         console.log('Login successful, attempting navigation...');
         // Navigate to your main app screen (index page)
-        router.replace('/');
+        if(result.data.user.role === 'DRIVER') {
+          console.log('User is a SERVICE, navigating to service screen');
+          // router.replace('/signup/steps');
+        } else if(result.data.user.role === 'PARENT') {
+          // router.replace('/parent');
+        }
+        // router.replace('/login');
+        console.log('Navigation to main app screen completed');
         // console.log('Navigation completed');
       } else {
         console.log('Login failed:', result.error);
@@ -82,25 +109,19 @@ const LoginScreen = () => {
         secureTextEntry={true}
       />
 
-      <Text style={styles.forgotpw}>Forgot Password?</Text>
+      <TextLink href='#' passstyle={{fontSize:12,marginTop:0, marginBottom:10}} >Forgot Password?</TextLink>
       
       <Button 
         title={isLoading ? "Logging in..." :"Continue"}
         varient="primary"
         passstyles={{ marginTop: 20 }}
         onPress={handleLogin}
-        disabled={isLoading}
+        disabled={isLoading || !proceed}
       />
 
       <Text style={styles.signupText}>
         Do not have an account?{' '}
-        {/* <Text
-          style={styles.signuplink}
-          onPress={() => router.push('/signup')}
-        >
-          Sign up
-        </Text> */}
-        <TextLink href='/signup' passstyle={fontSize=14}>
+        <TextLink href='/signup' passstyle={{fontSize:14}}>
           Sign up
         </TextLink>
       </Text>

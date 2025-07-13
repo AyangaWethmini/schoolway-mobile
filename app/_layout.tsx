@@ -17,7 +17,7 @@ SplashScreen.preventAutoHideAsync(); // Prevent native splash screen from auto-h
 function AppNavigator() {
   const { user, isLoading, isAuthenticated } = useAuth();
   const [isReady, setIsReady] = useState<boolean>(false);
-  const [hasNavigated, setHasNavigated] = useState(false);
+
   useEffect(() => {
     async function prepare() {
       try {
@@ -49,19 +49,19 @@ function AppNavigator() {
       
       switch (userRole) {
         case 'DRIVER':
-          router.replace('/driver');
+          router.replace({pathname :'driver' as any});
           break;
         case 'PARENT':
-          router.replace('/parent/home');
+          router.replace('parent/home' as any);
           break;
         default:
           // For unknown roles, redirect to login
-          router.replace('/login/login');
+          router.replace('login/login' as any);
           break;
       }
     } else if (isReady && !isLoading && !isAuthenticated) {
       // Redirect unauthenticated users to login
-      router.replace('/login/login');
+      router.replace('login/login' as any);
     }
   }, [isReady, isLoading, isAuthenticated, user?.role]);
 
@@ -70,65 +70,18 @@ function AppNavigator() {
     return <SplashScreenSchoolway />;
   }
 
-  // Conditional navigation based on authentication and user role
-  const renderScreens = () => {
-    if (!isAuthenticated) {
-      // Unauthenticated users can only access login and signup
-      return (
-        <>
-          <Stack.Screen name="(signup)/steps" />
-          <Stack.Screen name="login/login" />
-          <Stack.Screen name="index" options={{ href: null }} />
-          <Stack.Screen name="driver" options={{ href: null }} />
-          <Stack.Screen name="parent" options={{ href: null }} />
-        </>
-      );
-    }
-
-    // Authenticated users - show screens based on role
-    const userRole = user?.role;
-    
-    switch (userRole) {
-      case 'DRIVER':
-        return (
-          <>
-            <Stack.Screen name="driver" />
-            <Stack.Screen name="(signup)/steps" options={{ href: null }} />
-            <Stack.Screen name="login/login" options={{ href: null }} />
-            <Stack.Screen name="parent" options={{ href: null }} />
-            <Stack.Screen name="index" options={{ href: null }} />
-          </>
-        );
-      case 'PARENT':
-        return (
-          <>
-            <Stack.Screen name="parent" />
-            <Stack.Screen name="(signup)/steps" options={{ href: null }} />
-            <Stack.Screen name="login/login" options={{ href: null }} />
-            <Stack.Screen name="driver" options={{ href: null }} />
-            <Stack.Screen name="index" options={{ href: null }} />
-          </>
-        );
-      default:
-        return (
-          <>
-            <Stack.Screen name="(signup)/steps" />
-            <Stack.Screen name="login/login" />
-            <Stack.Screen name="index" options={{ href: null }} />
-            <Stack.Screen name="driver" options={{ href: null }} />
-            <Stack.Screen name="parent" options={{ href: null }} />
-          </>
-        );
-    }
-  };
-
   return (
     <FormProvider>
-      <Stack screenOptions={{ headerShown: false }}
-      // initialRouteName="splash"
-      >
-        {renderScreens()}
-      </Stack>
+      {isReady ? (
+          <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" options={{ href: null }}/>
+          <Stack.Screen name="(signup)/steps" />
+          <Stack.Screen name="login/login" />
+          <Stack.Screen name="driver" />
+          </Stack>
+      ) : (
+        <SplashScreenSchoolway />
+      )}
     </FormProvider>
   );
 }

@@ -52,7 +52,7 @@ export default function Index() {
 
         <Spacer/>
         
-        <Link href='/steps/step3'>Parent Step 3</Link>
+        <Link href ='/steps/step3' >Parent Step 3</Link>
         
         <TouchableOpacity 
           style={{ marginBottom: 20 }}
