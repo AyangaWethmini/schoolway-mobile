@@ -10,6 +10,7 @@ import {
   TextInputComponent
 } from "./components/inputs";
 import Spacer from "./components/Spacer";
+import SWText from "./components/SWText";
 
 export default function Index() {
   const router = useRouter();
@@ -168,7 +169,136 @@ export default function Index() {
               disabled={true}
               onPress={() => console.log('This should not fire')}
             />
+          </View>{/* Button Components Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Button Components</Text>
+          
+          <View style={styles.buttonContainer}>
+            <Button 
+              title="Primary Button" 
+              varient="primary"
+              onPress={() => console.log('Primary pressed')}
+            />
+            
+            <Button 
+              title="Secondary Button" 
+              varient="secondary"
+              onPress={() => console.log('Secondary pressed')}
+            />
+            
+            <Button 
+              title="Outlined Yellow" 
+              varient="outlined-yellow"
+              onPress={() => console.log('Outlined Yellow pressed')}
+            />
+            
+            <Button 
+              title="Outlined Black" 
+              varient="outlined-black"
+              onPress={() => console.log('Outlined Black pressed')}
+            />
+            
+            <Button 
+              title="Disabled Button" 
+              varient="primary"
+              disabled={true}
+              onPress={() => console.log('This should not fire')}
+            />
           </View>
+        </View>
+        
+
+        
+        {/* Text Component Examples */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Text Components</Text>
+          
+          <View style={styles.typographyContainer}>
+            {/* Headings */}
+            <SWText h1>H1 Heading Component</SWText>
+            <SWText h2>H2 Heading Component</SWText>
+            <SWText h3>H3 Heading Component</SWText>
+            
+            <Spacer />
+            
+            {/* Body Text Variations */}
+            <SWText md>Regular body text</SWText>
+            <SWText md bold>Bold body text</SWText>
+            <SWText md semibold>Semibold body text</SWText>
+            
+            <Spacer />
+            
+            {/* Text Sizes */}
+            <SWText sm>Small text (sm)</SWText>
+            <SWText md>Medium text (md - default)</SWText>
+            <SWText lg>Large text (lg)</SWText>
+            <SWText xs>Extra small text (xs)</SWText>
+            <SWText xl>Extra large text (xl)</SWText>
+            
+            <Spacer />
+            
+            {/* Special Roles */}
+            <SWText button>Button text</SWText>
+            <SWText label>Form label text</SWText>
+            <SWText caption>Caption text</SWText>
+            
+            <Spacer />
+            
+            {/* Colors */}
+            <SWText h2 primary>Primary Color Text</SWText>
+            <SWText md blue>Blue Text</SWText>
+            <SWText md grayd>Dark Gray Text</SWText>
+            <SWText md grayl>Light Gray Text</SWText>
+            <SWText md white style={{backgroundColor: '#333', padding: 8}}>
+              White text on dark background
+            </SWText>
+            
+            <Spacer />
+            
+            {/* Font Families */}
+            <SWText md regular>Regular Font</SWText>
+            <SWText md uberMedium>Uber Medium Font</SWText>
+            <SWText md uberBold>Uber Bold Font</SWText>
+            
+            <Spacer />
+            
+            {/* Text Alignment */}
+            <SWText md left>Left Aligned Text (default)</SWText>
+            <SWText md center>Center Aligned Text</SWText>
+            <SWText md right>Right Aligned Text</SWText>
+            
+            <Spacer />
+            
+            {/* Text Styling */}
+            <SWText md italic>Italic Text</SWText>
+            <SWText md underline>Underlined Text</SWText>
+            <SWText md italic underline>Italic and Underlined</SWText>
+            
+            <Spacer />
+            
+            {/* Combined Examples */}
+            <SWText lg uberBold center primary>
+              Large, Uber Bold, Centered Primary Text
+            </SWText>
+            
+            <SWText 
+              md 
+              white 
+              center 
+              bold
+              style={{
+                backgroundColor: '#333', 
+                padding: 10, 
+                borderRadius: 5,
+                marginTop: 8
+              }}
+            >
+              Custom Styled Text with Additional Props
+            </SWText>
+          </View>
+        </View>
+        <View>
+        </View>
         </View>
       </View>
     </ScrollView>
