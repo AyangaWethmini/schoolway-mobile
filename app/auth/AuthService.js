@@ -1,14 +1,18 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { router } from 'expo-router';
 
-const API_BASE_URL = 'http://192.168.137.1:3000'; // Replace with your actual backend URL to web server
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
+
+const API_BASE_URL = 'http://10.58.68.116:3000'; // Replace with your actual backend URL to web server
 
 class AuthService {
   // Sign in function - uses custom mobile endpoint
   async signIn(email, password) {
     try {
+      console.log('API_BASE_URL:', API_URL);
       console.log('Signing in with email:', email);
-      const response = await fetch(`${API_BASE_URL}/api/mobileAuth`, {
+      const response = await fetch(`${API_URL}/mobileAuth`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
