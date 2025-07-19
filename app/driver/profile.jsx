@@ -1,8 +1,10 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, ScrollView } from 'react-native'
-import { useTheme } from "../theme/ThemeContext";
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Link, useRouter } from 'expo-router';
 import { useState } from 'react';
-
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../auth/AuthContext';
+import { useTheme } from "../theme/ThemeContext";
 //----------------------------------------------REUSABLE DOCUMENT ITEM COMPONENT------------------------//
 const DocumentItem = ({ 
   name, 
@@ -81,7 +83,13 @@ const DocumentItem = ({
 
 //----------------------------------------------COMPONENT FOT THE PROFILE SECTION ON THE TOP------------------------//
 const DriverProfileOverview = () => {
-  
+  const {logout} = useAuth();
+  const router = useRouter();
+  // const logouts = () => {
+  //   AuthService.signOut();
+  //   console.log('Logout pressed');
+  // }
+
   const { theme } = useTheme();
   
   const styles = StyleSheet.create({
@@ -203,10 +211,11 @@ const DriverProfileOverview = () => {
   return (
 
     <View style={styles.container}>
-      <TouchableOpacity style={styles.editButton} onPress={() => console.log('Edit profile')}>
-        <FontAwesome name="pencil" size={20} color={theme.colors.textgreylight} />
+      <TouchableOpacity style={styles.editButton} onPress={() => router.push('./DriverComponents/EditProfile')}>
+        <FontAwesome6 name="pencil" size={20} color="black" />
       </TouchableOpacity>
-      
+      <Link href="/allindex" > see font type</Link>
+        <Ionicons name="log-out-outline" size = {24} onPress={logout}></Ionicons>
       <View style={styles.section}>
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>

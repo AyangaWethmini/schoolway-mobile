@@ -4,6 +4,7 @@ import { Tabs } from 'expo-router';
 import { lightTheme } from '../../theme/theme';
 // import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import ParentProtected from '../../auth/ParentProtected';
 
 const DashboardLayout = () => {
     // const colorTheme = useColorScheme();
@@ -11,6 +12,7 @@ const DashboardLayout = () => {
     const theme = lightTheme.navbar;
 
 return (
+    <ParentProtected>
         <Tabs 
             screenOptions={{
                 headerShown: true,
@@ -51,6 +53,7 @@ return (
                 )
             }} />
         </Tabs>
+    </ParentProtected>
   
 )
 }

@@ -17,7 +17,8 @@ class AuthService {
           email,
           password,
         }),
-      });      console.log('Response status:', response.status);
+      });      
+      console.log('Response status:', response.status);
       const data = await response.json();
       console.log('Response data:', data);
       
@@ -41,6 +42,7 @@ class AuthService {
       console.log('Accessing Stored session:', session);
       return session ? JSON.parse(session) : null;
     } catch (error) {
+      console.error('Error retrieving stored session:', error);
       return null;
     }
   }

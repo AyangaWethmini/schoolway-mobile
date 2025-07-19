@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    setIsLoading(true);
+    // setIsLoading(true);
     try {
       const result = await AuthService.signIn(email, password);
       if (result.success && result.data.user) {
