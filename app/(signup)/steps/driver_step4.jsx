@@ -124,7 +124,7 @@ const onSubmit = async () => {
 
     console.log('Final payload (FormData):', payload);
     
-    const response = await fetch('http://192.168.1.62:3000/api/mobileAuth/signup', {
+    const response = await fetch('http://192.168.8.112:3000/api/mobileAuth/signup', {
       method: 'POST',
       body: payload,  
       headers: {

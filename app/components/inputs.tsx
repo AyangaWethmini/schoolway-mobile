@@ -47,7 +47,7 @@ export const TextInputComponent = ({
         },
         label: {
             fontSize: theme.fontSizes.small,
-            color: theme.colors.textblack,
+            color: theme.colors.textgreydark,
             marginBottom: theme.spacing.xs,
             fontWeight: '600',
         },
@@ -472,7 +472,7 @@ export const MultilineTextInput = ({
         },
         label: {
             fontSize: theme.fontSizes.small,
-            color: theme.colors.textblack,
+            color: theme.colors.textgreydark,
             marginBottom: theme.spacing.xs,
             fontWeight: '600',
         },
