@@ -90,6 +90,8 @@ const DriverProfileOverview = () => {
   const {logout, user} = useAuth();
   const router = useRouter();
   const { theme } = useTheme();
+  const [driverData, setDriverData] = useState({user: null});
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   
   const styles = StyleSheet.create({
@@ -211,19 +213,43 @@ const DriverProfileOverview = () => {
    useEffect(() => {
     // Fetch user data to show on profile from backend api mobile/profile/data
     const fetchUserData = async () => {
+      setIsLoading(true); // Start loading
       try {
-        const response = await fetch(`${API_URL}/mobile/profile/data`);
+        const response = await fetch(`${API_URL}/mobile/driver/profile/${user.id}`);
         const data = await response.json();
-        // Update state with fetched data
+        setDriverData(data);
       } catch (error) {
         console.error('Error fetching user data:', error);
+      } finally {
+        setIsLoading(false); // Stop loading
       }
     };
     fetchUserData();
   }, []);
 
-  return (
+  // Helper to calculate years of experience from startedDriving date
+  const getYearsOfExperience = (startedDriving) => {
+    if (!startedDriving) return 0;
+    const start = new Date(startedDriving);
+    const now = new Date();
+    let years = now.getFullYear() - start.getFullYear();
+    const m = now.getMonth() - start.getMonth();
+    if (m < 0 || (m === 0 && now.getDate() < start.getDate())) {
+      years--;
+    }
+    return years;
+  };
 
+  // Show loading indicator while data is being fetched
+  if (isLoading || !driverData.user) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  return (
     <View style={styles.container}> 
 
       {user?.approvalstatus !== 1 && (
@@ -256,6 +282,7 @@ const DriverProfileOverview = () => {
       {/* <Link href="/allindex" > see font type {user.approvalstatus}</Link> */}
 
         <Ionicons name="log-out-outline" size = {24} onPress={logout}></Ionicons>
+      
       <View style={styles.section}>
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
@@ -265,13 +292,23 @@ const DriverProfileOverview = () => {
             />
           </View>
           <View style={styles.profileInfo}>
-            <Text style={styles.name}>John Doe</Text>
-            <Text style={styles.details}><Text style={styles.attribute}>Driver ID: </Text>DRV12345</Text>
-            <Text style={styles.details}><Text style={styles.attribute}>Vehicle:</Text> Toyota Hiace (ABC-1234)</Text>
-            <Text style={styles.details}><Text style={styles.attribute}>Phone:</Text> +94 77 123 4567</Text>
+            <Text style={styles.name}>{driverData.user.firstname} {driverData.user.lastname}</Text>
+            <Text style={styles.details}>
+              <Text style={styles.attribute}>Driver ID: </Text>
+              {driverData.user.driverProfile?.id || 'N/A'}
+            </Text>
+            <Text style={styles.details}>
+              <Text style={styles.attribute}>Vehicle:</Text> 
+              {driverData.user.driverProfile?.vehicle || 'Not enrolled'}
+            </Text>
+            <Text style={styles.details}>
+              <Text style={styles.attribute}>Phone:</Text> 
+              {driverData.user.mobile || 'not given'}
+            </Text>
           </View>
         </View>
       </View>
+      
       <View style={styles.section}>
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
@@ -279,15 +316,20 @@ const DriverProfileOverview = () => {
             <Text style={styles.statLabel}>Trips</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>4.8</Text>
+            <Text style={styles.statValue}>
+              {driverData.user.driverProfile?.rating || 'N/A'}
+            </Text>
             <Text style={styles.statLabel}>Rating</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>2 yrs</Text>
+            <Text style={styles.statValue}>
+              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)} yrs
+            </Text>
             <Text style={styles.statLabel}>Experience</Text>
           </View>
         </View>
       </View>
+      
       <View style={styles.separator} />
     </View>
 
