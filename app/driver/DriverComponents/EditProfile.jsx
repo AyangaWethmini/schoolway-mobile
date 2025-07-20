@@ -69,6 +69,7 @@ const EditProfile = () => {
     container: {
       flex: 1,
       padding: theme.spacing.md,
+      paddingBottom: theme.spacing.lg,
       backgroundColor: theme.colors.backgroud,
     },
     scrollContainer: {
@@ -167,7 +168,7 @@ const EditProfile = () => {
       paddingVertical: theme.spacing.md,
       borderRadius: theme.borderRadius.small,
       alignItems: 'center',
-      marginTop: theme.spacing.lg,
+      // marginTop: theme.spacing.lg,
     },
     saveButtonText: {
       color: 'white',
@@ -318,7 +319,7 @@ const EditProfile = () => {
   }
 
   return (
-    <View style={styles.container}>
+    // <View style={[styles.container, { marginBottom: 50 }]}>
       <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
         
         {/* Profile Image */}
@@ -659,8 +660,9 @@ const EditProfile = () => {
             maximumDate={new Date()}
           />
         )}
+        {/* <Text style={styles.footerText}>By saving changes, you agree to our Terms of Service and Privacy Policy.</Text> */}
       </ScrollView>
-    </View>
+    // </View>
   );
 };
 

@@ -1,16 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
-// import { Colors } from '../../constants/Colors';
-import { lightTheme } from '../theme/theme';
-// import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { Tabs } from 'expo-router';
 import { useAuth } from '../auth/AuthContext';
 import DriverProtected from '../auth/DriverProtected';
+import { lightTheme } from '../theme/theme';
 
 const DashboardLayout = () => {
     const { user } = useAuth();
-    // const colorTheme = useColorScheme();
-    // const theme = Colors[colorTheme] ?? Colors.light;
     const theme = lightTheme.navbar;
 
 if (user?.approvalstatus !== 1) {
@@ -46,8 +42,14 @@ if (user?.approvalstatus !== 1) {
                 <Tabs.Screen name="dashboard" options={{ href: null }} />
                 <Tabs.Screen name="map" options={{ href: null }} />
                 <Tabs.Screen name="payments" options={{ href: null }} />
-                <Tabs.Screen name="DriverComponents/EditProfile" options={{ href: null }} />
-                <Tabs.Screen name="DriverComponents/EditP" options={{ href: null }} />
+                {/* Hide the DriverComponents folder from tabs */}
+                <Tabs.Screen 
+                    name="DriverComponents" 
+                    options={{ 
+                        href: null,
+                        tabBarStyle: { display: 'none' } // This will hide tab bar when navigating to DriverComponents
+                    }} 
+                />
             </Tabs>
         </DriverProtected>
     );
@@ -112,10 +114,14 @@ return (
                 }} 
             />
             
-            <Tabs.Screen name="DriverComponents/EditProfile" options={{ href: null }} />
-            
-            
-                <Tabs.Screen name="DriverComponents/EditP" options={{ href: null }} />
+            {/* Hide the DriverComponents folder from tabs */}
+            <Tabs.Screen 
+                name="DriverComponents" 
+                options={{ 
+                    href: null,
+                    tabBarStyle: { display: 'none' } // This will hide tab bar when navigating to DriverComponents
+                }} 
+            />
         </Tabs>
     </DriverProtected>
 );

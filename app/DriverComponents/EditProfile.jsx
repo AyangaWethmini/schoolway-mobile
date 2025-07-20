@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Image, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useTheme } from "../theme/ThemeContext";
 
 const EditProfile = () => {
@@ -234,7 +234,7 @@ const EditProfile = () => {
         
         <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
           <Text style={styles.cancelButtonText}>Cancel</Text>
-        </TouchableOpacity>
+        </TouchableOpacity><Text style={styles.footerText}>By saving changes, you agree to our Terms of Service and Privacy Policy.</Text>
       </ScrollView>
     </KeyboardAvoidingView>
   );
