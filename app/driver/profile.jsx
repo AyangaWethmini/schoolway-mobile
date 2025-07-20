@@ -10,6 +10,20 @@ import { useTheme } from "../theme/ThemeContext";
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
+const LogoutButton = () => {
+  const { logout, user } = useAuth();
+  return (
+    <>
+    <View style={{ height: 1, backgroundColor: '#e0e0e0', flex: 1, margin: 8, marginTop: 20 }} />
+    <View style={{  justifyContent: 'center', alignItems: 'center', display: 'flex', flexDirection: 'row', gap: 8, backgroundColor: `${useTheme().theme.colors.primary}`, width: '30%' , alignSelf: 'center', padding: 12, borderRadius: 8 }} >
+         <Ionicons name="log-out-outline" size = {24} onPress={logout} style={{fontWeight: '600', color: 'white' }} />
+         <Text style={{ fontSize: 16, fontWeight: '600', color: 'white' }}>Logout</Text>
+      </View>
+    </>
+  )
+};
+
+
 //----------------------------------------------REUSABLE DOCUMENT ITEM COMPONENT------------------------//
 const DocumentItem = ({ 
   name, 
@@ -281,8 +295,6 @@ const DriverProfileOverview = () => {
         <FontAwesome6 name="pencil" size={20} color="black" />
       </TouchableOpacity>
       {/* <Link href="/allindex" > see font type {user.approvalstatus}</Link> */}
-
-        <Ionicons name="log-out-outline" size = {24} onPress={logout}></Ionicons>
       
       <View style={styles.section}>
         <View style={styles.profileHeader}>
@@ -1078,6 +1090,7 @@ export default function Profile() {
       <DriverProfileOverview />
       <VehicleInfo />
       <LicenseAndVehicleCheckups />
+      <LogoutButton />
     </ScrollView>
   )
 }

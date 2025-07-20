@@ -5,17 +5,17 @@ import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Image,
-    Platform,
-    ScrollView,
-    StyleSheet,
-    Switch,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  Image,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { useAuth } from '../../auth/AuthContext';
 import { useTheme } from '../../theme/ThemeContext';
@@ -218,6 +218,7 @@ const EditProfile = () => {
           licenseBack: driverData?.licenseBack || null,
           nicPic: userData.nicPic || null,
           policeReport: driverData?.policeReport || null,
+          medicalReport: driverData?.medicalReport || null,
         });
       } else {
         Alert.alert('Error', 'Failed to fetch user data');
@@ -373,7 +374,7 @@ const EditProfile = () => {
                     </View>
                 </TouchableOpacity>
             </View>
-        </View>}
+        </View>
         {/* <View style={styles.inputContainer}>
             <Text style={styles.label}>Profile Image</Text>
             <View style={styles.imageUploadContainer}>
