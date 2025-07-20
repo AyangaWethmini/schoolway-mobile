@@ -1,5 +1,6 @@
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import { useIsFocused } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -92,7 +93,7 @@ const DriverProfileOverview = () => {
   const { theme } = useTheme();
   const [driverData, setDriverData] = useState({user: null});
   const [isLoading, setIsLoading] = useState(true); // Add loading state
-
+  const isFocused = useIsFocused();
   
   const styles = StyleSheet.create({
     container: {
@@ -225,7 +226,7 @@ const DriverProfileOverview = () => {
       }
     };
     fetchUserData();
-  }, []);
+  }, [isFocused]); // Refetch when the screen is focused
 
   // Helper to calculate years of experience from startedDriving date
   const getYearsOfExperience = (startedDriving) => {
@@ -287,7 +288,8 @@ const DriverProfileOverview = () => {
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
             <Image 
-              source={require('../../assets/images/dummy/driver.webp')}
+              // source={require('../../assets/images/dummy/driver.webp')}
+              source={{ uri: driverData.user.dp || 'https://via.placeholder.com/150' }}
               style={styles.avatarImage}
             />
           </View>

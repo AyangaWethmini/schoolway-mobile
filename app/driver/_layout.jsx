@@ -47,7 +47,7 @@ if (user?.approvalstatus !== 1) {
                 <Tabs.Screen name="map" options={{ href: null }} />
                 <Tabs.Screen name="payments" options={{ href: null }} />
                 <Tabs.Screen name="DriverComponents/EditProfile" options={{ href: null }} />
-
+                <Tabs.Screen name="DriverComponents/EditP" options={{ href: null }} />
             </Tabs>
         </DriverProtected>
     );
@@ -114,6 +114,8 @@ return (
             
             <Tabs.Screen name="DriverComponents/EditProfile" options={{ href: null }} />
             
+            
+                <Tabs.Screen name="DriverComponents/EditP" options={{ href: null }} />
         </Tabs>
     </DriverProtected>
 );
