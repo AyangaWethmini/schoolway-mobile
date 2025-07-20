@@ -214,6 +214,10 @@ const EditProfile = () => {
 
         setImages({
           profileImage: userData.dp || null,
+          licenseFront: driverData?.licenseFront || null,
+          licenseBack: driverData?.licenseBack || null,
+          nicPic: userData.nicPic || null,
+          policeReport: driverData?.policeReport || null,
         });
       } else {
         Alert.alert('Error', 'Failed to fetch user data');
@@ -530,93 +534,178 @@ const EditProfile = () => {
             <Text style={styles.sectionTitle}>Document Uploads</Text>
             <Text style={[styles.label, { paddingBottom: 20, paddingTop:0, color: theme.colors.warning }]}>You are only able to update these before verified by the admins</Text>
 
-            {/* License Front (only if status == 2) */}
+            {/* License Front (only if status != 1) */}
             {user.approvalstatus !== 1 && (
-                <View style={styles.inputContainer}>
-                    <Text style={styles.label}>License Front</Text>
-                    <View style={styles.imageUploadContainer}>
-                        <TouchableOpacity
-                            style={styles.imageUploadButton}
-                            onPress={() => pickImage('licenseFront')}
-                        >
-                            <FontAwesome name="upload" size={16} color="white" />
-                            <Text style={styles.imageUploadButtonText}>
-                                {images.licenseFront ? 'Change Image' : 'Upload Image'}
-                            </Text>
-                        </TouchableOpacity>
-                        {images.licenseFront && (
-                            <Text style={{ marginTop: 8, color: theme.colors.primary }}>
-                                ✓ Image selected
-                            </Text>
-                        )}
+              <View style={styles.inputContainer}>
+                <Text style={styles.label}>License Front</Text>
+                <View style={styles.imageUploadContainer}>
+                  <TouchableOpacity
+                    style={{ width: 120, height: 90, borderRadius: 8, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.textgreylight }}
+                    onPress={() => pickImage('licenseFront')}
+                    activeOpacity={0.8}
+                  >
+                    {images.licenseFront ? (
+                      <Image
+                        source={{ uri: images.licenseFront }}
+                        style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={{ width: 120, height: 90, justifyContent: 'center', alignItems: 'center' }}>
+                        {/* Empty background */}
+                      </View>
+                    )}
+                    {/* Overlay with upload icon and text */}
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        width: '100%',
+                        height: 32,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <FontAwesome name="upload" size={16} color="white" />
+                      <Text style={[styles.imageUploadButtonText, { color: 'white', marginLeft: 6 }]}>
+                        {images.licenseFront ? 'Change Image' : 'Upload Image'}
+                      </Text>
                     </View>
+                  </TouchableOpacity>
                 </View>
+              </View>
             )}
 
-            {/* License Back (only if status == 2) */}
+
             {user.approvalstatus !== 1 && (
                 <View style={styles.inputContainer}>
-                    <Text style={styles.label}>License Back</Text>
-                    <View style={styles.imageUploadContainer}>
-                        <TouchableOpacity
-                            style={styles.imageUploadButton}
-                            onPress={() => pickImage('licenseBack')}
-                        >
-                            <FontAwesome name="upload" size={16} color="white" />
-                            <Text style={styles.imageUploadButtonText}>
-                                {images.licenseBack ? 'Change Image' : 'Upload Image'}
-                            </Text>
-                        </TouchableOpacity>
-                        {images.licenseBack && (
-                            <Text style={{ marginTop: 8, color: theme.colors.primary }}>
-                                ✓ Image selected
-                            </Text>
-                        )}
+                <Text style={styles.label}>License Back</Text>
+                <View style={styles.imageUploadContainer}>
+                  <TouchableOpacity
+                    style={{ width: 120, height: 90, borderRadius: 8, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.textgreylight }}
+                    onPress={() => pickImage('licenseBack')}
+                    activeOpacity={0.8}
+                  >
+                    {images.licenseBack ? (
+                      <Image
+                        source={{ uri: images.licenseBack }}
+                        style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={{ width: 120, height: 90, justifyContent: 'center', alignItems: 'center' }}>
+                        {/* Empty background */}
+                      </View>
+                    )}
+                    {/* Overlay with upload icon and text */}
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        width: '100%',
+                        height: 32,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <FontAwesome name="upload" size={16} color="white" />
+                      <Text style={[styles.imageUploadButtonText, { color: 'white', marginLeft: 6 }]}>
+                        {images.licenseBack ? 'Change Image' : 'Upload Image'}
+                      </Text>
                     </View>
+                  </TouchableOpacity>
                 </View>
+              </View>
             )}
+
 
             {/* Police Report */}
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Police Report</Text>
                 <View style={styles.imageUploadContainer}>
-                    <TouchableOpacity
-                        style={styles.imageUploadButton}
-                        onPress={() => pickImage('policeReport')}
-                    >
-                        <FontAwesome name="upload" size={16} color="white" />
-                        <Text style={styles.imageUploadButtonText}>
-                            {images.policeReport ? 'Change Image' : 'Upload Image'}
-                        </Text>
-                    </TouchableOpacity>
-                    {images.policeReport && (
-                        <Text style={{ marginTop: 8, color: theme.colors.primary }}>
-                            ✓ Image selected
-                        </Text>
+                  <TouchableOpacity
+                    style={{ width: 120, height: 90, borderRadius: 8, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.textgreylight }}
+                    onPress={() => pickImage('policeReport')}
+                    activeOpacity={0.8}
+                  >
+                    {images.policeReport ? (
+                      <Image
+                        source={{ uri: images.policeReport }}
+                        style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={{ width: 120, height: 90, justifyContent: 'center', alignItems: 'center' }}>
+                        {/* Empty background */}
+                      </View>
                     )}
+                    {/* Overlay with upload icon and text */}
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        width: '100%',
+                        height: 32,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <FontAwesome name="upload" size={16} color="white" />
+                      <Text style={[styles.imageUploadButtonText, { color: 'white', marginLeft: 6 }]}>
+                        {images.policeReport ? 'Change Image' : 'Upload Image'}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
-            </View>
+              </View>
 
             {/* Medical Report */}
             <View style={styles.inputContainer}>
                 <Text style={styles.label}>Medical Report</Text>
                 <View style={styles.imageUploadContainer}>
-                    <TouchableOpacity
-                        style={styles.imageUploadButton}
-                        onPress={() => pickImage('medicalReport')}
-                    >
-                        <FontAwesome name="upload" size={16} color="white" />
-                        <Text style={styles.imageUploadButtonText}>
-                            {images.medicalReport ? 'Change Image' : 'Upload Image'}
-                        </Text>
-                    </TouchableOpacity>
-                    {images.medicalReport && (
-                        <Text style={{ marginTop: 8, color: theme.colors.primary }}>
-                            ✓ Image selected
-                        </Text>
+                  <TouchableOpacity
+                    style={{ width: 120, height: 90, borderRadius: 8, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.textgreylight }}
+                    onPress={() => pickImage('medicalReport')}
+                    activeOpacity={0.8}
+                  >
+                    {images.medicalReport ? (
+                      <Image
+                        source={{ uri: images.medicalReport }}
+                        style={{ width: '100%', height: '100%', borderRadius: 8 }}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={{ width: 120, height: 90, justifyContent: 'center', alignItems: 'center' }}>
+                        {/* Empty background */}
+                      </View>
                     )}
+                    {/* Overlay with upload icon and text */}
+                    <View
+                      style={{
+                        position: 'absolute',
+                        bottom: 0,
+                        width: '100%',
+                        height: 32,
+                        backgroundColor: 'rgba(0,0,0,0.5)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <FontAwesome name="upload" size={16} color="white" />
+                      <Text style={[styles.imageUploadButtonText, { color: 'white', marginLeft: 6 }]}>
+                        {images.medicalReport ? 'Change Image' : 'Upload Image'}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
-            </View>
+              </View>
         </View>
         <TouchableOpacity
           style={[styles.saveButton, isSaving && styles.disabledButton]}
