@@ -1,5 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
+import { useRouter } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
 import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -10,6 +12,7 @@ import KeyboardAwareScrollView from '../../components/KeyboardAwareScrollView';
 import SafeAreaView from '../../components/SafeAreaView';
 import TextHeader from '../../components/TextHeader';
 import { FormContext } from '../../utils/FormContext';
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const VerificationStep = ({}) => {
   const { formData, updateFormData } = useContext(FormContext);
@@ -22,6 +25,7 @@ const VerificationStep = ({}) => {
   const [proceed, setProceed] = useState(false);
   const [Error, setError] = useState(null);
   const [isloading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (formData.licenseId && formData.licenseExpiry && frontImageUri && backImageUri) {
@@ -123,8 +127,8 @@ const onSubmit = async () => {
     }
 
     console.log('Final payload (FormData):', payload);
-    
-    const response = await fetch('http://192.168.8.112:3000/api/mobileAuth/signup', {
+
+    const response = await fetch(`${API_URL}/mobileAuth/signup`, {
       method: 'POST',
       body: payload,  
       headers: {
@@ -139,6 +143,7 @@ const onSubmit = async () => {
       const data = await response.json();
       console.log('Response:', data);
       alert('Account created successfully!');
+      router.push('/login/login');
     } else {
       const errorData = await response.json();
       console.error('Signup failed:', errorData);

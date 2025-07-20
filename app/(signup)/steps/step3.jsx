@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import { useContext, useEffect, useState } from 'react';
@@ -12,6 +13,8 @@ import SafeAreaView from '../../components/SafeAreaView';
 import Spacer from '../../components/Spacer';
 import TextHeader from '../../components/TextHeader';
 import { FormContext } from '../../utils/FormContext';
+
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const VerificationStep = ({}) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
@@ -159,7 +162,7 @@ const onSubmit = async () => {
   setIsLoading(true);
   
   try {
-    const response = await fetch('http://192.168.1.62:3000/api/mobileAuth/signup', {
+    const response = await fetch(`${API_URL}/mobileAuth/signup`, {
       method: 'POST',
       headers: {
         'Content-Type': 'multipart/form-data',
@@ -171,6 +174,7 @@ const onSubmit = async () => {
       const data = await response.json();
       console.log('Response:', data);
       alert('Account created successfully!');
+      router.push('/login/login'); 
     } else {
       const errorData = await response.json();
       console.error('Signup failed:', errorData);
