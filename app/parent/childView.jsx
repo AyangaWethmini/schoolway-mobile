@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+
 import {
   Alert,
   Dimensions,
@@ -89,7 +90,12 @@ const ChildView = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* Header */}
         <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
@@ -101,13 +107,13 @@ const ChildView = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Student Profile Card */}
-        <View style={styles.profileCard}>
-          <View style={styles.avatarContainer}>
+        {/* Student Profile Card - Add pointerEvents="box-none" to allow scroll through */}
+        <View style={[styles.profileCard, styles.scrollableCard]} pointerEvents="box-none">
+          <View style={styles.avatarContainer} pointerEvents="none">
             <Ionicons name="person-circle" size={80} color={'grey'} />
           </View>
-          <Text style={styles.studentName}>{studentData.name}</Text>
-          <Text style={styles.studentGrade}>{studentData.grade} • {studentData.school}</Text>
+          <Text style={styles.studentName} pointerEvents="none">{studentData.name}</Text>
+          <Text style={styles.studentGrade} pointerEvents="none">{studentData.grade} • {studentData.school}</Text>
         </View>
 
         {/* Quick Actions */}
@@ -122,9 +128,9 @@ const ChildView = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
 
-        {/* Student Information */}
-        <View style={styles.infoCard}>
-          <Text style={styles.sectionTitle}>Personal Information</Text>
+        {/* Student Information - Add pointerEvents="box-none" for scrollable areas */}
+        <View style={[styles.infoCard, styles.scrollableCard]} pointerEvents="box-none">
+          <Text style={styles.sectionTitle} pointerEvents="none">Personal Information</Text>
           <InfoRow label="Full Name" value={studentData.name} field="name" />
           <InfoRow label="Age" value={studentData.age} field="age" />
           <InfoRow label="Grade" value={studentData.grade} field="grade" />
@@ -133,8 +139,8 @@ const ChildView = ({ navigation, route }) => {
         </View>
 
         {/* Transport Information */}
-        <View style={styles.infoCard}>
-          <Text style={styles.sectionTitle}>Transport Information</Text>
+        <View style={[styles.infoCard, styles.scrollableCard]} pointerEvents="box-none">
+          <Text style={styles.sectionTitle} pointerEvents="none">Transport Information</Text>
           <InfoRow label="Pickup Address" value={studentData.pickupAddress} field="pickupAddress" />
           <InfoRow label="Drop-off Address" value={studentData.dropoffAddress} field="dropoffAddress" />
           { !(!studentData.vanNumber || studentData.vanNumber.trim() === '') &&
@@ -158,8 +164,8 @@ const ChildView = ({ navigation, route }) => {
           }
         </View>
 
-        <View style={styles.infoCard}>
-          <Text style={styles.sectionTitle}>Contact Information</Text>
+        <View style={[styles.infoCard, styles.scrollableCard]} pointerEvents="box-none">
+          <Text style={styles.sectionTitle} pointerEvents="none">Contact Information</Text>
           <InfoRow label="Parent Contact" value={studentData.parentContact} field="parentContact" />
           <InfoRow label="Emergency Contact" value={studentData.emergencyContact} field="emergencyContact" />
         </View>
@@ -180,7 +186,7 @@ const ChildView = ({ navigation, route }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Mark Toommorw's Attendance</Text>
+            <Text style={styles.modalTitle}>Mark Tomorrow's Attendance</Text>
             <Text style={styles.modalSubtitle}>for {studentData.name}</Text>
             
             <View style={styles.attendanceOptions}>
@@ -236,6 +242,10 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  // Add this new style for scrollable cards
+  scrollableCard: {
+    // Remove any potential touch interference
   },
   header: {
     flexDirection: 'row',

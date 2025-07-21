@@ -18,38 +18,41 @@ return (
                 headerShown: true,
                 headerStyle: { backgroundColor: theme.headerBg },
                 headerTintColor: theme.text,
-                headerTitleStyle: { fontWeight: 'bold' }, 
+                headerTitleStyle: { 
+                    fontWeight: 'bold',
+                    marginLeft: 10,
+                 }, 
                 tabBarStyle: { 
                     backgroundColor: '#ffffff',
                     paddingTop: 5,
                     paddingBottom: 0,
                     height: 60,
                 },
-                tabBarActiveTintColor: theme.iconActiveBlue,
-                tabBarInactiveTintColor: theme.iconInactive,
+                    tabBarActiveTintColor: theme.iconActiveBlue,
+                    tabBarInactiveTintColor: theme.iconInactive,
             }}
         >
             <Tabs.Screen name="dashboard" options={{ title: 'Home', tabBarIcon: ({focused})=> (
-                <Ionicons name={"home"} size={24} color={focused? theme.iconActiveBlack : theme.iconInactive}/>
+                <Ionicons name={"home"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive}/>
             ) }} />
             <Tabs.Screen name="map" options={{ title: 'Map',
                 tabBarIcon: ({focused}) => (
-                    <FontAwesome6 name="map-location-dot" size={24} color={focused ? theme.iconActiveBlack : theme.iconInactive} />
+                    <FontAwesome6 name="map-location-dot" size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                 )
             }} />
             <Tabs.Screen name="payments" options={{ title: 'Payments',
                 tabBarIcon: ({focused}) => (
-                    <Ionicons name="wallet" size={24} color={focused? theme.iconActiveBlack : theme.iconInactive} />
+                    <Ionicons name="wallet" size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                 )
             }} />
             <Tabs.Screen name="profile" options={{ title: 'Profile', 
                 tabBarIcon: ({focused}) => (
-                    <Ionicons name={"person"} size={24} color={focused? theme.iconActiveBlack : theme.iconInactive} />
+                    <Ionicons name={"person"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                 )
             }} />
             <Tabs.Screen name="vansearch" options={{ title: 'Van search', 
                 tabBarIcon: ({focused}) => (
-                    <Ionicons name={"person"} size={24} color={focused? theme.iconActiveBlack : theme.iconInactive} />
+                    <Ionicons name={"person"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                 )
             }} />
         </Tabs>

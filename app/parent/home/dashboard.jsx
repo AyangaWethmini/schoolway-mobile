@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import AddButton from '../../components/AddButton';
 import TextHeading from '../../components/TextHeading';
 import { Button } from "../../components/button";
@@ -100,7 +100,11 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>      
-      <ScrollView style={styles.scrollContainer}>
+      <ScrollView 
+        style={styles.scrollContainer}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.section}>
           <View style={styles.Headingview}>
             <TextHeading>Your Children</TextHeading>
@@ -109,7 +113,7 @@ const Dashboard = () => {
               onPress={() => router.push('/parent/addChild')}
             />
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal  contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
             <View style={styles.cardsContainer}>
               {children.map((child) => (
                 <View key={child.id} style={styles.card}>
@@ -157,7 +161,23 @@ const Dashboard = () => {
         </View>
 
         <View style={styles.section}>
-          <TextHeading>Current Status</TextHeading>
+          <View style={styles.Headingview}>
+            <TextHeading>Current Status</TextHeading>
+            <View style={[{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+              <TouchableOpacity 
+                style={styles.privateHireButton}
+                onPress={() => router.push('/parent/privateHire')}
+                activeOpacity={0.8}
+              >
+                <View style={styles.privateHireButtonContent}>
+                  <Text style={styles.privateHireButtonText}>Private Hires</Text>
+                  <View style={styles.privateHireIcon}>
+                    <Text style={styles.privateHireIconText}>→</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
           <View style={styles.table}>
 
             <View style={styles.tableHeader}>
@@ -385,5 +405,45 @@ const styles = StyleSheet.create({
   statusTagText: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  privateHireButton: {
+    backgroundColor: 'black',
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 8,
+    shadowColor: '#008080',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: '#006666',
+  },
+
+  privateHireButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  privateHireButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: '600',
+    marginRight: 6,
+  },
+
+  privateHireIcon: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  privateHireIconText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: 'bold',
   },
 })

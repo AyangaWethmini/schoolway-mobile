@@ -86,7 +86,11 @@ const SchoolVanScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
 
         <View style={[styles.header, { backgroundColor : theme.colors.primary } ]}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>

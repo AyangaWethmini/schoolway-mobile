@@ -165,7 +165,7 @@ const AddChild = ({ navigation, onBack }) => {
     },
     headerTitle: {
       fontSize: 18,
-      fontWeight: '600',
+      fontWeight: 'bold',
       color: '#000',
     },
     formContainer: {
