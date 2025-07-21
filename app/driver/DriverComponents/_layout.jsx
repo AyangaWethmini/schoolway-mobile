@@ -4,13 +4,18 @@ export default function DriverComponentsLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false, // Hide the header since EditProfile has its own
+        headerShown: false, // Hide the header for all DriverComponents screens
       }}
     >
       <Stack.Screen 
         name="EditProfile" 
         options={{
-          // title: 'Edit Profile',
+          headerShown: false,
+        }} 
+      />
+      <Stack.Screen 
+        name="travelPage" 
+        options={{
           headerShown: false,
         }} 
       />
