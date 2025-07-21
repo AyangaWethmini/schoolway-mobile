@@ -52,13 +52,7 @@ const AddReview = ({ navigation, onBack }) => {
     ];
 
     const handleBack = () => {
-        if (navigation && navigation.goBack) {
-            navigation.goBack();
-        } else if (onBack) {
-            onBack();
-        } else {
-            console.log('No navigation method provided');
-        }
+        router.back();
     };
 
     const handleStarPress = (starIndex) => {
@@ -357,7 +351,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: 'bold',
         color: '#000',
     },
     formContainer: {
