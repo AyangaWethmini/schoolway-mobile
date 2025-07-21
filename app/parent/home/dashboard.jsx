@@ -163,20 +163,7 @@ const Dashboard = () => {
         <View style={styles.section}>
           <View style={styles.Headingview}>
             <TextHeading>Current Status</TextHeading>
-            <View style={[{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
-              <TouchableOpacity 
-                style={styles.privateHireButton}
-                onPress={() => router.push('/parent/privateHire')}
-                activeOpacity={0.8}
-              >
-                <View style={styles.privateHireButtonContent}>
-                  <Text style={styles.privateHireButtonText}>Private Hires</Text>
-                  <View style={styles.privateHireIcon}>
-                    <Text style={styles.privateHireIconText}>→</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            </View>
+            
           </View>
           <View style={styles.table}>
 
@@ -207,6 +194,27 @@ const Dashboard = () => {
             ))}
           </View>
         </View>
+        <View style={{ borderBottomWidth: 1, borderBottomColor: '#e0e0e0', marginVertical: 0 }} />
+        <View style={styles.Headingview}>
+            <TextHeading>Find privet hires</TextHeading>
+            
+          </View>
+        <View style={[{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }]}>
+          <TouchableOpacity 
+            style={styles.privateHireButton}
+            onPress={() => router.push('/parent/privateHire')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.privateHireButtonContent}>
+              <Text style={styles.privateHireButtonText}>Private Hires</Text>
+              {/* <View style={styles.privateHireIcon}>
+                <Text style={styles.privateHireIconText}>→</Text>
+              </View> */}
+            </View>
+          </TouchableOpacity>
+        </View>
+        <View style={{ borderBottomWidth: 1, borderBottomColor: '#e0e0e0', marginVertical: 16 }} />
+        
       </ScrollView>
     </View>
   )

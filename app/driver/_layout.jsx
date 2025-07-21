@@ -116,12 +116,12 @@ return (
             
             {/* Hide the DriverComponents folder from tabs */}
             <Tabs.Screen 
-                name="DriverComponents" 
-                options={{ 
-                    href: null,
-                    tabBarStyle: { display: 'none' } // This will hide tab bar when navigating to DriverComponents
-                }} 
-            />
+    name="DriverComponents" 
+    options={{ 
+        href: null,
+        headerShown: false, // This ensures no header when navigating to DriverComponents
+    }} 
+/>
         </Tabs>
     </DriverProtected>
 );

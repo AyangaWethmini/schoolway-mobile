@@ -1,25 +1,38 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import { StyleSheet, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { useTheme } from '../theme/ThemeContext';
 
-export default function Map() {
+const Map = () => {
+  const { theme } = useTheme();
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Map View</Text>
-      <Text>Your route map will appear here</Text>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 6.9271,
+          longitude: 79.8612,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        <Marker
+          coordinate={{ latitude: 6.9271, longitude: 79.8612 }}
+          title="Colombo"
+          description="Capital of Sri Lanka"
+        />
+      </MapView>
     </View>
-  )
-}
+  );
+};
+
+export default Map;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#FAF8F8',
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    color: '#2B3674',
-  }
-})
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});

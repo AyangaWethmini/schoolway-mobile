@@ -10,7 +10,7 @@ export default function DriverComponentsLayout() {
       <Stack.Screen 
         name="EditProfile" 
         options={{
-          title: 'Edit Profile',
+          // title: 'Edit Profile',
           headerShown: false,
         }} 
       />
