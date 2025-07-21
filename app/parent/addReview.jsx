@@ -4,17 +4,17 @@ import { useState } from 'react';
 
 import {
     Alert,
+    Image,
     SafeAreaView,
     ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
-    View,
-    Image
+    View
 } from 'react-native';
-import { Button } from "../../components/button";
-import { MultilineTextInput } from '../../components/inputs';
-import { useTheme } from "../../theme/ThemeContext";
+import { Button } from "../components/button";
+import { MultilineTextInput } from '../components/inputs';
+import { useTheme } from "../theme/ThemeContext";
 
 const AddReview = ({ navigation, onBack }) => {
     const { theme } = useTheme();
@@ -29,7 +29,7 @@ const AddReview = ({ navigation, onBack }) => {
     const childrenWithDrivers = [
         {
             id: 1,
-            name: 'John Doe',
+            name: 'Duleepa Edirisinghe',
             school: 'Ananda College',
             driver: {
                 id: 1,
@@ -327,7 +327,7 @@ const AddReview = ({ navigation, onBack }) => {
             <View style={styles.bottomContainer}>
                 <Button
                     title="Submit Review"
-                    varient="primary"
+                    varient="outlined-black"
                     onPress={handleSubmitReview}
                 />
             </View>
@@ -386,7 +386,7 @@ const styles = StyleSheet.create({
         borderColor: '#e0e0e0',
     },
     selectedChildCard: {
-        borderColor: '#007AFF',
+        borderColor: '#2B3674',
         borderWidth: 2,
         backgroundColor: '#f0f8ff',
     },
@@ -424,17 +424,17 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         borderRadius: 10,
         borderWidth: 1,
-        borderColor: '#007AFF',
+        borderColor: '#2B3674',
         gap: 8,
     },
     activeReviewTypeButton: {
-        backgroundColor: '#007AFF',
-        borderColor: '#007AFF',
+        backgroundColor: '#2B3674',
+        borderColor: '#2B3674',
     },
     reviewTypeButtonText: {
         fontSize: 14,
         fontWeight: '500',
-        color: '#007AFF',
+        color: '#2B3674',
     },
     activeReviewTypeButtonText: {
         color: '#fff',

@@ -148,11 +148,18 @@ const ChildView = ({ navigation, route }) => {
             <InfoRow label="Van Number" value={studentData.vanNumber} field="vanNumber" />
             <InfoRow label="Van Route" value={studentData.vanRoute} field="vanRoute" />
             <InfoRow label="Monthly Fee" value={studentData.monthlyFee} field="monthlyFee" />
+            <View style={[{ flexDirection: 'row',     justifyContent: 'space-between',}]}> 
               <Button
-                title="Resign"
+                title="Resign from Van"
                 varient="secondary"
                 onPress={() => router.push('/parent/vansearch')}
               />
+              <Button
+                title="Add a Review"
+                varient="outlined-black"
+                onPress={() => router.push('/parent/addReview')}
+              />
+            </View>
           </>
           }
           {   (!studentData.vanNumber || studentData.vanNumber.trim() === '') &&

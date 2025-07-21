@@ -45,14 +45,6 @@ return (
                     <Ionicons name="wallet" size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                 )
             }} />
-
-            <Tabs.Screen name="addReview" options={{ title: 'Add Review',
-                tabBarIcon: ({focused}) => (
-                    <Ionicons name={"star"} size={24} color={focused? theme.iconActiveBlack : theme.iconInactive} />
-                )
-            }} />
-
-
             <Tabs.Screen name="profile" options={{ title: 'Profile', 
                 tabBarIcon: ({focused}) => (
                     <Ionicons name={"person"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
