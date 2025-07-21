@@ -300,8 +300,12 @@ const DriverProfileOverview = () => {
         <View style={styles.profileHeader}>
           <View style={styles.avatar}>
             <Image 
-              // source={require('../../assets/images/dummy/driver.webp')}
-              source={{ uri: driverData.user.dp || 'https://via.placeholder.com/150' }}
+
+              source={
+                driverData.user.dp !== "/Images/male_pro_pic_placeholder.png"
+                  ? { uri: driverData.user.dp }
+                  : { uri: "https://res.cloudinary.com/db6dfgjz0/image/upload/v1753010305/driver_gkkawq.webp" }
+              }
               style={styles.avatarImage}
             />
           </View>

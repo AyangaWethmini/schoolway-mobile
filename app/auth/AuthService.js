@@ -75,6 +75,52 @@ class AuthService {
     }
   }
 
+  // async updateStoredUser(user) {
+  //   try {
+  //     const session = await this.getStoredSession();
+  //     if (session) {
+  //       session.user = user; // Update user in session
+  //       await AsyncStorage.setItem('user_session', JSON.stringify(session));
+  //       return { success: true, data: session };
+  //     }
+  //     return { success: false, error: 'No session found' };
+  //   } catch (error) {
+  //     console.error('Error updating stored user:', error);
+  //     return { success: false, error: 'Network error' };
+  //   }
+  // }
+
+  async updateUserInStorage(updatedUser) {
+  try {
+    // Get the current session structure
+    const currentSession = await this.getStoredSession();
+    
+    if (currentSession) {
+      // Preserve the session structure, only update the user data
+      const updatedSession = {
+        ...currentSession,
+        user: updatedUser  // Update only the user part
+      };
+      
+      console.log('Updating user in storage:', updatedSession);
+      await AsyncStorage.setItem('user_session', JSON.stringify(updatedSession));
+      
+      // Verify the update
+      const verifySession = await this.getStoredSession();
+      console.log('Updated session:', verifySession);
+      
+      return { success: true, data: updatedSession };
+    } else {
+      console.error('No existing session found');
+      return { success: false, error: 'No session found' };
+    }
+  } catch (error) {
+    console.error('Error saving user data:', error);
+    return { success: false, error: error.message };
+  }
+}
+    
+
   // Sign out
   async signOut() {
     try {
