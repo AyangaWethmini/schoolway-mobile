@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   SafeAreaView,
@@ -16,9 +17,10 @@ import { useTheme } from "../theme/ThemeContext";
 const PaymentHistory = ({ navigation }) => {
 
   const { theme } = useTheme();
+  const router = useRouter();  
 
   const handleBack = () => {
-    navigation.goBack();
+    router.back();
   };
 
   const [paymentHistory, setPaymentHistory] = useState([

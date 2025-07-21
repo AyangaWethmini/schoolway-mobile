@@ -29,15 +29,9 @@ const AddChild = ({ navigation, onBack }) => {
     const [selectedFile, setSelectedFile] = useState(null);
     
 
-    const handleBack = () => {
-      if (navigation && navigation.goBack) {
-        navigation.goBack();
-      } else if (onBack) {
-        onBack();
-      } else {
-        console.log('No navigation method provided');
-      }
-    };
+  const handleBack = () => {
+    router.back(); 
+  };
 
     const handleAddPhoto = () => {
       Alert.alert('Add Photo', 'Add photo alert');

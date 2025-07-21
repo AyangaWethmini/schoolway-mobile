@@ -43,7 +43,7 @@ const ChildView = ({ navigation, route }) => {
   });
 
   const handleBack = () => {
-    navigation.goBack();
+    router.back();
   };
 
   const handleEdit = () => {

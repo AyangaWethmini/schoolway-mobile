@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   SafeAreaView,
@@ -18,6 +19,8 @@ const SchoolVanScreen = ({ navigation }) => {
 
   const [pickupLocation, setPickupLocation] = useState('');
   const [dropoffLocation, setDropoffLocation] = useState('');
+
+  const router = useRouter();
 
   const { theme } = useTheme();
 
@@ -47,7 +50,7 @@ const SchoolVanScreen = ({ navigation }) => {
   ];
 
   const handleBack = () => {
-    navigation.goBack();
+    router.back();
   };
 
   const handleRequest = (vanId) => {
