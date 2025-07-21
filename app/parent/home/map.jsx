@@ -1,28 +1,38 @@
-import { StyleSheet, Text, View } from 'react-native';
-import { useTheme } from "../../theme/ThemeContext";
-
+import { StyleSheet, View } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
+import { useTheme } from '../../theme/ThemeContext';
 
 const Map = () => {
-  const {theme} = useTheme();
-  
+  const { theme } = useTheme();
+
   return (
     <View style={styles.container}>
-      <Text style={[styles.text ,{ color : theme.colors.textgreylight}]}>Your Map will appear in this page.</Text>
+      <MapView
+        style={styles.map}
+        initialRegion={{
+          latitude: 6.9271,
+          longitude: 79.8612,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
+      >
+        <Marker
+          coordinate={{ latitude: 6.9271, longitude: 79.8612 }}
+          title="Colombo"
+          description="Capital of Sri Lanka"
+        />
+      </MapView>
     </View>
-  )
-}
+  );
+};
 
-export default Map
+export default Map;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'row',
-    justifyContent:'center',
-    alignItems:'center',
   },
-
-  text:{
-    fontSize: 18,
-  }
-})
+  map: {
+    ...StyleSheet.absoluteFillObject,
+  },
+});

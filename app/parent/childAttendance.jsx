@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Dimensions,
@@ -18,11 +19,13 @@ const { width } = Dimensions.get('window');
 const SchoolVanScreen = ({ navigation }) => {
 
   const { theme } = useTheme();
+  const router = useRouter();  
+  
 
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const handleBack = () => {
-    navigation.goBack();
+    router.back(); 
   };
 
   const [attendanceHistory, setAttendanceHistory] = useState({
