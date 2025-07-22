@@ -1,13 +1,14 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { useAuth } from '../../auth/AuthContext';
 import { useTheme } from '../../theme/ThemeContext';
@@ -21,27 +22,30 @@ const TravelPage = () => {
   const [studentsToPickup, setStudentsToPickup] = useState([
     {
       id: '1',
-      name: 'Amara Silva',
-      grade: 'Grade 5',
+      name: 'Sasmitha Silva',
       pickupLocation: 'Kaluthara Junction',
       pickupTime: '6:45 AM',
-      parentContact: '+94 77 123 4567'
+      parentContact: '+94 77 123 4567',
+      profileImage: 'https://i.pravatar.cc/150?img=1',
+      reminderSent: true
     },
     {
       id: '2',
-      name: 'Nimal Perera',
-      grade: 'Grade 7',
+      name: 'Duleepa Anjana',
       pickupLocation: 'Panadura Station',
       pickupTime: '6:55 AM',
-      parentContact: '+94 71 234 5678'
+      parentContact: '+94 71 234 5678',
+      profileImage: 'https://i.pravatar.cc/150?img=2',
+      reminderSent: false
     },
     {
       id: '3',
       name: 'Sahan Fernando',
-      grade: 'Grade 6',
       pickupLocation: 'Moratuwa Bus Stand',
       pickupTime: '7:05 AM',
-      parentContact: '+94 76 345 6789'
+      parentContact: '+94 76 345 6789',
+      profileImage: 'https://i.pravatar.cc/150?img=3',
+      reminderSent: true
     }
   ]);
 
@@ -49,37 +53,48 @@ const TravelPage = () => {
     {
       id: '4',
       name: 'Kavindi Jayawardena',
-      grade: 'Grade 8',
       pickupLocation: 'Dehiwala Station',
       pickupTime: '6:35 AM',
-      actualPickupTime: '6:37 AM'
+      actualPickupTime: '6:37 AM',
+      profileImage: 'https://i.pravatar.cc/150?img=4',
+      status: 'picked_up'
     }
   ]);
+
+  const attendanceReasons = [
+    { id: 'picked_up', label: 'Student Picked Up', icon: 'checkmark-circle', color: '#28a745' },
+    { id: 'not_present', label: 'Student Not Present', icon: 'close-circle', color: '#dc3545' },
+    { id: 'cancelled_parent', label: 'Cancelled by Parent', icon: 'ban', color: '#ffc107' },
+    { id: 'cancelled_driver', label: 'Cancelled by Driver', icon: 'warning', color: '#fd7e14' }
+  ];
 
   const handleMarkAttendance = (studentId, studentName) => {
     Alert.alert(
       'Mark Attendance',
-      `Mark ${studentName} as picked up?`,
+      `Select status for ${studentName}:`,
       [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Confirm', 
-          onPress: () => {
-            // Move student from pickup list to picked up list
-            const student = studentsToPickup.find(s => s.id === studentId);
-            if (student) {
-              const updatedStudent = {
-                ...student,
-                actualPickupTime: new Date().toLocaleTimeString()
-              };
-              
-              setPickedUpStudents(prev => [...prev, updatedStudent]);
-              setStudentsToPickup(prev => prev.filter(s => s.id !== studentId));
-            }
-          }
-        }
+        ...attendanceReasons.map(reason => ({
+          text: reason.label,
+          onPress: () => markStudentAttendance(studentId, reason)
+        })),
+        { text: 'Cancel', style: 'cancel' }
       ]
     );
+  };
+
+  const markStudentAttendance = (studentId, reason) => {
+    const student = studentsToPickup.find(s => s.id === studentId);
+    if (student) {
+      const updatedStudent = {
+        ...student,
+        actualPickupTime: new Date().toLocaleTimeString(),
+        status: reason.id,
+        statusLabel: reason.label
+      };
+      
+      setPickedUpStudents(prev => [...prev, updatedStudent]);
+      setStudentsToPickup(prev => prev.filter(s => s.id !== studentId));
+    }
   };
 
   const handleScanQR = (studentId, studentName) => {
@@ -91,7 +106,6 @@ const TravelPage = () => {
         { 
           text: 'Open Scanner', 
           onPress: () => {
-            // Navigate to QR scanner or implement QR scanning logic
             console.log(`Scanning QR for student ${studentId}`);
           }
         }
@@ -99,28 +113,84 @@ const TravelPage = () => {
     );
   };
 
+  const sendReminder = (studentId, studentName) => {
+    Alert.alert(
+      'Send Reminder',
+      `Send pickup reminder for ${studentName}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Send', 
+          onPress: () => {
+            setStudentsToPickup(prev => 
+              prev.map(student => 
+                student.id === studentId 
+                  ? { ...student, reminderSent: true }
+                  : student
+              )
+            );
+          }
+        }
+      ]
+    );
+  };
+
+  const getStatusIcon = (status) => {
+    const reason = attendanceReasons.find(r => r.id === status);
+    return reason || attendanceReasons[0];
+  };
+
   const StudentCard = ({ student, isPickedUp = false }) => (
     <View style={[styles.studentCard, isPickedUp && styles.pickedUpCard]}>
-      <View style={styles.studentInfo}>
-        <Text style={styles.studentName}>{student.name}</Text>
-        <Text style={styles.studentGrade}>{student.grade}</Text>
-        <Text style={styles.pickupLocation}>
-          <Ionicons name="location-outline" size={14} color="#666" />
-          {' '}{student.pickupLocation}
-        </Text>
-        <Text style={styles.pickupTime}>
-          <Ionicons name="time-outline" size={14} color="#666" />
-          {' '}Scheduled: {student.pickupTime}
-          {isPickedUp && ` | Actual: ${student.actualPickupTime}`}
-        </Text>
-        {!isPickedUp && (
-          <Text style={styles.parentContact}>
+      {/* Top Row: Profile Picture, Name, Location */}
+      <View style={styles.topRow}>
+        <Image 
+          source={{ uri: student.profileImage || 'https://i.pravatar.cc/150?img=5' }}
+          style={styles.profileImage}
+        />
+        <View style={styles.studentMainInfo}>
+          <View style={styles.nameLocationRow}>
+            <Text style={styles.studentName}>{student.name}</Text>
+            {!isPickedUp && student.reminderSent && (
+              <View style={styles.reminderIcon}>
+                <Ionicons name="notifications" size={16} color="#28a745" />
+              </View>
+            )}
+          </View>
+          <View style={styles.locationRow}>
+            <Ionicons name="location-outline" size={14} color="#666" />
+            <Text style={styles.pickupLocation}>{student.pickupLocation}</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Bottom Row: Time and Contact */}
+      <View style={styles.bottomRow}>
+        <View style={styles.timeContact}>
+          <View style={styles.infoRow}>
+            <Ionicons name="time-outline" size={14} color="#666" />
+            <Text style={styles.infoText}>
+              Scheduled: {student.pickupTime}
+              {isPickedUp && ` | Actual: ${student.actualPickupTime}`}
+            </Text>
+          </View>
+          <View style={styles.infoRow}>
             <Ionicons name="call-outline" size={14} color="#666" />
-            {' '}{student.parentContact}
-          </Text>
+            <Text style={styles.infoText}>{student.parentContact}</Text>
+          </View>
+        </View>
+
+        {!isPickedUp && !student.reminderSent && (
+          <TouchableOpacity 
+            style={styles.reminderButton}
+            onPress={() => sendReminder(student.id, student.name)}
+          >
+            <MaterialIcons name="notification-add" size={18} color="#2B3674" />
+          </TouchableOpacity>
         )}
       </View>
 
+      {/* Action Buttons for Pickup */}
       {!isPickedUp && (
         <View style={styles.actionButtons}>
           <TouchableOpacity 
@@ -141,10 +211,22 @@ const TravelPage = () => {
         </View>
       )}
 
+      {/* Status Indicator for Picked Up Students */}
       {isPickedUp && (
-        <View style={styles.pickedUpIndicator}>
-          <Ionicons name="checkmark-circle" size={24} color="#28a745" />
-          <Text style={styles.pickedUpText}>Picked Up</Text>
+        <View style={styles.statusIndicator}>
+          <View style={styles.statusInfo}>
+            {(() => {
+              const statusConfig = getStatusIcon(student.status);
+              return (
+                <>
+                  <Ionicons name={statusConfig.icon} size={24} color={statusConfig.color} />
+                  <Text style={[styles.statusText, { color: statusConfig.color }]}>
+                    {student.statusLabel || statusConfig.label}
+                  </Text>
+                </>
+              );
+            })()}
+          </View>
         </View>
       )}
     </View>
@@ -157,10 +239,34 @@ const TravelPage = () => {
           <Text style={styles.title}>Trip in Progress</Text>
           <Text style={styles.subtitle}>Kaluthara - Colombo 13</Text>
           <Text style={styles.startTime}>Started: {new Date().toLocaleTimeString()}</Text>
+          <Text style={[styles.startTime, { marginTop: 5 }]}>Next pick up in: 8.53 mins est.</Text>
         </View>
       </View>
 
+      
+
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+
+        <View style={[styles.tripSummary, { backgroundColor: theme.colors.background, marginBottom: 10, marginTop: 0, paddingTop: 0 }]}>
+          <Text style={styles.summaryTitle}>Trip Summary</Text>
+          <View style={styles.summaryStats}>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>
+                {pickedUpStudents.filter(s => s.status === 'picked_up').length}
+              </Text>
+              <Text style={styles.statLabel}>Picked Up</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{studentsToPickup.length}</Text>
+              <Text style={styles.statLabel}>Remaining</Text>
+            </View>
+            <View style={styles.statItem}>
+              <Text style={styles.statNumber}>{pickedUpStudents.length + studentsToPickup.length}</Text>
+              <Text style={styles.statLabel}>Total</Text>
+            </View>
+          </View>
+        </View>
+
         {/* Students to Pick Up Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
@@ -173,7 +279,7 @@ const TravelPage = () => {
           {studentsToPickup.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="checkmark-done-circle-outline" size={48} color="#28a745" />
-              <Text style={styles.emptyStateText}>All students picked up!</Text>
+              <Text style={styles.emptyStateText}>All students processed!</Text>
             </View>
           ) : (
             studentsToPickup.map((student, index) => (
@@ -190,11 +296,11 @@ const TravelPage = () => {
           )}
         </View>
 
-        {/* Already Picked Up Section */}
+        {/* Already Processed Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>
-              Already Picked Up ({pickedUpStudents.length})
+              Processed Students ({pickedUpStudents.length})
             </Text>
             <Ionicons name="checkmark-circle-outline" size={20} color="#28a745" />
           </View>
@@ -202,7 +308,7 @@ const TravelPage = () => {
           {pickedUpStudents.length === 0 ? (
             <View style={styles.emptyState}>
               <Ionicons name="hourglass-outline" size={48} color="#ccc" />
-              <Text style={styles.emptyStateText}>No students picked up yet</Text>
+              <Text style={styles.emptyStateText}>No students processed yet</Text>
             </View>
           ) : (
             pickedUpStudents.map((student) => (
@@ -211,24 +317,13 @@ const TravelPage = () => {
           )}
         </View>
 
-        {/* Trip Summary */}
-        <View style={styles.tripSummary}>
-          <Text style={styles.summaryTitle}>Trip Summary</Text>
-          <View style={styles.summaryStats}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{pickedUpStudents.length}</Text>
-              <Text style={styles.statLabel}>Picked Up</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{studentsToPickup.length}</Text>
-              <Text style={styles.statLabel}>Remaining</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{pickedUpStudents.length + studentsToPickup.length}</Text>
-              <Text style={styles.statLabel}>Total</Text>
-            </View>
-          </View>
+        {/* add a button to cancel the ride( no need of any functionality) */}
+        <View style={styles.cancelButtonContainer}>
+          <TouchableOpacity style={styles.cancelButton}>
+            <Text style={styles.cancelButtonText}>Cancel Ride</Text>
+          </TouchableOpacity>
         </View>
+
       </ScrollView>
     </View>
   );
@@ -241,8 +336,8 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: 'white',
-    paddingTop: 50,
-    paddingBottom: 20,
+    paddingTop: 10,
+    paddingBottom: 10,
     paddingHorizontal: 20,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
@@ -299,39 +394,66 @@ const styles = StyleSheet.create({
     borderColor: '#28a745',
     borderWidth: 1,
   },
-  studentInfo: {
+  topRow: {
+    flexDirection: 'row',
     marginBottom: 12,
+  },
+  profileImage: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    marginRight: 12,
+  },
+  studentMainInfo: {
+    flex: 1,
+  },
+  nameLocationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
   },
   studentName: {
     fontSize: 18,
     fontWeight: 'bold',
     color: '#2B3674',
-    marginBottom: 4,
+    flex: 1,
   },
-  studentGrade: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
+  reminderIcon: {
+    marginLeft: 8,
+  },
+  locationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   pickupLocation: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 4,
+    marginLeft: 4,
+  },
+  bottomRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    marginBottom: 12,
+  },
+  timeContact: {
+    flex: 1,
+  },
+  infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 4,
   },
-  pickupTime: {
+  infoText: {
     fontSize: 14,
     color: '#666',
-    marginBottom: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
+    marginLeft: 4,
   },
-  parentContact: {
-    fontSize: 14,
-    color: '#666',
-    flexDirection: 'row',
-    alignItems: 'center',
+  reminderButton: {
+    padding: 8,
+    borderRadius: 8,
+    backgroundColor: '#f0f0f0',
   },
   actionButtons: {
     flexDirection: 'row',
@@ -358,14 +480,16 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginLeft: 6,
   },
-  pickedUpIndicator: {
+  statusIndicator: {
+    marginTop: 8,
+  },
+  statusInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 8,
   },
-  pickedUpText: {
-    color: '#28a745',
+  statusText: {
     fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
