@@ -1,23 +1,39 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../auth/AuthContext';
 import { useTheme } from '../../theme/ThemeContext';
 
 const WithVanDashboard = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
+  const router = useRouter(); // Fixed: renamed from 'route' to 'router'
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome, {user?.firstname || 'Driver'}!</Text>
+      <Text style={styles.welcomeText}>Good Morning, {user?.firstname || 'Ranjith'}!</Text>
       
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Today's Route</Text>
+        <Text style={styles.cardTitle}>Plan for today</Text>
         <View style={styles.routeInfo}>
-          <Text style={styles.routeSchool}>Good Shepherd Convent - Colombo 13</Text>
-          <Text style={styles.routeTime}>Pickup: 6:45 AM</Text>
-          <Text style={styles.routeTime}>Drop-off: 7:30 AM</Text>
-          <Text style={styles.routeStudents}>12 students</Text>
+          <Text style={styles.routeSchool}>Kaluthara - Colombo 13</Text>
+          <Text style={styles.routeTime}>Start: 6:30 AM</Text>
+          <Text style={styles.routeTime}>End: 7:25 AM</Text>
+          <Text style={styles.routeStudents}>Pick up : 12 students</Text>
         </View>
+        <TouchableOpacity
+          style={{
+            marginTop: 15,
+            backgroundColor: '#2B3674',
+            paddingVertical: 10,
+            borderRadius: 8,
+            alignItems: 'center',
+          }}
+          onPress={() => router.push('./DriverComponents/travelPage')} // Fixed navigation path
+        >
+          <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
+            Start School Trip
+          </Text>
+        </TouchableOpacity>
       </View>
       
       <View style={styles.card}>

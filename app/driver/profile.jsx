@@ -316,8 +316,8 @@ const DriverProfileOverview = () => {
               {driverData.user.driverProfile?.id || 'N/A'}
             </Text>
             <Text style={styles.details}>
-              <Text style={styles.attribute}>Vehicle:</Text> 
-              {driverData.user.driverProfile?.vehicle || 'Not enrolled'}
+              <Text style={styles.attribute}>Van Service:</Text> 
+              {driverData.user.driverProfile?.hasVan ? ' Enrolled' : ' Not enrolled'}
             </Text>
             <Text style={styles.details}>
               <Text style={styles.attribute}>Phone:</Text> 
