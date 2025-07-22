@@ -232,6 +232,51 @@ const TravelPage = () => {
     </View>
   );
 
+  const handleCancelRide = () => {
+    Alert.alert(
+      'Cancel Ride',
+      'Why do you want to cancel this ride?',
+      [
+        { 
+          text: 'Vehicle Breakdown', 
+          onPress: () => router.push('./breakdown')
+        },
+        { 
+          text: 'Personal Emergency', 
+          onPress: () => showCancelConfirmation('Personal Emergency')
+        },
+        { 
+          text: 'Weather Conditions', 
+          onPress: () => showCancelConfirmation('Weather Conditions')
+        },
+        { 
+          text: 'Other Reason', 
+          onPress: () => showCancelConfirmation('Other Reason')
+        },
+        { text: 'Back', style: 'cancel' }
+      ]
+    );
+  };
+
+  const showCancelConfirmation = (reason) => {
+    Alert.alert(
+      'Confirm Cancellation',
+      `Are you sure you want to cancel the ride due to: ${reason}?`,
+      [
+        { text: 'No', style: 'cancel' },
+        { 
+          text: 'Yes, Cancel', 
+          style: 'destructive',
+          onPress: () => {
+            // Handle ride cancellation logic here
+            console.log(`Ride cancelled due to: ${reason}`);
+            Alert.alert('Ride Cancelled', 'Parents have been notified.');
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -242,8 +287,6 @@ const TravelPage = () => {
           <Text style={[styles.startTime, { marginTop: 5 }]}>Next pick up in: 8.53 mins est.</Text>
         </View>
       </View>
-
-      
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
 
@@ -293,7 +336,8 @@ const TravelPage = () => {
                 )}
               </View>
             ))
-          )}
+          )
+          }
         </View>
 
         {/* Already Processed Section */}
@@ -319,7 +363,11 @@ const TravelPage = () => {
 
         {/* add a button to cancel the ride( no need of any functionality) */}
         <View style={styles.cancelButtonContainer}>
-          <TouchableOpacity style={styles.cancelButton}>
+          <TouchableOpacity 
+            style={styles.cancelButton}
+            onPress={handleCancelRide}
+          >
+            <Ionicons name="close-circle-outline" size={20} color="white" />
             <Text style={styles.cancelButtonText}>Cancel Ride</Text>
           </TouchableOpacity>
         </View>
@@ -545,6 +593,29 @@ const styles = StyleSheet.create({
   statLabel: {
     fontSize: 14,
     color: '#666',
+  },
+  cancelButtonContainer: {
+    marginVertical: 20,
+    paddingHorizontal: 10,
+  },
+  cancelButton: {
+    backgroundColor: '#dc3545',
+    paddingVertical: 15,
+    borderRadius: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  cancelButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 8,
   },
 });
 
