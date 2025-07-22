@@ -4,7 +4,7 @@ export default function DriverComponentsLayout() {
   return (
     <Stack
       screenOptions={{
-        headerShown: false, // Hide the header for all DriverComponents screens
+        headerShown: false,
       }}
     >
       <Stack.Screen 
@@ -15,6 +15,12 @@ export default function DriverComponentsLayout() {
       />
       <Stack.Screen 
         name="travelPage" 
+        options={{
+          headerShown: false,
+        }} 
+      />
+      <Stack.Screen 
+        name="breakdown" 
         options={{
           headerShown: false,
         }} 
