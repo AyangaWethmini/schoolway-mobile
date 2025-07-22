@@ -127,6 +127,12 @@ const ChildView = ({ navigation, route }) => {
             <Text style={styles.actionText}>View Calendar</Text>
           </TouchableOpacity>
         </View>
+        <View style={styles.quickActions}>
+          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/parent/generateQR')}>
+            <Ionicons name="qr-code" size={24} color={theme.colors.accentblue} />
+            <Text style={styles.actionText}>Generate a QR code</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Student Information - Add pointerEvents="box-none" for scrollable areas */}
         <View style={[styles.infoCard, styles.scrollableCard]} pointerEvents="box-none">
