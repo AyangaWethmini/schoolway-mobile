@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   SafeAreaView,
@@ -22,6 +23,7 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errors, setErrors] = useState({});
+  const router = useRouter();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -157,6 +159,14 @@ const Profile = () => {
               />
           </View>
         )}
+        const router = useRouter();
+
+        <Button
+          title="Go to Guardian"
+          varient="outlined-black"
+          onPress={() => router.push('/guardian/guardian')}
+        />
+        
       </ScrollView>
     </SafeAreaView>
   );
