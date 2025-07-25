@@ -1,12 +1,13 @@
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import SWText from './SWText';
 
 const AddButton = ({ onPress,text, ...props}) => {
   return (
     <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.button} onPress={onPress}>
         <Ionicons name="add" size={15} color="white" style={styles.icon} />
-        <Text style={styles.text}>{text}</Text>
+        <SWText button white>{text}</SWText>
       </TouchableOpacity>
     </View>
   );
@@ -28,11 +29,6 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 8,
-  },
-  text: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '500',
   },
 });
 

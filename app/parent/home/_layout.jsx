@@ -21,17 +21,24 @@ return (
                 headerTitleStyle: { 
                     fontWeight: 'bold',
                     marginLeft: 10,
-                 }, 
+                    fontFamily: 'UberMove-Bold', // Correct usage
+                }, 
                 tabBarStyle: { 
                     backgroundColor: '#ffffff',
                     paddingTop: 5,
                     paddingBottom: 0,
                     height: 60,
                 },
-                    tabBarActiveTintColor: theme.iconActiveBlue,
-                    tabBarInactiveTintColor: theme.iconInactive,
+                tabBarActiveTintColor: theme.iconActiveBlue,
+                tabBarInactiveTintColor: theme.iconInactive,
+                tabBarLabelStyle: {
+                    fontFamily: 'UberMove-Medium', // Correct usage
+                    fontSize: 12,
+                }
             }}
         >
+
+
             <Tabs.Screen name="dashboard" options={{ title: 'Home', tabBarIcon: ({focused})=> (
                 <Ionicons name={"home"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive}/>
             ) }} />

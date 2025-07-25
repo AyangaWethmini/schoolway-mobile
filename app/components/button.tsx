@@ -1,7 +1,8 @@
 import React from "react";
-import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
+import { Pressable, PressableProps, StyleSheet } from "react-native";
 import { baseStyles } from "../theme/theme";
 import { useTheme } from "../theme/ThemeContext";
+import SWText from "./SWText";
 
 //button props
 interface ButtonProps extends PressableProps {
@@ -49,7 +50,7 @@ export const Button = ({title, varient = 'primary', passstyles=null, disabled = 
             disabled={disabled}
             {...props}
         >
-            <Text style={[buttonStyles.text, { fontWeight: 'bold' }]}>{title}</Text>
+            <SWText button style={[buttonStyles.text]}>{title}</SWText>
         </Pressable>
     );
 }

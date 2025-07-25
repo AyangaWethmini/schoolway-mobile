@@ -5,15 +5,14 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useAuth } from '../../auth/AuthContext';
 import Button from '../../components/button';
 import PasswordInput from '../../components/inputs';
 import Spacer from '../../components/Spacer';
-import TextHeading from '../../components/TextHeading';
+import SWText from '../../components/SWText';
 
 const Profile = () => {
   const {logout} = useAuth();
@@ -37,14 +36,15 @@ const Profile = () => {
             onPress={() => setActiveTab(tab)}
             style={[styles.tab ,activeTab === tab && styles.activeTab]}
           >
-            <Text
+            <SWText
+              uberBold = {activeTab === tab}
               style={[
                 styles.tabText,
                 activeTab === tab && styles.activeTabText,
               ]}
             >
               {tab}
-            </Text>
+            </SWText>
             <View style={[activeTab != tab && styles.inactiveTabIndicator , activeTab === tab && styles.tabIndicator] } />
           </TouchableOpacity>
         ))}
@@ -62,8 +62,8 @@ const Profile = () => {
 
             <View style={styles.infoRow}>
               <View style={styles.infoData}>
-                <Text style={styles.label}>Name</Text>
-                <Text style={styles.value}>Duleepa Edirisinghe</Text>
+                <SWText style={styles.label}>Name</SWText>
+                <SWText style={styles.value}>Duleepa Edirisinghe</SWText>
               </View>
               <View>
                 <View style={styles.rowIcon}>
@@ -76,9 +76,9 @@ const Profile = () => {
 
             <View style={styles.infoRow}>
               <View style={styles.infoData}>
-                <Text style={styles.label}>Phone number</Text>
+                <SWText style={styles.label}>Phone number</SWText>
                 <View style={styles.inlineRow}>
-                  <Text style={styles.value}>+94783152739</Text>
+                  <SWText style={styles.value}>+94783152739</SWText>
                   <Ionicons name="checkmark-circle" size={16} color="green" />
                 </View>
               </View>
@@ -93,9 +93,9 @@ const Profile = () => {
 
             <View style={styles.infoRow}>
               <View style={styles.infoData}>
-                <Text style={styles.label}>Email</Text>
+                <SWText style={styles.label}>Email</SWText>
                 <View style={styles.inlineRow}>
-                  <Text style={styles.value}>duleepa24@gmail.com</Text>
+                  <SWText style={styles.value}>duleepa24@gmail.com</SWText>
                   <Ionicons name="warning" size={16} color="orange" />
                 </View>
               </View>
@@ -110,9 +110,9 @@ const Profile = () => {
 
             <View style={styles.infoRow}>
               <View style={styles.infoData}>
-                <Text style={styles.label}>Language</Text>
+                <SWText style={styles.label}>Language</SWText>
                 <View style={styles.inlineRow}>
-                  <Text style={styles.value}>English</Text>
+                  <SWText style={styles.value}>English</SWText>
                   <Ionicons name="open-outline" size={16} color="#000" />
                 </View>
               </View>
@@ -120,9 +120,10 @@ const Profile = () => {
           </>
         ) : (
           <View style={styles.securityContainer}>
-              <TextHeading>
+              <SWText bold h2>
                 Change Password
-              </TextHeading>
+              </SWText>
+              <Spacer/>
               <PasswordInput
                 label="Current Password"
                 placeholder="Enter current password"
@@ -159,13 +160,7 @@ const Profile = () => {
               />
           </View>
         )}
-        const router = useRouter();
 
-        <Button
-          title="Go to Guardian"
-          varient="outlined-black"
-          onPress={() => router.push('/guardian/guardian')}
-        />
         
       </ScrollView>
     </SafeAreaView>
@@ -205,7 +200,6 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   activeTabText: {
-    fontWeight: 'bold',
     color: '#000',
   },
   tabIndicator: {

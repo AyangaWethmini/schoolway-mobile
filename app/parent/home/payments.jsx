@@ -1,9 +1,10 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Alert, RefreshControl, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Spacer from '../../components/Spacer';
+import { Alert, RefreshControl, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Button from '../../components/button';
+import Spacer from '../../components/Spacer';
+import SWText from '../../components/SWText';
 import { useTheme } from "../../theme/ThemeContext";
 
 const Payments = () => {
@@ -141,8 +142,8 @@ const Payments = () => {
               <MaterialIcons name="payments" size={20} color="#E74C3C" />
             </View>
             <View style={styles.textContainer}>
-              <Text style={styles.summaryLabel}>Total Due</Text>
-              <Text style={styles.summaryValue}>Rs.{getTotalDue()}</Text>
+              <SWText style={styles.summaryLabel}>Total Due</SWText>
+              <SWText uberBold style={styles.summaryValue}>Rs.{getTotalDue()}</SWText>
             </View>
           </TouchableOpacity>
           
@@ -153,8 +154,8 @@ const Payments = () => {
               <Ionicons name="people" size={20} style={{color : theme.colors.primary}} />
             </View>
             <View style={styles.textContainer}>
-              <Text style={styles.summaryLabel}>Children</Text>
-              <Text style={styles.summaryValue}>{children.length}</Text>
+              <SWText style={styles.summaryLabel}>Children</SWText>
+              <SWText uberBold style={styles.summaryValue}>{children.length}</SWText>
             </View>
           </TouchableOpacity>
         </View>
@@ -169,7 +170,7 @@ const Payments = () => {
       >
         <View style={styles.gradientButtonContent}>
           <MaterialIcons name="receipt-long" size={24} color="#FFFFFF" />
-          <Text style={styles.gradientButtonText}>Transaction History</Text>
+          <SWText style={styles.gradientButtonText}>Transaction History</SWText>
           <MaterialIcons name="chevron-right" size={20} color="#FFFFFF" />
         </View>
       </TouchableOpacity>
@@ -184,19 +185,19 @@ const Payments = () => {
                 <Ionicons name={child.avatar} size={24} color="#666" />
               </View>
               <View style={styles.childInfo}>
-                <Text style={styles.childName}>{child.name}</Text>
-                <Text style={styles.childGrade}>{child.grade}</Text>
+                <SWText uberBold style={styles.childName}>{child.name}</SWText>
+                <SWText style={styles.childGrade}>{child.grade}</SWText>
               </View>
               <View style={styles.paymentStatus}>
                 {child.isPaid ? (
                   <View style={styles.paidBadge}>
                     <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                    <Text style={styles.paidText}>Paid</Text>
+                    <SWText style={styles.paidText}>Paid</SWText>
                   </View>
                 ) : (
                   <View style={styles.dueBadge}>
                     <Ionicons name="time-outline" size={16} color="#FF9800" />
-                    <Text style={styles.dueText}>Due</Text>
+                    <SWText style={styles.dueText}>Due</SWText>
                   </View>
                 )}
               </View>
@@ -205,15 +206,15 @@ const Payments = () => {
             <View style={styles.vanDetails}>
               <View style={styles.vanInfo}>
                 <Ionicons name="bus-outline" size={16} color="#666" />
-                <Text style={styles.vanServiceName}>{child.vanService}</Text>
+                <SWText style={styles.vanServiceName}>{child.vanService}</SWText>
               </View>
-              <Text style={styles.routeInfo}>{child.route}</Text>
+              <SWText style={styles.routeInfo}>{child.route}</SWText>
             </View>
 
             <View style={styles.paymentSection}>
               <View style={styles.amountSection}>
-                <Text style={styles.amountLabel}>Monthly Fee</Text>
-                <Text style={styles.amount}>Rs.{child.monthlyFee}</Text>
+                <SWText style={styles.amountLabel}>Monthly Fee</SWText>
+                <SWText style={styles.amount}>Rs.{child.monthlyFee}</SWText>
               </View>
               {!child.isPaid && (
                 <View>
@@ -228,7 +229,7 @@ const Payments = () => {
             {!child.isPaid && (
               <View style={styles.dueDateSection}>
                 <Ionicons name="calendar-outline" size={14} color="#FF9800" />
-                <Text style={styles.dueDateText}>Due: {formatDate(child.dueDate)}</Text>
+                <SWText style={styles.dueDateText}>Due: {formatDate(child.dueDate)}</SWText>
               </View>
             )}
           </View>
@@ -338,7 +339,6 @@ const styles = StyleSheet.create({
   
   summaryValue: {
     fontSize: 18,
-    fontWeight: '700',
     color: '#2C3E50',
   },
   
@@ -388,7 +388,6 @@ const styles = StyleSheet.create({
   },
   childName: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: '#333',
   },
   childGrade: {

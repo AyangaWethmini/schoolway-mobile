@@ -1,8 +1,10 @@
 import { useRouter } from 'expo-router';
+import { ChevronRight } from 'lucide-react-native';
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import AddButton from '../../components/AddButton';
-import TextHeading from '../../components/TextHeading';
+import SWText from '../../components/SWText';
+import Spacer from '../../components/Spacer';
 import { Button } from "../../components/button";
 import { useTheme } from "../../theme/ThemeContext";
 import { baseStyles } from "../../theme/theme";
@@ -107,20 +109,21 @@ const Dashboard = () => {
       >
         <View style={styles.section}>
           <View style={styles.Headingview}>
-            <TextHeading>Your Children</TextHeading>
+              <SWText uberBold xl >Your Children</SWText>
             <AddButton 
               text={'Add Child'}
               onPress={() => router.push('/parent/addChild')}
             />
           </View>
+          <Spacer/>
           <ScrollView horizontal  contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
             <View style={styles.cardsContainer}>
               {children.map((child) => (
                 <View key={child.id} style={styles.card}>
                   <View style={styles.cardHeader}>
-                    <Text style={styles.childName}>{child.name}</Text>
+                    <SWText style={styles.childName}>{child.name}</SWText>
                     <View style={styles.gradeContainer}>
-                      <Text style={styles.childGrade}>{child.grade}</Text>
+                      <SWText style={styles.childGrade}>{child.grade}</SWText>
                     </View>
                   </View>
                   
@@ -128,13 +131,13 @@ const Dashboard = () => {
                     {child.isAssigned ? (
                       <View style={styles.assignmentInfo}>
                         <View style={styles.vanInfoContainer}>
-                          <Text style={styles.vanLabel}>Van</Text>
-                          <Text style={[styles.vanNumber, { color : theme.colors.accentblue }]}>{child.vanNumber}</Text>
+                          <SWText style={styles.vanLabel}>Van</SWText>
+                          <SWText style={[styles.vanNumber, { color : theme.colors.accentblue }]}>{child.vanNumber}</SWText>
                         </View>
                       </View>
                     ) : (
                       <View style={styles.notAssignedContainer}>
-                        <Text style={styles.notAssignedText}>Not assigned to any van</Text>
+                        <SWText style={styles.notAssignedText}>Not assigned to any van</SWText>
                       </View>
                     )}
                   </View>
@@ -159,61 +162,60 @@ const Dashboard = () => {
             </View>
           </ScrollView>
         </View>
+        <View style={styles.privateHireButtonContainer}>
+          <View>
+            <SWText uberBold xl center >Find privet hires</SWText>
+          </View>
+          
+          <View>
+            <TouchableOpacity 
+              onPress={() => router.push('/parent/privateHire')}
+              activeOpacity={0.8}
+            >
+              <ChevronRight size={20} color={theme.colors.accentblue} />
+            </TouchableOpacity>
+          </View>
+        </View>
+        <Spacer/>
 
         <View style={styles.section}>
           <View style={styles.Headingview}>
-            <TextHeading>Current Status</TextHeading>
-            
+            <SWText uberBold xl center >Current Status</SWText>
           </View>
-          <View style={styles.table}>
+          <Spacer/>
 
-            <View style={styles.tableHeader}>
-              <Text style={[styles.tableHeaderText, styles.nameColumn]}>Name</Text>
-              <Text style={[styles.tableHeaderText, styles.timeColumn]}>Time</Text>
-              <Text style={[styles.tableHeaderText, styles.statusColumn]}>Status</Text>
-            </View>
-            
+          <TouchableOpacity activeOpacity={1} style={styles.downCardsContainer}>
             {children.map((child, index) => (
-              <View key={child.id} style={[styles.tableRow, index % 2 === 0 ? styles.evenRow : styles.oddRow]}>
-                <Text style={[styles.tableCell, styles.nameColumn]}>{child.name}</Text>
-                <Text style={[styles.tableCell, styles.timeColumn]}>{child.pickupTime || 'N/A'}</Text>
-                <View style={[styles.tableCell, styles.statusColumn]}>
+              <View key={child.id} style={styles.card}>
+                {/* Header with name and status */}
+                <View style={styles.cardHeader}>
+                  <SWText style={styles.childName}>{child.name}</SWText>
                   <View style={[
-                    styles.statusTag,
+                    styles.statusBadge,
                     { backgroundColor: getStatusBackgroundColor(child.status) }
                   ]}>
-                    <Text style={[
-                      styles.statusTagText,
+                    <SWText style={[
+                      styles.statusBadgeText,
                       { color: getStatusColor(child.status) }
                     ]}>
                       {child.status}
-                    </Text>
+                    </SWText>
+                  </View>
+                </View>
+                
+                {/* Time info */}
+                <View style={styles.cardBody}>
+                  <View style={styles.timeContainer}>
+                    <SWText style={styles.timeLabel}>Pickup Time</SWText>
+                    <SWText style={styles.timeValue}>{child.pickupTime || 'Not scheduled'}</SWText>
                   </View>
                 </View>
               </View>
             ))}
-          </View>
-        </View>
-        <View style={{ borderBottomWidth: 1, borderBottomColor: '#e0e0e0', marginVertical: 0 }} />
-        <View style={styles.Headingview}>
-            <TextHeading>Find privet hires</TextHeading>
-            
-          </View>
-        <View style={[{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }]}>
-          <TouchableOpacity 
-            style={styles.privateHireButton}
-            onPress={() => router.push('/parent/privateHire')}
-            activeOpacity={0.8}
-          >
-            <View style={styles.privateHireButtonContent}>
-              <Text style={styles.privateHireButtonText}>Private Hires</Text>
-              {/* <View style={styles.privateHireIcon}>
-                <Text style={styles.privateHireIconText}>→</Text>
-              </View> */}
-            </View>
           </TouchableOpacity>
         </View>
-        <View style={{ borderBottomWidth: 1, borderBottomColor: '#e0e0e0', marginVertical: 16 }} />
+        
+        
         
       </ScrollView>
     </View>
@@ -242,35 +244,20 @@ const styles = StyleSheet.create({
   },
   Headingview:{
     flexDirection: 'row',
-    justifyContent:'space-between'
+    justifyContent:'space-between',
+    alignItems: 'center',
+    borderBottomWidth:1,
+    borderBottomColor:'#d7d8e5ff',
+    paddingVertical:10,
   }
   ,
   cardsContainer: {
     flexDirection: 'row',
-    paddingHorizontal: 4,
+    paddingHorizontal: 4 ,
+    paddingBottom: 6,
+    gap:10,
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 20,
-    marginRight: 12,
-    marginVertical: 10,
-    width: 300,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#f0f0f0',
-  },
-  
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
+
   
   childName: {
     fontSize: 18,
@@ -360,59 +347,88 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   buttonContainer: {
-    flexDirection: 'row',      
+    flexDirection: 'row',
+    gap:2,      
     justifyContent: 'space-between',
   },
-  table: {
-    overflow: 'hidden',
-    borderRadius: 4,
+  downCardsContainer: {
+    gap: 5,
+    paddingHorizontal: 4, // Small padding for shadow visibility
   },
-  tableHeader: {
-    flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-
-  },
-  tableHeaderText: {
-    color: '#00000',
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  tableRow: {
-    backgroundColor:'#ffffff',
-    flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  tableCell: {
-    fontSize: 14,
-    color: '#333',
-  },
-  nameColumn: {
-    flex: 1,
-  },
-  timeColumn: {
-    flex: 1,
-  },
-  statusColumn: {
-    flex: 1,
-    textAlign:'center',
-    flexDirection:'row',
-    justifyContent:'center'
-  },
-  statusTag: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+  
+  card: {
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    alignSelf: 'flex-start',
+    padding: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3, // Android shadow
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
   },
-  statusTagText: {
+  
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  
+  childName: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    flex: 1,
+    marginRight: 12,
+  },
+  
+  statusBadge: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    minWidth: 80,
+    alignItems: 'center',
+  },
+  
+  statusBadgeText: {
     fontSize: 12,
     fontWeight: '600',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  
+  cardBody: {
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
+    paddingTop: 12,
+  },
+  
+  timeContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  
+  timeLabel: {
+    fontSize: 14,
+    color: '#6B7280',
+    fontWeight: '500',
+  },
+  
+  timeValue: {
+    fontSize: 14,
+    color: '#374151',
+    fontWeight: '600',
+  },
+  privateHireButtonContainer: {
+    flexDirection:'row',
+    justifyContent:'space-between',
+    alignItems: 'center',
   },
   privateHireButton: {
     backgroundColor: 'black',

@@ -5,13 +5,13 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import { Button } from "../components/button";
 import { DropdownInput } from '../components/inputs';
-import TextHeading from '../components/TextHeading';
+import Spacer from '../components/Spacer';
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 
@@ -73,7 +73,7 @@ const SchoolVanScreen = ({ navigation }) => {
               },
             ]}
           >
-            <Text style={styles.driverInitial}>{driver.initial}</Text>
+            <SWText style={styles.driverInitial}>{driver.initial}</SWText>
           </View>
         ))}
       </View>
@@ -88,13 +88,13 @@ const SchoolVanScreen = ({ navigation }) => {
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>School Van Booking</Text>
+          <SWText style={styles.headerTitle}>School Van Booking</SWText>
         </View>
 
         <View style={styles.locationSection}>
           <View style={styles.locationRow}>
             <View style={styles.locationItem}>
-              <Text style={styles.locationLabel}>Pickup</Text>
+              <SWText style={styles.locationLabel}>Pickup</SWText>
               <DropdownInput
                 placeholder="Pickup location"
                 options={[
@@ -110,7 +110,7 @@ const SchoolVanScreen = ({ navigation }) => {
               
             </View>
             <View style={styles.locationItem}>
-              <Text style={styles.locationLabel}>Drop-off</Text>
+              <SWText style={styles.locationLabel}>Drop-off</SWText>
               <DropdownInput
                 placeholder="Drop-Off location"
                 options={[
@@ -133,23 +133,23 @@ const SchoolVanScreen = ({ navigation }) => {
         </View>
 
         <View style={styles.pickedSection}>
-          <TextHeading> Picked For You </TextHeading>
-          
+          <SWText h2> Picked For You </SWText>
+          <Spacer/>
           {schoolVans.map((van) => (
             <View key={van.id} style={styles.vanCard}>
               <View style={styles.vanHeader}>
-                <Text style={styles.vanName}>{van.name}</Text>
+                <SWText style={styles.vanName}>{van.name}</SWText>
                 {renderDriverImages(van.drivers)}
               </View>
               
               <View style={styles.vanDetails}>
                 <View style={styles.detailRow}>
                   <Ionicons name="time-outline" size={16} color="#666" />
-                  <Text style={styles.detailText}>{van.time}</Text>
+                  <SWText style={styles.detailText}>{van.time}</SWText>
                 </View>
                 <View style={styles.detailRow}>
                   <Ionicons name="location-outline" size={16} color="#666" />
-                  <Text style={styles.detailText}>{van.route}</Text>
+                  <SWText style={styles.detailText}>{van.route}</SWText>
                 </View>
               </View>
 

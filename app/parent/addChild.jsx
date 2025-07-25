@@ -1,19 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-
 import {
   Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import AddButton from '../components/AddButton';
 import { Button } from "../components/button";
 import { DropdownInput, FileUpload, MultilineTextInput, TextInputComponent } from '../components/inputs';
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 
@@ -52,19 +51,19 @@ const AddChild = ({ navigation, onBack }) => {
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
               <Ionicons name="arrow-back" size={24} color="#000" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Add child info</Text>
+            <SWText style={styles.headerTitle}>Add child info</SWText>
           </View>
 
           <View style={styles.formContainer}>
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Child's name</Text>
+              <SWText style={styles.label}>Child's name</SWText>
               <TextInputComponent
                 placeholder="Enter Child's name"
               />
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Age</Text>
+              <SWText style={styles.label}>Age</SWText>
               <TextInputComponent
                 placeholder="Enter Child's age"
               />
@@ -72,7 +71,7 @@ const AddChild = ({ navigation, onBack }) => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>School</Text>
+              <SWText style={styles.label}>School</SWText>
               <DropdownInput
                 placeholder="Select School's name"
                 options={[
@@ -90,7 +89,7 @@ const AddChild = ({ navigation, onBack }) => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Pickup time</Text>
+              <SWText style={styles.label}>Pickup time</SWText>
                 <DropdownInput
                   placeholder="Select a time"
                   options={[
@@ -105,7 +104,7 @@ const AddChild = ({ navigation, onBack }) => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Special Notes</Text>
+              <SWText style={styles.label}>Special Notes</SWText>
               <MultilineTextInput
                 placeholder="Mention special needs, illnesses, allergies and any other things"
                 value={specialNotes}
@@ -115,7 +114,7 @@ const AddChild = ({ navigation, onBack }) => {
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Add profile photo</Text>
+              <SWText style={styles.label}>Add profile photo</SWText>
               <FileUpload
                 placeholder="Upload Child's Photo"
                 selectedFile={selectedFile}

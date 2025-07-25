@@ -1,19 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-
 import {
     Alert,
     Image,
     SafeAreaView,
     ScrollView,
     StyleSheet,
-    Text,
     TouchableOpacity,
     View
 } from 'react-native';
 import { Button } from "../components/button";
 import { MultilineTextInput } from '../components/inputs';
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 const AddReview = ({ navigation, onBack }) => {
@@ -116,7 +115,7 @@ const AddReview = ({ navigation, onBack }) => {
     const renderChildSelector = () => {
         return (
             <View style={styles.childSelectorContainer}>
-                <Text style={styles.label}>Select Child</Text>
+                <SWText style={styles.label}>Select Child</SWText>
                 {childrenWithDrivers.map((child) => (
                     <TouchableOpacity
                         key={child.id}
@@ -127,8 +126,8 @@ const AddReview = ({ navigation, onBack }) => {
                         onPress={() => setSelectedChild(child)}
                     >
                         <View style={styles.childInfo}>
-                            <Text style={styles.childName}>{child.name}</Text>
-                            <Text style={styles.childSchool}>{child.school}</Text>
+                            <SWText style={styles.childName}>{child.name}</SWText>
+                            <SWText style={styles.childSchool}>{child.school}</SWText>
                         </View>
                         <View style={styles.checkmarkContainer}>
                             {selectedChild?.id === child.id && (
@@ -146,7 +145,7 @@ const AddReview = ({ navigation, onBack }) => {
 
         return (
             <View style={styles.reviewTypeContainer}>
-                <Text style={styles.label}>What would you like to review?</Text>
+                <SWText style={styles.label}>What would you like to review?</SWText>
                 <View style={styles.reviewTypeButtons}>
                     <TouchableOpacity
                         style={[
@@ -160,12 +159,12 @@ const AddReview = ({ navigation, onBack }) => {
                             size={20}
                             color={reviewType === 'driver' ? '#fff' : theme.colors.primary}
                         />
-                        <Text style={[
+                        <SWText style={[
                             styles.reviewTypeButtonText,
                             reviewType === 'driver' && styles.activeReviewTypeButtonText
                         ]}>
                             Driver
-                        </Text>
+                        </SWText>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -180,12 +179,12 @@ const AddReview = ({ navigation, onBack }) => {
                             size={20}
                             color={reviewType === 'van' ? '#fff' : theme.colors.primary}
                         />
-                        <Text style={[
+                        <SWText style={[
                             styles.reviewTypeButtonText,
                             reviewType === 'van' && styles.activeReviewTypeButtonText
                         ]}>
                             Van Service
-                        </Text>
+                        </SWText>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -198,7 +197,7 @@ const AddReview = ({ navigation, onBack }) => {
         const driver = selectedChild.driver;
         return (
             <View style={styles.infoContainer}>
-                <Text style={styles.label}>Driver Information</Text>
+                <SWText style={styles.label}>Driver Information</SWText>
                 <View style={styles.infoCard}>
                     <View style={styles.driverHeader}>
                         <View style={styles.driverPhotoContainer}>
@@ -211,10 +210,10 @@ const AddReview = ({ navigation, onBack }) => {
                             )}
                         </View>
                         <View style={styles.driverDetails}>
-                            <Text style={styles.infoName}>{driver.name}</Text>
-                            <Text style={styles.infoDetail}>Van: {driver.vanNumber}</Text>
-                            <Text style={styles.infoDetail}>Experience: {driver.experience}</Text>
-                            <Text style={styles.infoDetail}>Phone: {driver.phone}</Text>
+                            <SWText style={styles.infoName}>{driver.name}</SWText>
+                            <SWText style={styles.infoDetail}>Van: {driver.vanNumber}</SWText>
+                            <SWText style={styles.infoDetail}>Experience: {driver.experience}</SWText>
+                            <SWText style={styles.infoDetail}>Phone: {driver.phone}</SWText>
                         </View>
                     </View>
                 </View>
@@ -228,26 +227,26 @@ const AddReview = ({ navigation, onBack }) => {
         const van = selectedChild.van;
         return (
             <View style={styles.infoContainer}>
-                <Text style={styles.label}>Van Information</Text>
+                <SWText style={styles.label}>Van Information</SWText>
                 <View style={styles.infoCard}>
                     <View style={styles.vanHeader}>
                         <View style={styles.vanIconContainer}>
                             <Ionicons name="car" size={40} color={theme.colors.primary} />
                         </View>
                         <View style={styles.vanDetails}>
-                            <Text style={styles.infoName}>Van {van.number}</Text>
-                            <Text style={styles.infoDetail}>Model: {van.model}</Text>
-                            <Text style={styles.infoDetail}>Capacity: {van.capacity}</Text>
-                            <Text style={styles.infoDetail}>Condition: {van.condition}</Text>
+                            <SWText style={styles.infoName}>Van {van.number}</SWText>
+                            <SWText style={styles.infoDetail}>Model: {van.model}</SWText>
+                            <SWText style={styles.infoDetail}>Capacity: {van.capacity}</SWText>
+                            <SWText style={styles.infoDetail}>Condition: {van.condition}</SWText>
                         </View>
                     </View>
                     <View style={styles.amenitiesContainer}>
-                        <Text style={styles.amenitiesTitle}>Amenities:</Text>
+                        <SWText style={styles.amenitiesTitle}>Amenities:</SWText>
                         <View style={styles.amenitiesList}>
                             {van.amenities.map((amenity, index) => (
                                 <View key={index} style={styles.amenityItem}>
                                     <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                                    <Text style={styles.amenityText}>{amenity}</Text>
+                                    <SWText style={styles.amenityText}>{amenity}</SWText>
                                 </View>
                             ))}
                         </View>
@@ -280,7 +279,7 @@ const AddReview = ({ navigation, onBack }) => {
                     <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={24} color="#000" />
                     </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Add Review</Text>
+                    <SWText style={styles.headerTitle}>Add Review</SWText>
                 </View>
 
                 <View style={styles.formContainer}>
@@ -292,20 +291,20 @@ const AddReview = ({ navigation, onBack }) => {
                     {selectedChild && (
                         <>
                             <View style={styles.inputGroup}>
-                                <Text style={styles.label}>Rating</Text>
-                                <Text style={styles.ratingSubtext}>{getReviewPrompt()}</Text>
+                                <SWText style={styles.label}>Rating</SWText>
+                                <SWText style={styles.ratingSubtext}>{getReviewPrompt()}</SWText>
                                 <View style={styles.starsContainer}>
                                     {renderStars()}
                                 </View>
                                 {rating > 0 && (
-                                    <Text style={styles.ratingText}>
+                                    <SWText style={styles.ratingText}>
                                         {rating} out of 5 stars
-                                    </Text>
+                                    </SWText>
                                 )}
                             </View>
 
                             <View style={styles.inputGroup}>
-                                <Text style={styles.label}>Comments (Optional)</Text>
+                                <SWText style={styles.label}>Comments (Optional)</SWText>
                                 <MultilineTextInput
                                     placeholder={getCommentPlaceholder()}
                                     value={comment}

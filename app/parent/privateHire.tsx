@@ -9,12 +9,12 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
 import { Button } from "../components/button";
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 const PrivateHire = () => {
@@ -213,11 +213,11 @@ const PrivateHire = () => {
     <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
       {!showVanSelection ? (
         <View style={styles.formContainer}>
-          <Text style={styles.formTitle}>Plan Your Trip</Text>
-          <Text style={styles.formSubtitle}>Fill in the details to find available vans</Text>
+          <SWText h1 >Plan Your Trip</SWText>
+          <SWText uberMedium style={styles.formSubtitle}>Fill in the details to find available vans</SWText>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Destination *</Text>
+            <SWText style={styles.inputLabel}>Destination *</SWText>
             <TextInput
               style={styles.textInput}
               placeholder="Where are you going?"
@@ -227,7 +227,7 @@ const PrivateHire = () => {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Pickup Location *</Text>
+            <SWText style={styles.inputLabel}>Pickup Location *</SWText>
             <TextInput
               style={styles.textInput}
               placeholder="Where should we pick you up?"
@@ -238,33 +238,33 @@ const PrivateHire = () => {
 
           <View style={styles.dateRow}>
             <View style={[styles.inputGroup, {flex: 1, marginRight: 8}]}>
-              <Text style={styles.inputLabel}>Departure Date *</Text>
+              <SWText style={styles.inputLabel}>Departure Date *</SWText>
               <TouchableOpacity 
                 style={styles.dateInput}
                 onPress={() => setShowDeparturePicker(true)}
               >
-                <Text style={[styles.dateInputText, !formData.departureDate && styles.placeholderText]}>
+                <SWText style={[styles.dateInputText, !formData.departureDate && styles.placeholderText]}>
                   {formData.departureDate || 'Departure date'}
-                </Text>
+                </SWText>
                 <Ionicons name="calendar-outline" size={20} color="#666" />
               </TouchableOpacity>
             </View>
             <View style={[styles.inputGroup, {flex: 1, marginLeft: 8}]}>
-              <Text style={styles.inputLabel}>Return Date</Text>
+              <SWText style={styles.inputLabel}>Return Date</SWText>
               <TouchableOpacity 
                 style={styles.dateInput}
                 onPress={() => setShowReturnPicker(true)}
               >
-                <Text style={[styles.dateInputText, !formData.returnDate && styles.placeholderText]}>
+                <SWText style={[styles.dateInputText, !formData.returnDate && styles.placeholderText]}>
                   {formData.returnDate || 'Return date'}
-                </Text>
+                </SWText>
                 <Ionicons name="calendar-outline" size={20} color="#666" />
               </TouchableOpacity>
             </View>
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Number of Passengers *</Text>
+            <SWText style={styles.inputLabel}>Number of Passengers *</SWText>
             <TextInput
               style={styles.textInput}
               placeholder="How many people?"
@@ -275,7 +275,7 @@ const PrivateHire = () => {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Additional Notes</Text>
+            <SWText style={styles.inputLabel}>Additional Notes</SWText>
             <TextInput
               style={[styles.textInput, styles.textArea]}
               placeholder="Any special requirements or notes..."
@@ -320,35 +320,28 @@ const PrivateHire = () => {
         </View>
       ) : (
         <View style={styles.vanSelectionContainer}>
-          <View style={[styles.header , { backgroundColor : theme.colors.primary } ]}>
-            <TouchableOpacity 
-              style={styles.backButton}
-              onPress={() => setShowVanSelection(false)}
-            >
-              <Ionicons name="arrow-back" size={24} color="#000" />
-            </TouchableOpacity>
-            <Text style={styles.resultsTitle}>Available Vans</Text>
-            <Text style={styles.resultsSubtitle}>
+          <View style={[styles.header ]}>
+            <SWText style={styles.resultsSubtitle}>
               {formData.destination} • {formData.departureDate} • {formData.passengers} passengers
-            </Text>
+            </SWText>
           </View>
 
           {availableVans.map((van) => (
             <View key={van.id} style={styles.vanCard}>
               <View style={styles.vanCardHeader}>
                 <View style={styles.vanImageContainer}>
-                  <Text style={styles.vanImage}>{van.image}</Text>
+                  <SWText style={styles.vanImage}>{van.image}</SWText>
                 </View>
                 <View style={styles.vanInfo}>
-                  <Text style={styles.vanName}>{van.name}</Text>
-                  <Text style={styles.vanType}>{van.type} • Up to {van.capacity} passengers</Text>
-                  <Text style={styles.vanDriver}>Driver: {van.driver}</Text>
+                  <SWText uberBold style={styles.vanName}>{van.name}</SWText>
+                  <SWText style={styles.vanType}>{van.type} • Up to {van.capacity} passengers</SWText>
+                  <SWText style={styles.vanDriver}>Driver: {van.driver}</SWText>
                 </View>
                 <View style={styles.vanPricing}>
-                  <Text style={styles.vanPrice}>Rs. {van.pricePerDay.toLocaleString()}</Text>
-                  <Text style={styles.vanPriceUnit}>per day</Text>
+                  <SWText style={styles.vanPrice}>Rs. {van.pricePerDay.toLocaleString()}</SWText>
+                  <SWText style={styles.vanPriceUnit}>per day</SWText>
                   <View style={styles.ratingContainer}>
-                    <Text style={styles.rating}>⭐ {van.rating}</Text>
+                    <SWText style={styles.rating}>⭐ {van.rating}</SWText>
                   </View>
                 </View>
               </View>
@@ -356,14 +349,14 @@ const PrivateHire = () => {
               <View style={styles.vanFeatures}>
                 {van.features.map((feature, index) => (
                   <View key={index} style={styles.featureTag}>
-                    <Text style={styles.featureText}>{feature}</Text>
+                    <SWText style={styles.featureText}>{feature}</SWText>
                   </View>
                 ))}
               </View>
 
               <View style={styles.vanActions}>
                 <TouchableOpacity style={styles.contactButton}>
-                  <Text style={styles.contactButtonText}>📞 Contact</Text>
+                  <SWText style={styles.contactButtonText}>📞 Contact</SWText>
                 </TouchableOpacity>
                 <Button
                   title="Request This Van"
@@ -383,41 +376,41 @@ const PrivateHire = () => {
   const renderHistoryTab = () => (
     <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
       <View style={styles.historyContainer}>
-        <Text style={styles.historyTitle}>Your Private Hire History</Text>
-        <Text style={styles.historySubtitle}>Track all your vacation van bookings</Text>
+        <SWText h1 style={styles.historyTitle}>Your Private Hire History</SWText>
+        <SWText uberMedium style={styles.historySubtitle}>Track all your vacation van bookings</SWText>
 
         {hireHistory.map((hire) => (
           <View key={hire.id} style={styles.historyCard}>
             <View style={styles.historyCardHeader}>
               <View style={styles.historyMainInfo}>
-                <Text style={styles.historyDestination}>{hire.destination}</Text>
-                <Text style={styles.historyDates}>
+                <SWText style={styles.historyDestination}>{hire.destination}</SWText>
+                <SWText style={styles.historyDates}>
                   {hire.departureDate} - {hire.returnDate}
-                </Text>
-                <Text style={styles.historyDetails}>
+                </SWText>
+                <SWText style={styles.historyDetails}>
                   {hire.vanName} • {hire.passengers} passengers
-                </Text>
+                </SWText>
               </View>
               <View style={styles.historyStatus}>
                 <View style={[
                   styles.statusBadge,
                   { backgroundColor: getStatusBackgroundColor(hire.status) }
                 ]}>
-                  <Text style={[
+                  <SWText style={[
                     styles.statusText,
                     { color: getStatusColor(hire.status) }
                   ]}>
                     {hire.status}
-                  </Text>
+                  </SWText>
                 </View>
-                <Text style={styles.historyCost}>Rs. {hire.totalCost.toLocaleString()}</Text>
+                <SWText style={styles.historyCost}>Rs. {hire.totalCost.toLocaleString()}</SWText>
               </View>
             </View>
 
             {hire.status === 'Upcoming' && (
               <View style={styles.historyActions}>
                 <TouchableOpacity style={styles.cancelButton}>
-                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                  <SWText style={styles.cancelButtonText}>Cancel</SWText>
                 </TouchableOpacity>
               </View>
             )}
@@ -435,7 +428,7 @@ const PrivateHire = () => {
           <TouchableOpacity onPress={() => { router.back()}} style={styles.backButton}>
             <Ionicons name="arrow-back" size={24} color="#000" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Private Hire</Text>
+          <SWText style={styles.headerTitle}>Private Hire</SWText>
         </View>
 
       <View style={styles.tabContainer}>
@@ -443,17 +436,17 @@ const PrivateHire = () => {
           style={[styles.tab, activeTab === 'request' && styles.activeTab]}
           onPress={() => setActiveTab('request')}
         >
-          <Text style={[styles.tabText, activeTab === 'request' && styles.activeTabText]}>
+          <SWText uberBold={activeTab === 'request'} style={[styles.tabText, activeTab === 'request' && styles.activeTabText]}>
             Request Van
-          </Text>
+          </SWText>
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'history' && styles.activeTab]}
           onPress={() => setActiveTab('history')}
         >
-          <Text style={[styles.tabText, activeTab === 'history' && styles.activeTabText]}>
+          <SWText uberBold={activeTab === 'history'} style={[styles.tabText, activeTab === 'history' && styles.activeTabText]}>
             My Bookings
-          </Text>
+          </SWText>
         </TouchableOpacity>
       </View>
 
@@ -468,30 +461,30 @@ const PrivateHire = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirm Request</Text>
+            <SWText style={styles.modalTitle}>Confirm Request</SWText>
             {selectedVan && (
               <>
-                <Text style={styles.modalText}>
-                  You're about to request <Text style={styles.modalBold}>{selectedVan.name}</Text> for your trip to <Text style={styles.modalBold}>{formData.destination}</Text>.
-                </Text>
-                <Text style={styles.modalDetails}>
+                <SWText style={styles.modalText}>
+                  You're about to request <SWText style={styles.modalBold}>{selectedVan.name}</SWText> for your trip to <SWText style={styles.modalBold}>{formData.destination}</SWText>.
+                </SWText>
+                <SWText style={styles.modalDetails}>
                   • Departure: {formData.departureDate}
                   {formData.returnDate && `\n• Return: ${formData.returnDate}`}
                   {`\n• Passengers: ${formData.passengers}`}
                   {`\n• Driver: ${selectedVan.driver}`}
-                </Text>
+                </SWText>
                 <View style={styles.modalActions}>
                   <TouchableOpacity
                     style={styles.modalCancelButton}
                     onPress={() => setShowConfirmModal(false)}
                   >
-                    <Text style={styles.modalCancelText}>Cancel</Text>
+                    <SWText style={styles.modalCancelText}>Cancel</SWText>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.modalConfirmButton}
                     onPress={confirmRequest}
                   >
-                    <Text style={styles.modalConfirmText}>Send Request</Text>
+                    <SWText style={styles.modalConfirmText}>Send Request</SWText>
                   </TouchableOpacity>
                 </View>
               </>
@@ -550,7 +543,6 @@ const styles = StyleSheet.create({
     color: '#888',
   },
   activeTabText: {
-    fontWeight: 'bold',
     color: '#000',
   },
   tabContent: {
@@ -569,6 +561,7 @@ const styles = StyleSheet.create({
   formSubtitle: {
     fontSize: 16,
     color: '#666',
+    marginTop: 10,
     marginBottom: 32,
   },
   inputGroup: {
@@ -618,7 +611,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   vanSelectionContainer: {
-    padding: 16,
+    paddingHorizontal: 10,
   },
   searchResultsHeader: {
     marginBottom: 20,
@@ -751,9 +744,8 @@ const styles = StyleSheet.create({
   },
   historyTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
     color: '#1a1a1a',
-    marginBottom: 8,
+    marginVertical: 8,
   },
   historySubtitle: {
     fontSize: 16,
