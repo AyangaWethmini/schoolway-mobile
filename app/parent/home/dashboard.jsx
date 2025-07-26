@@ -113,7 +113,7 @@ const Dashboard = () => {
         <View style={styles.content}>
           <View style={styles.section}>
             <View style={styles.Headingview}>
-                <SWText uberBold xl >Your Children</SWText>
+                <SWText uberBold xl darkPrimary >Your Children</SWText>
               <AddButton 
                 text={'Add Child'}
                 onPress={() => router.push('/parent/addChild')}
@@ -149,14 +149,14 @@ const Dashboard = () => {
                     <View style={styles.buttonContainer}>
                       <Button
                         title="View Details"
-                        varient="outlined-black"
+                        varient="primary-transparent"
                         onPress={() => router.push('/parent/childView')}
                         passstyles={child.isAssigned ? { flex: 1 } : null}
                       />
                       {!child.isAssigned && (
                         <Button
                           title="Assign to Van"
-                          varient="secondary"
+                          varient="primary"
                           onPress={() => router.push('/parent/vansearch')}
                         />
                       )}
@@ -169,7 +169,7 @@ const Dashboard = () => {
           
           <View style={styles.privateHireButtonContainer}>
             <View>
-              <SWText uberBold xl center >Find privet hires</SWText>
+              <SWText uberBold xl center darkPrimary >Find private hires</SWText>
             </View>
             
             <View>
@@ -185,7 +185,7 @@ const Dashboard = () => {
 
           <View style={styles.section}>
             <View style={styles.Headingview}>
-              <SWText uberBold xl center >Current Status</SWText>
+              <SWText uberBold xl center darkPrimary >Current Status</SWText>
             </View>
             <Spacer/>
 
@@ -194,7 +194,7 @@ const Dashboard = () => {
                 <View key={child.id} style={styles.card}>
                   {/* Header with name and status */}
                   <View style={styles.cardHeader}>
-                    <SWText style={styles.childName}>{child.name}</SWText>
+                    <SWText darkPrimary style={styles.childName}>{child.name}</SWText>
                     <View style={[
                       styles.statusBadge,
                       { backgroundColor: getStatusBackgroundColor(child.status) }
@@ -265,7 +265,6 @@ const styles = StyleSheet.create({
   childName: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#1a1a1a',
     flex: 1,
     marginRight: 8,
   },

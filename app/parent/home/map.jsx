@@ -1,5 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import CurvedHeader from '../../components/CurvedHeader';
 import { useTheme } from '../../theme/ThemeContext';
 
 const Map = () => {
@@ -7,6 +8,10 @@ const Map = () => {
 
   return (
     <View style={styles.container}>
+      <CurvedHeader 
+          title="Map" 
+          theme={theme}
+        />
       <MapView
         style={styles.map}
         initialRegion={{

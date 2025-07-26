@@ -126,6 +126,440 @@ const PrivateHire = () => {
     }
   ]);
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#f5f5f5',
+    },
+      header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingHorizontal: 20,
+      paddingVertical: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: '#e0e0e0',
+    },
+    backButton: {
+      padding: 5,
+      marginRight: 15,
+    },
+    headerTitle: {
+      fontSize: 18,
+      color: 'white',
+    },
+    headerSpacer: {
+      width: 60,
+    },
+    tabContainer: {
+      flexDirection: 'row',
+      backgroundColor: '#fff',
+    },
+    tab: {
+      flex: 1,
+      paddingVertical: 16,
+      alignItems: 'center',
+      borderBottomWidth: 5,
+      borderBottomColor: 'transparent',
+    },
+    activeTab: {
+      backgroundColor: '#eee',
+      borderBottomColor: theme.colors.accentblue,
+    },
+    tabText: {
+      fontSize: 14,
+      color: '#888',
+    },
+    activeTabText: {
+      color: theme.colors.accentblue,
+    },
+    tabContent: {
+      flex: 1,
+      backgroundColor: '#f5f5f5',
+    },
+    formContainer: {
+      padding: 16,
+    },
+    formTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#1a1a1a',
+      marginBottom: 8,
+    },
+    formSubtitle: {
+      fontSize: 16,
+      color: '#666',
+      marginTop: 10,
+      marginBottom: 32,
+    },
+    inputGroup: {
+      marginBottom: 20,
+    },
+    inputLabel: {
+      fontSize: 16,
+      fontWeight: '600',
+      color: '#333',
+      marginBottom: 8,
+    },
+    textInput: {
+      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      fontSize: 16,
+    },
+    textArea: {
+      height: 80,
+      textAlignVertical: 'top',
+    },
+    dateRow: {
+      flexDirection: 'row',
+    },
+    dateInput: {
+      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderColor: '#ddd',
+      borderRadius: 8,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    dateInputText: {
+      fontSize: 16,
+      color: '#333',
+    },
+    placeholderText: {
+      color: '#999',
+    },
+    searchButton: {
+      marginTop: 20,
+    },
+    vanSelectionContainer: {
+      paddingHorizontal: 10,
+    },
+    searchResultsHeader: {
+      marginBottom: 20,
+    },
+    backButtonText: {
+      color: '#008080',
+      fontSize: 16,
+      fontWeight: '500',
+    },
+    resultsTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: '#1a1a1a',
+      marginBottom: 4,
+    },
+    resultsSubtitle: {
+      fontSize: 14,
+      color: '#666',
+    },
+    vanCard: {
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    vanCardHeader: {
+      flexDirection: 'row',
+      marginBottom: 12,
+    },
+    vanImageContainer: {
+      width: 60,
+      height: 60,
+      backgroundColor: '#f0f0f0',
+      borderRadius: 8,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    vanImage: {
+      fontSize: 24,
+    },
+    vanInfo: {
+      flex: 1,
+    },
+    vanName: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#1a1a1a',
+      marginBottom: 4,
+    },
+    vanType: {
+      fontSize: 14,
+      color: '#666',
+      marginBottom: 4,
+    },
+    vanDriver: {
+      fontSize: 14,
+      color: '#333',
+    },
+    vanPricing: {
+      alignItems: 'flex-end',
+    },
+    vanPrice: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#008080',
+    },
+    vanPriceUnit: {
+      fontSize: 12,
+      color: '#666',
+      marginBottom: 4,
+    },
+    ratingContainer: {
+      backgroundColor: '#f8f9fa',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+    },
+    rating: {
+      fontSize: 12,
+      color: '#333',
+    },
+    vanFeatures: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      marginBottom: 16,
+    },
+    featureTag: {
+      backgroundColor: '#e8f4f8',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 12,
+      marginRight: 8,
+      marginBottom: 4,
+    },
+    featureText: {
+      fontSize: 12,
+      color: '#008080',
+      fontWeight: '500',
+    },
+    vanActions: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    contactButton: {
+      backgroundColor: '#f8f9fa',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#ddd',
+    },
+    contactButtonText: {
+      color: '#333',
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    requestButton: {
+      flex: 0,
+      paddingHorizontal: 24,
+    },
+    historyContainer: {
+      padding: 16,
+    },
+    historyTitle: {
+      fontSize: 24,
+      color: '#1a1a1a',
+      marginVertical: 8,
+    },
+    historySubtitle: {
+      fontSize: 16,
+      color: '#666',
+      marginBottom: 24,
+    },
+    historyCard: {
+      backgroundColor: '#fff',
+      borderRadius: 12,
+      padding: 16,
+      marginBottom: 16,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 4,
+      elevation: 3,
+    },
+    historyCardHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    historyMainInfo: {
+      flex: 1,
+    },
+    historyDestination: {
+      fontSize: 18,
+      fontWeight: '600',
+      color: '#1a1a1a',
+      marginBottom: 4,
+    },
+    historyDates: {
+      fontSize: 14,
+      color: '#666',
+      marginBottom: 4,
+    },
+    historyDetails: {
+      fontSize: 14,
+      color: '#333',
+    },
+    historyStatus: {
+      alignItems: 'flex-end',
+    },
+    statusBadge: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 16,
+      marginBottom: 8,
+    },
+    statusText: {
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    historyCost: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#1a1a1a',
+    },
+    historyActions: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+    },
+    modifyButton: {
+      backgroundColor: '#fff3cd',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 8,
+      marginRight: 8,
+      borderWidth: 1,
+      borderColor: '#ffeeba',
+    },
+    modifyButtonText: {
+      color: '#856404',
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    cancelButton: {
+      backgroundColor: '#f8d7da',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#f5c6cb',
+    },
+    cancelButtonText: {
+      color: '#721c24',
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    rebookButton: {
+      backgroundColor: '#d4edda',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 8,
+      marginRight: 8,
+      borderWidth: 1,
+      borderColor: '#c3e6cb',
+    },
+    rebookButtonText: {
+      color: '#155724',
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    reviewButton: {
+      backgroundColor: '#d1ecf1',
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 8,
+      borderWidth: 1,
+      borderColor: '#bee5eb',
+    },
+    reviewButtonText: {
+      color: '#0c5460',
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: '#fff',
+      borderRadius: 16,
+      padding: 24,
+      margin: 20,
+      minWidth: 300,
+    },
+    modalTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      color: '#1a1a1a',
+      marginBottom: 16,
+      textAlign: 'center',
+    },
+    modalText: {
+      fontSize: 16,
+      color: '#333',
+      marginBottom: 16,
+      lineHeight: 24,
+    },
+    modalBold: {
+      fontWeight: '600',
+      color: '#008080',
+    },
+    modalDetails: {
+      fontSize: 14,
+      color: '#666',
+      marginBottom: 24,
+      lineHeight: 20,
+    },
+    modalActions: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    modalCancelButton: {
+      flex: 1,
+      backgroundColor: '#f8f9fa',
+      paddingVertical: 12,
+      borderRadius: 8,
+      marginRight: 8,
+      borderWidth: 1,
+      borderColor: '#ddd',
+    },
+    modalCancelText: {
+      textAlign: 'center',
+      color: '#666',
+      fontSize: 16,
+      fontWeight: '500',
+    },
+    modalConfirmButton: {
+      flex: 1,
+      backgroundColor: '#008080',
+      paddingVertical: 12,
+      borderRadius: 8,
+      marginLeft: 8,
+    },
+    modalConfirmText: {
+      textAlign: 'center',
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: '600',
+    },
+    
+  });
+
   // Date formatting function
   const formatDate = (date) => {
     return date.toLocaleDateString('en-GB', {
@@ -426,9 +860,9 @@ const PrivateHire = () => {
     <View style={styles.container}>
         <View style={[styles.header , { backgroundColor : theme.colors.primary } ]}>
           <TouchableOpacity onPress={() => { router.back()}} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <SWText style={styles.headerTitle}>Private Hire</SWText>
+          <SWText uberBold style={styles.headerTitle}>Private Hire</SWText>
         </View>
 
       <View style={styles.tabContainer}>
@@ -498,437 +932,3 @@ const PrivateHire = () => {
 
 export default PrivateHire;
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-    header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  backButton: {
-    padding: 5,
-    marginRight: 15,
-  },
-  headerTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
-  },
-  headerSpacer: {
-    width: 60,
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-  },
-  tab: {
-    flex: 1,
-    paddingVertical: 16,
-    alignItems: 'center',
-    borderBottomWidth: 5,
-    borderBottomColor: 'transparent',
-  },
-  activeTab: {
-    backgroundColor: '#eee',
-    borderBottomColor: '#000000',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#888',
-  },
-  activeTabText: {
-    color: '#000',
-  },
-  tabContent: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  formContainer: {
-    padding: 16,
-  },
-  formTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 8,
-  },
-  formSubtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 10,
-    marginBottom: 32,
-  },
-  inputGroup: {
-    marginBottom: 20,
-  },
-  inputLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
-  },
-  textInput: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    fontSize: 16,
-  },
-  textArea: {
-    height: 80,
-    textAlignVertical: 'top',
-  },
-  dateRow: {
-    flexDirection: 'row',
-  },
-  dateInput: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  dateInputText: {
-    fontSize: 16,
-    color: '#333',
-  },
-  placeholderText: {
-    color: '#999',
-  },
-  searchButton: {
-    marginTop: 20,
-  },
-  vanSelectionContainer: {
-    paddingHorizontal: 10,
-  },
-  searchResultsHeader: {
-    marginBottom: 20,
-  },
-  backButtonText: {
-    color: '#008080',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  resultsTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  resultsSubtitle: {
-    fontSize: 14,
-    color: '#666',
-  },
-  vanCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  vanCardHeader: {
-    flexDirection: 'row',
-    marginBottom: 12,
-  },
-  vanImageContainer: {
-    width: 60,
-    height: 60,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  vanImage: {
-    fontSize: 24,
-  },
-  vanInfo: {
-    flex: 1,
-  },
-  vanName: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  vanType: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  vanDriver: {
-    fontSize: 14,
-    color: '#333',
-  },
-  vanPricing: {
-    alignItems: 'flex-end',
-  },
-  vanPrice: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#008080',
-  },
-  vanPriceUnit: {
-    fontSize: 12,
-    color: '#666',
-    marginBottom: 4,
-  },
-  ratingContainer: {
-    backgroundColor: '#f8f9fa',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-  },
-  rating: {
-    fontSize: 12,
-    color: '#333',
-  },
-  vanFeatures: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 16,
-  },
-  featureTag: {
-    backgroundColor: '#e8f4f8',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
-    marginRight: 8,
-    marginBottom: 4,
-  },
-  featureText: {
-    fontSize: 12,
-    color: '#008080',
-    fontWeight: '500',
-  },
-  vanActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  contactButton: {
-    backgroundColor: '#f8f9fa',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  contactButtonText: {
-    color: '#333',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  requestButton: {
-    flex: 0,
-    paddingHorizontal: 24,
-  },
-  historyContainer: {
-    padding: 16,
-  },
-  historyTitle: {
-    fontSize: 24,
-    color: '#1a1a1a',
-    marginVertical: 8,
-  },
-  historySubtitle: {
-    fontSize: 16,
-    color: '#666',
-    marginBottom: 24,
-  },
-  historyCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  historyCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  historyMainInfo: {
-    flex: 1,
-  },
-  historyDestination: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: 4,
-  },
-  historyDates: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 4,
-  },
-  historyDetails: {
-    fontSize: 14,
-    color: '#333',
-  },
-  historyStatus: {
-    alignItems: 'flex-end',
-  },
-  statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    marginBottom: 8,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  historyCost: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-  },
-  historyActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  modifyButton: {
-    backgroundColor: '#fff3cd',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#ffeeba',
-  },
-  modifyButtonText: {
-    color: '#856404',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  cancelButton: {
-    backgroundColor: '#f8d7da',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#f5c6cb',
-  },
-  cancelButtonText: {
-    color: '#721c24',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  rebookButton: {
-    backgroundColor: '#d4edda',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#c3e6cb',
-  },
-  rebookButtonText: {
-    color: '#155724',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  reviewButton: {
-    backgroundColor: '#d1ecf1',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#bee5eb',
-  },
-  reviewButtonText: {
-    color: '#0c5460',
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 24,
-    margin: 20,
-    minWidth: 300,
-  },
-  modalTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#1a1a1a',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  modalText: {
-    fontSize: 16,
-    color: '#333',
-    marginBottom: 16,
-    lineHeight: 24,
-  },
-  modalBold: {
-    fontWeight: '600',
-    color: '#008080',
-  },
-  modalDetails: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 24,
-    lineHeight: 20,
-  },
-  modalActions: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  modalCancelButton: {
-    flex: 1,
-    backgroundColor: '#f8f9fa',
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginRight: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-  },
-  modalCancelText: {
-    textAlign: 'center',
-    color: '#666',
-    fontSize: 16,
-    fontWeight: '500',
-  },
-  modalConfirmButton: {
-    flex: 1,
-    backgroundColor: '#008080',
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginLeft: 8,
-  },
-  modalConfirmText: {
-    textAlign: 'center',
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  
-});

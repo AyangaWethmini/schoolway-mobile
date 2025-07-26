@@ -94,9 +94,9 @@ const SchoolVanScreen = ({ navigation }) => {
 
         <View style={[styles.header, { backgroundColor : theme.colors.primary } ]}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <SWText style={styles.headerTitle}>Attendance</SWText>
+          <SWText uberBold style={styles.headerTitle}>Attendance</SWText>
         </View>
 
         <View style={styles.calendarCard}>
@@ -180,8 +180,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight:'bold',
-    color: '#000',
+    color: 'white',
   },
   calendarCard: {
     backgroundColor: '#fff',

@@ -72,16 +72,6 @@ const DashboardLayout = () => {
                         )
                     }} 
                 />
-                <Tabs.Screen 
-                    name="vansearch" 
-                    options={{ 
-                        title: 'Van Search', 
-                        tabBarIcon: ({focused}) => (
-                            <Ionicons name={"search"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
-                        ),
-                        href: null // Hide from tab bar if this should only be accessible via navigation
-                    }} 
-                />
             </Tabs>
         </ParentProtected>
     );

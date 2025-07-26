@@ -10,13 +10,19 @@ import {
 } from 'react-native';
 import { useAuth } from '../../auth/AuthContext';
 import Button from '../../components/button';
+import CurvedHeader from '../../components/CurvedHeader';
 import PasswordInput from '../../components/inputs';
 import Spacer from '../../components/Spacer';
+import { useTheme } from "../../theme/ThemeContext";
+
 import SWText from '../../components/SWText';
+
 
 const Profile = () => {
   const {logout} = useAuth();
   const [activeTab, setActiveTab] = useState('Personal Info');
+
+  const { theme } = useTheme();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -24,8 +30,119 @@ const Profile = () => {
   const [errors, setErrors] = useState({});
   const router = useRouter();
 
+  const styles = StyleSheet.create({
+    container: { flex: 1, backgroundColor: '#fff' },
+    header: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      padding: 16,
+      gap: 10,
+      borderBottomWidth: 1,
+      borderBottomColor: '#eee',
+    },
+    headerTitle: {
+      fontSize: 20,
+      fontWeight: '600',
+      color: '#000',
+    },
+    tabs: {
+      flexDirection: 'row',
+    },
+    tab: {
+      flex: 1,
+      paddingTop:15,
+      alignItems: 'center',
+    },
+    activeTab: {
+      backgroundColor: '#eee',
+    },
+    tabText: {
+      fontSize: 14,
+      color: '#888',
+    },
+    activeTabText: {
+      color: theme.colors.accentblue,
+    },
+    tabIndicator: {
+      height: 5,
+      width: '100%',
+      backgroundColor: theme.colors.accentblue,
+      marginTop: 12,
+    },
+    inactiveTabIndicator: {
+      height: 5,
+      width: '100%',
+      backgroundColor: '#eee',
+      marginTop: 12,
+    },
+    content: {
+      paddingHorizontal: 20,
+    },
+    avatarContainer: {
+      alignItems: 'start',
+      marginVertical: 50,
+    },
+    avatarCircle: {
+      width: 120,
+      height: 120,
+      borderRadius: 100,
+      backgroundColor: '#ddd',
+    },
+    editIcon: {
+      position: 'absolute',
+      bottom: 0,
+      left: 100,
+      backgroundColor: '#fff',
+      padding: 6,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: '#ccc',
+    },
+    infoRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      paddingVertical: 10,
+      marginHorizontal: 1,
+      borderBottomWidth: 0.5,
+      borderColor: '#ccc'
+    },
+    infoData:{
+    }
+    ,
+    rowIcon:{
+      flexDirection:'row',
+      alignItems:'center',
+      justifyContent:'center',
+      flex:1,
+    },
+    label: {
+      fontSize: 14,
+      fontWeight: '600',
+      color: '#000',
+      marginBottom: 4,
+    },
+    value: {
+      fontSize: 15,
+      color: '#555',
+    },
+    inlineRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 6,
+    },
+    securityContainer: {
+      paddingVertical: 20,
+      paddingHorizontal: 10,
+    },
+  });
+
+
   return (
     <SafeAreaView style={styles.container}>
+      <CurvedHeader 
+          title="Profile" 
+          theme={theme}
+      />
 
       <Spacer height={30}/>
 
@@ -169,108 +286,3 @@ const Profile = () => {
 
 export default Profile;
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    gap: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#000',
-  },
-  tabs: {
-    flexDirection: 'row',
-  },
-  tab: {
-    flex: 1,
-    paddingTop:15,
-    alignItems: 'center',
-  },
-   activeTab: {
-    backgroundColor: '#eee',
-  },
-  tabText: {
-    fontSize: 14,
-    color: '#888',
-  },
-  activeTabText: {
-    color: '#000',
-  },
-  tabIndicator: {
-    height: 5,
-    width: '100%',
-    backgroundColor: '#000',
-    marginTop: 12,
-  },
-  inactiveTabIndicator: {
-    height: 5,
-    width: '100%',
-    backgroundColor: '#eee',
-    marginTop: 12,
-  },
-  content: {
-    paddingHorizontal: 20,
-  },
-  avatarContainer: {
-    alignItems: 'start',
-    marginVertical: 50,
-  },
-  avatarCircle: {
-    width: 120,
-    height: 120,
-    borderRadius: 100,
-    backgroundColor: '#ddd',
-  },
-  editIcon: {
-    position: 'absolute',
-    bottom: 0,
-    left: 100,
-    backgroundColor: '#fff',
-    padding: 6,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#ccc',
-  },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 10,
-    marginHorizontal: 1,
-    borderBottomWidth: 0.5,
-    borderColor: '#ccc'
-  },
-  infoData:{
-  }
-  ,
-  rowIcon:{
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center',
-    flex:1,
-  },
-  label: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#000',
-    marginBottom: 4,
-  },
-  value: {
-    fontSize: 15,
-    color: '#555',
-  },
-  inlineRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  securityContainer: {
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-  },
-});

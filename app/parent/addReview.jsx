@@ -277,9 +277,9 @@ const AddReview = ({ navigation, onBack }) => {
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
                     <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                        <Ionicons name="arrow-back" size={24} color="#000" />
+                        <Ionicons name="arrow-back" size={24} color="white" />
                     </TouchableOpacity>
-                    <SWText style={styles.headerTitle}>Add Review</SWText>
+                    <SWText uberBold style={styles.headerTitle}>Add Review</SWText>
                 </View>
 
                 <View style={styles.formContainer}>
@@ -350,8 +350,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 18,
-        fontWeight: 'bold',
-        color: '#000',
+        color: 'white',
     },
     formContainer: {
         padding: 20,

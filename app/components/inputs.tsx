@@ -838,4 +838,223 @@ export const FileUpload = ({
     );
 };
 
+
+interface NumberInputProps extends Omit<BaseInputProps, 'value'> {
+    minValue?: number;
+    maxValue?: number;
+    onValueChange?: (value: number | null) => void;
+    value?: number | null;
+    allowZero?: boolean;
+}
+
+export const NumberInput = ({
+    label,
+    placeholder,
+    error,
+    disabled = false,
+    minValue = 1, // Default minimum is 1 (doesn't allow 0 or negative)
+    maxValue = 999,
+    onValueChange,
+    value,
+    allowZero = false,
+    passstyle,
+    ...props
+}: NumberInputProps) => {
+    const { theme } = useTheme();
+    const [isFocused, setIsFocused] = useState(false);
+    const [displayValue, setDisplayValue] = useState(value ? value.toString() : '');
+
+    const inputStyles = StyleSheet.create({
+        container: {
+            marginBottom: theme.spacing.md,
+        },
+        label: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.textgreydark,
+            marginBottom: theme.spacing.xs,
+            fontWeight: '600',
+        },
+        inputContainer: {
+            flexDirection: 'row',
+            alignItems: 'center',
+            borderWidth: 1,
+            borderColor: error ? theme.colors.error : 
+                        isFocused ? theme.colors.primary : 
+                        theme.colors.textgreylight,
+            borderRadius: theme.borderRadius.medium,
+            backgroundColor: disabled ? theme.colors.textgreylight : theme.colors.backgroud,
+            minHeight: 50,
+        },
+        input: {
+            flex: 1,
+            padding: theme.spacing.sm,
+            fontSize: theme.fontSizes.medium,
+            color: theme.colors.textblack,
+            textAlign: 'center',
+        },
+        button: {
+            width: 40,
+            height: 40,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: theme.colors.primary + '20',
+            margin: 5,
+            borderRadius: theme.borderRadius.small,
+        },
+        buttonDisabled: {
+            backgroundColor: theme.colors.textgreylight,
+        },
+        buttonText: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: theme.colors.primary,
+        },
+        buttonTextDisabled: {
+            color: theme.colors.textgreydark,
+        },
+        error: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.error,
+            marginTop: theme.spacing.xs,
+        },
+        helperText: {
+            fontSize: theme.fontSizes.small,
+            color: theme.colors.textgreydark,
+            marginTop: theme.spacing.xs,
+            textAlign: 'center',
+        },
+    });
+
+    const validateAndSetValue = (newValue: string) => {
+        // Allow empty string for clearing
+        if (newValue === '') {
+            setDisplayValue('');
+            onValueChange?.(null);
+            return;
+        }
+
+        // Remove non-numeric characters
+        const numericValue = newValue.replace(/[^0-9]/g, '');
+        
+        if (numericValue === '') {
+            setDisplayValue('');
+            onValueChange?.(null);
+            return;
+        }
+
+        const parsedValue = parseInt(numericValue, 10);
+
+        // Check constraints
+        if (!allowZero && parsedValue <= 0) {
+            return; // Don't update if value is 0 or less and not allowed
+        }
+
+        if (parsedValue < minValue || parsedValue > maxValue) {
+            return; // Don't update if outside bounds
+        }
+
+        setDisplayValue(parsedValue.toString());
+        onValueChange?.(parsedValue);
+    };
+
+    const incrementValue = () => {
+        const currentValue = displayValue === '' ? 0 : parseInt(displayValue, 10);
+        let newValue = currentValue + 1;
+        
+        if (!allowZero && newValue <= 0) {
+            newValue = minValue;
+        }
+        
+        if (newValue <= maxValue) {
+            setDisplayValue(newValue.toString());
+            onValueChange?.(newValue);
+        }
+    };
+
+    const decrementValue = () => {
+        const currentValue = displayValue === '' ? 0 : parseInt(displayValue, 10);
+        let newValue = currentValue - 1;
+        
+        if (!allowZero && newValue <= 0) {
+            return; // Don't allow decrement below minimum
+        }
+        
+        if (newValue >= minValue) {
+            setDisplayValue(newValue.toString());
+            onValueChange?.(newValue);
+        }
+    };
+
+    const canDecrement = () => {
+        const currentValue = displayValue === '' ? 0 : parseInt(displayValue, 10);
+        return currentValue > minValue && !disabled;
+    };
+
+    const canIncrement = () => {
+        const currentValue = displayValue === '' ? 0 : parseInt(displayValue, 10);
+        return currentValue < maxValue && !disabled;
+    };
+
+    return (
+        <View style={inputStyles.container}>
+            {label && <Text style={inputStyles.label}>{label}</Text>}
+            <View style={inputStyles.inputContainer}>
+                {/* Decrement Button */}
+                <TouchableOpacity
+                    style={[
+                        inputStyles.button,
+                        !canDecrement() && inputStyles.buttonDisabled,
+                    ]}
+                    onPress={decrementValue}
+                    disabled={!canDecrement()}
+                >
+                    <Text style={[
+                        inputStyles.buttonText,
+                        !canDecrement() && inputStyles.buttonTextDisabled,
+                    ]}>−</Text>
+                </TouchableOpacity>
+
+                {/* Input Field */}
+                <TextInput
+                    style={[inputStyles.input, passstyle]}
+                    placeholder={placeholder}
+                    placeholderTextColor={theme.colors.textgreylight}
+                    value={displayValue}
+                    onChangeText={validateAndSetValue}
+                    keyboardType="numeric"
+                    editable={!disabled}
+                    onFocus={() => setIsFocused(true)}
+                    onBlur={() => setIsFocused(false)}
+                    maxLength={3} // Reasonable limit for age/grade inputs
+                    {...props}
+                />
+
+                {/* Increment Button */}
+                <TouchableOpacity
+                    style={[
+                        inputStyles.button,
+                        !canIncrement() && inputStyles.buttonDisabled,
+                    ]}
+                    onPress={incrementValue}
+                    disabled={!canIncrement()}
+                >
+                    <Text style={[
+                        inputStyles.buttonText,
+                        !canIncrement() && inputStyles.buttonTextDisabled,
+                    ]}>+</Text>
+                </TouchableOpacity>
+            </View>
+            
+            {/* Helper text showing range */}
+            {!error && (
+                <Text style={inputStyles.helperText}>
+                    Range: {minValue} - {maxValue}
+                </Text>
+            )}
+            
+            {error && <Text style={inputStyles.error}>{error}</Text>}
+        </View>
+    );
+};
+
 export default TextInputComponent;

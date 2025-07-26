@@ -5,6 +5,7 @@ import {
   Alert,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   TouchableOpacity,
   View
@@ -47,11 +48,12 @@ const AddChild = ({ navigation, onBack }) => {
     return (
       <SafeAreaView style={styles.container}>
         <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-          <View style={[styles.header , { backgroundColor : theme.colors.primary } ]}>
+          <View style={[styles.header , { backgroundColor: theme.colors.primary } ]}>
+            <StatusBar barStyle="light-content" backgroundColor={theme.colors.primary} />
             <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-              <Ionicons name="arrow-back" size={24} color="#000" />
+              <Ionicons name="arrow-back" size={24} color="white" />
             </TouchableOpacity>
-            <SWText style={styles.headerTitle}>Add child info</SWText>
+            <SWText uberBold style={styles.headerTitle}>Add child info</SWText>
           </View>
 
           <View style={styles.formContainer}>
@@ -72,31 +74,46 @@ const AddChild = ({ navigation, onBack }) => {
 
             <View style={styles.inputGroup}>
               <SWText style={styles.label}>School</SWText>
-              <DropdownInput
-                placeholder="Select School's name"
-                options={[
-                  { label: 'Ananda College', value: 'ananda' },
-                  { label: 'Royal College', value: 'royal' },
-                  { label: 'Visakha Vidyalaya', value: 'visakha' },
-                  { label: 'Devi Balika Vidyalaya', value: 'devi' },
-                  { label: 'Nalanda College', value: 'nalanda' },
-                  { label: 'Dharmaraja College', value: 'dharmaraja' },
-                  { label: 'Mahamaya Girls\' College', value: 'mahamaya' },
-                ]}
-                selectedValue={selectedSchool}
-                onSelect={(value) => setSelectedSchool(value)}
-              />
+                <DropdownInput
+                  placeholder="Select School's name"
+                  options={[
+                    { label: 'Ananda College', value: 'ananda' },
+                    { label: 'Royal College', value: 'royal' },
+                    { label: 'Visakha Vidyalaya', value: 'visakha' },
+                    { label: 'Devi Balika Vidyalaya', value: 'devi' },
+                    { label: 'Nalanda College', value: 'nalanda' },
+                    { label: 'Dharmaraja College', value: 'dharmaraja' },
+                    { label: 'Mahamaya Girls\' College', value: 'mahamaya' },
+                  ]}
+                  selectedValue={selectedSchool}
+                  onSelect={(value) => setSelectedSchool(value)}
+                />
             </View>
 
             <View style={styles.inputGroup}>
-              <SWText style={styles.label}>Pickup time</SWText>
+              <SWText style={styles.label}>Start time</SWText>
                 <DropdownInput
-                  placeholder="Select a time"
+                  placeholder="Select your School's Start time"
+                  options={[
+                            { label: '07:10 AM', value: '07:10' },
+                            { label: '07:30 AM', value: '07:30' },
+                            { label: '08:00 AM', value: '08:00' },
+                          ]}
+                  selectedValue={pickupTime}
+                  onSelect={(value) => setPickupTime(value)}
+                />
+            </View>
+
+            <View style={styles.inputGroup}>
+              <SWText style={styles.label}>End time</SWText> 
+                <DropdownInput
+                  placeholder="Select your School's End time"
                   options={[
                     { label: '11:00 AM', value: '11:00' },
                     { label: '11:30 AM', value: '11:30' },
                     { label: '12:30 PM', value: '12:30' },
-                    { label: '1:30 PM', value: '13:30' }, // 24-hour format if needed
+                    { label: '01:10 PM', value: '13:10' },
+                    { label: '01:30 PM', value: '13:30' },
                   ]}
                   selectedValue={pickupTime}
                   onSelect={(value) => setPickupTime(value)}
@@ -164,8 +181,7 @@ const AddChild = ({ navigation, onBack }) => {
     },
     headerTitle: {
       fontSize: 18,
-      fontWeight: 'bold',
-      color: '#000',
+      color: 'white',
     },
     formContainer: {
       padding: 20,

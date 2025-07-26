@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, TextProps, TextStyle } from 'react-native';
+import { Text, TextProps } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 
 interface SWTextProps extends TextProps {
@@ -23,7 +23,7 @@ interface SWTextProps extends TextProps {
   grayl?: boolean; // light gray
   blue?: boolean;
   primary?: boolean;
-  
+  darkPrimary?: boolean;
   // Text alignment
   left?: boolean;
   center?: boolean;
@@ -80,6 +80,7 @@ const SWText: React.FC<SWTextProps> = (props) => {
     grayl,
     blue,
     primary,
+    darkPrimary,
     
     // Alignment props
     left,
@@ -132,6 +133,7 @@ const SWText: React.FC<SWTextProps> = (props) => {
   if (grayl) textColor = theme.colors.textgreylight;
   if (blue) textColor = theme.colors.accentblue;
   if (primary) textColor = theme.colors.primary;
+  if (darkPrimary) textColor = theme.colors.accentblue;
   
   // Determine text alignment
   let textAlign: 'auto' | 'left' | 'right' | 'center' | 'justify' = 'auto';

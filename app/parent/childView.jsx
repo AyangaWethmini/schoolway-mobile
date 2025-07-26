@@ -99,11 +99,11 @@ const ChildView = ({ navigation, route }) => {
         {/* Header */}
         <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <SWText style={styles.headerTitle}>Student Details</SWText>
+          <SWText uberBold style={styles.headerTitle}>Student Details</SWText>
           <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
-            <Ionicons name={isEditMode ? "close" : "create"} size={24} color="#000" />
+            <Ionicons name={isEditMode ? "close" : "create"} size={24} color="white" />
           </TouchableOpacity>
         </View>
 
@@ -162,7 +162,7 @@ const ChildView = ({ navigation, route }) => {
               />
               <Button
                 title="Add a Review"
-                varient="outlined-black"
+                varient="outlined-primary"
                 onPress={() => router.push('/parent/addReview')}
               />
             </View>
@@ -274,8 +274,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
+    color: 'white',
     flex: 1,
     textAlign: 'center',
     marginLeft: -29, // Compensate for edit button
