@@ -1,61 +1,71 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import { useIsFocused } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../auth/AuthContext';
+import Loading3 from '../../../components/LoadingComponents/Loading4';
 import { useTheme } from "../../../theme/ThemeContext";
+import IdImagesSection from './IdImageSection';
+
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
+
+// IdImagesSection Component
 
 const DriverProfileOverview = () => {
   const { user } = useAuth();
   const router = useRouter();
   const { theme } = useTheme();
   const [driverData, setDriverData] = useState({user: null});
-  const [isLoading, setIsLoading] = useState(true); // Add loading state
+  const [isLoading, setIsLoading] = useState(true);
   const isFocused = useIsFocused();
   
   const styles = StyleSheet.create({
     container: {
       flex: 1,
-      padding: theme.spacing.md,
-      backgroundColor: theme.colors.backgroud,
+      backgroundColor: '#f8f9fa',
     },
-    title: {
-      fontSize: theme.fontSizes.large,
+    headerCard: {
+      backgroundColor: '#ffffff',
+      margin: 16,
+      borderRadius: 12,
+      padding: 20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    cardTitle: {
+      fontSize: 18,
       fontWeight: 'bold',
-      marginBottom: theme.spacing.md,
-      color: theme.colors.textblack,
+      color: '#2c3e50',
+      textAlign: 'center',
+      marginBottom: 4,
     },
-    section: {
-      paddingVertical: theme.spacing.sm,
+    cardSubtitle: {
+      fontSize: 14,
+      color: '#7f8c8d',
+      textAlign: 'center',
+      marginBottom: 20,
     },
-    sectionTitle: {
-      fontSize: theme.fontSizes.medium,
-      fontWeight: '600',
-      color: theme.colors.textblack,
-      marginBottom: theme.spacing.sm,
-    },
-    separator: {
-      height: 1,
-      backgroundColor: theme.colors.textgreylight,
-      marginVertical: theme.spacing.sm,
-    },
-    profileHeader: {
+    profileSection: {
       flexDirection: 'row',
       alignItems: 'center',
+      marginBottom: 20,
+    },
+    avatarContainer: {
+      position: 'relative',
+      marginRight: 20,
     },
     avatar: {
-      width: 90,
-      height: 90,
-      borderRadius: 45,
+      width: 130,
+      height: 130,
+      borderRadius: 65,
+      borderWidth: 3,
       borderColor: theme.colors.primary,
-      borderWidth: 2, 
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginRight: theme.spacing.md,
       overflow: 'hidden',
     },
     avatarImage: {
@@ -63,94 +73,188 @@ const DriverProfileOverview = () => {
       height: '100%',
       resizeMode: 'cover',
     },
-    avatarText: {
-      color: 'white',
-      fontSize: theme.fontSizes.large + 8,
-      fontWeight: 'bold',
-    },
     profileInfo: {
       flex: 1,
-      justifyContent: 'center',
     },
-    name: {
-      fontSize: theme.fontSizes.medium + 2,
+    driverName: {
+      fontSize: 22,
       fontWeight: 'bold',
-      color: theme.colors.textblack,
-      marginBottom: theme.spacing.xs,
+      color: '#2c3e50',
+      marginBottom: 4,
     },
-    editButton: {
-      position: 'absolute',
-      top: theme.spacing.md,
-      right: theme.spacing.md,
-      padding: theme.spacing.sm,
-      backgroundColor: theme.colors.backgroud,
+    driverId: {
+      fontSize: 16,
+      color: theme.colors.primary,
+      fontWeight: '600',
+      marginBottom: 8,
+    },
+    statusBadge: {
+      backgroundColor: '#27ae60',
+      paddingHorizontal: 12,
+      paddingVertical: 4,
       borderRadius: 20,
-      borderWidth: 1,
-      borderColor: theme.colors.textgreylight,
-      zIndex: 10,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 1,
-      elevation: 1,
+      alignSelf: 'flex-start',
     },
-    details: {
-      fontSize: theme.fontSizes.small + 2,
-      color: theme.colors.textgreylight,
-      marginBottom: 2,
-      fontWeight : 400
+    statusText: {
+      color: '#ffffff',
+      fontSize: 12,
+      fontWeight: '600',
+    },
+    detailsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    detailItem: {
+      width: '48%',
+      marginBottom: 16,
+    },
+    detailLabel: {
+      fontSize: 12,
+      color: '#7f8c8d',
+      fontWeight: '600',
+      marginBottom: 4,
+      textTransform: 'uppercase',
+    },
+    detailValue: {
+      fontSize: 16,
+      color: '#2c3e50',
+      fontWeight: '500',
+    },
+    licenseCard: {
+      backgroundColor: '#ffffff',
+      margin: 16,
+      marginTop: 0,
+      borderRadius: 12,
+      padding: 20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    licenseHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    licenseTitle: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#2c3e50',
+      marginLeft: 8,
+    },
+    licenseDetails: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 12,
+    },
+    statsCard: {
+      backgroundColor: '#ffffff',
+      margin: 16,
+      marginTop: 0,
+      borderRadius: 12,
+      padding: 20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    statsHeader: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#2c3e50',
+      marginBottom: 16,
+      textAlign: 'center',
     },
     statsContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
-      paddingVertical: theme.spacing.sm,
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 2,
-      backgroundColor: theme.colors.backgroud,
-      borderRadius: theme.borderRadius.small,
-      marginHorizontal: 5,
+      justifyContent: 'space-around',
     },
-    statCard: {
+    statItem: {
       alignItems: 'center',
-      flex: 1,
-  
     },
     statValue: {
-      fontSize: theme.fontSizes.large,
+      fontSize: 24,
       fontWeight: 'bold',
-      color: theme.colors.textblack,
+      color: theme.colors.primary,
+      marginBottom: 4,
     },
     statLabel: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textgreydark,
-      marginTop: theme.spacing.xs,
+      fontSize: 12,
+      color: '#7f8c8d',
+      fontWeight: '600',
     },
-    attribute : {
-      color : theme.colors.textgreydark,
-    } 
-   });
+    editButton: {
+      position: 'absolute',
+      top: 16,
+      right: 16,
+      backgroundColor: '#ffffff',
+      padding: 8,
+      borderRadius: 20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.2,
+      shadowRadius: 2,
+      elevation: 3,
+      zIndex: 10,
+    },
+    warningCard: {
+      backgroundColor: '#fff3cd',
+      margin: 16,
+      borderRadius: 8,
+      padding: 16,
+      borderLeftWidth: 4,
+      borderLeftColor: '#ffc107',
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    rejectedCard: {
+      backgroundColor: '#f8d7da',
+      borderLeftColor: '#dc3545',
+    },
+    warningText: {
+      color: '#856404',
+      fontWeight: '600',
+      flex: 1,
+      marginLeft: 8,
+    },
+    rejectedText: {
+      color: '#721c24',
+    },
+    qrSection: {
+      alignItems: 'center',
+      marginTop: 16,
+      paddingTop: 16,
+      borderTopWidth: 1,
+      borderTopColor: '#ecf0f1',
+    },
+    qrText: {
+      fontSize: 12,
+      color: '#7f8c8d',
+      marginTop: 8,
+    },
+  });
 
-   useEffect(() => {
-    // Fetch user data to show on profile from backend api mobile/profile/data
+  useEffect(() => {
     const fetchUserData = async () => {
-      setIsLoading(true); // Start loading
+      setIsLoading(true);
       try {
         const response = await fetch(`${API_URL}/mobile/driver/profile/${user.id}`);
         const data = await response.json();
         setDriverData(data);
+        console.log('Driver profile data : accessed');
+        // console.log('Driver Data:', data);
       } catch (error) {
         console.error('Error fetching user data:', error);
       } finally {
-        setIsLoading(false); // Stop loading
+        setIsLoading(false);
       }
     };
     fetchUserData();
-  }, [isFocused]); // Refetch when the screen is focused
+  }, [isFocused]);
 
-  // Helper to calculate years of experience from startedDriving date
   const getYearsOfExperience = (startedDriving) => {
     if (!startedDriving) return 0;
     const start = new Date(startedDriving);
@@ -163,103 +267,198 @@ const DriverProfileOverview = () => {
     return years;
   };
 
-  // Show loading indicator while data is being fetched
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getApprovalStatus = () => {
+    switch (user.approvalstatus) {
+      case 1: return { text: 'VERIFIED', color: '#27ae60' };
+      case 2: return { text: 'PENDING VERIFICATION', color: '#f39c12' };
+      default: return { text: 'REJECTED DRIVER', color: '#e74c3c' };
+    }
+  };
+
   if (isLoading || !driverData.user) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-        <Text>Loading...</Text>
-      </View>
+      // <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      //   {/* <Text>Loading...</Text>
+      // </View> */}
+      <Loading3 showMessage={true} message="Loading profile..." style={{ backgroundColor: 'rgba(0,0,0.1)' }} />
+
     );
   }
 
+  const status = getApprovalStatus();
+
   return (
-    <View style={styles.container}> 
+    <ScrollView style={styles.container}>
+      <TouchableOpacity style={styles.editButton} onPress={() => router.push('./DriverComponents/EditProfile')}>
+        <FontAwesome6 name="pencil" size={16} color="#7f8c8d" />
+      </TouchableOpacity>
 
       {user?.approvalstatus !== 1 && (
-        <View style={{
-          backgroundColor: '#FFF3CD',
-          borderRadius: 8,
-          padding: 10,
-          marginBottom: 12,
-          borderWidth: 1,
-          borderColor: '#FFECB5',
-          flexDirection: 'row',
-          alignItems: 'center',
-        }}>
-          <FontAwesome name="exclamation-triangle" size={18} color="#FFA500" style={{ marginRight: 8 }} />
-         {user.approvalstatus === 0 ? (
-          <Text style={{ color: '#856404', fontWeight: '600', flex: 1 }}>
-            Your account request is pending approval!
+        <View style={[styles.warningCard, user.approvalstatus === 2 && styles.rejectedCard]}>
+          <FontAwesome name="exclamation-triangle" size={18} color={user.approvalstatus === 0 ? "#ffc107" : "#dc3545"} />
+          <Text style={[styles.warningText, user.approvalstatus === 2 && styles.rejectedText]}>
+            {user.approvalstatus === 0 
+              ? "Your account request is pending approval!"
+              : "Your account has been rejected. Please contact support for more information."
+            }
           </Text>
-          ) : (
-           <Text style={{ color: '#D32F2F', fontWeight: '600', flex: 1 }}>
-            Your account has been rejected. Please contact support for more information.
-          </Text>
-          )}
         </View>
       )}
 
-      <TouchableOpacity style={styles.editButton} onPress={() => router.push('./DriverComponents/EditProfile')}>
-        <FontAwesome6 name="pencil" size={20} color="black" />
-      </TouchableOpacity>
-      {/* <Link href="/allindex" > see font type {user.approvalstatus}</Link> */}
-      
-      <View style={styles.section}>
-        <View style={styles.profileHeader}>
-          <View style={styles.avatar}>
-            <Image 
-
-              source={
-                driverData.user.dp !== "/Images/male_pro_pic_placeholder.png"
-                  ? { uri: driverData.user.dp }
-                  : { uri: "https://res.cloudinary.com/db6dfgjz0/image/upload/v1753010305/driver_gkkawq.webp" }
-              }
-              style={styles.avatarImage}
-            />
+      {/* Driver Identity Card */}
+      <View style={styles.headerCard}>
+        <Text style={styles.cardTitle}>SCHOOLWAY DRIVER IDENTITY</Text>
+        <Text style={styles.cardSubtitle}>Official Driver Identification Document</Text>
+        
+        <View style={styles.profileSection}>
+          <View style={styles.avatarContainer}>
+            <View style={styles.avatar}>
+              <Image 
+                source={
+                  driverData.user.dp !== "/Images/male_pro_pic_placeholder.png"
+                    ? { uri: driverData.user.dp }
+                    : { uri: "https://res.cloudinary.com/db6dfgjz0/image/upload/v1753010305/driver_gkkawq.webp" }
+                }
+                style={styles.avatarImage}
+              />
+            </View>
+            {user.approvalstatus === 1 && (
+              <View style={styles.verifiedBadge}>
+                <FontAwesome name="check" size={12} color="#ffffff" />
+              </View>
+            )}
           </View>
+          
           <View style={styles.profileInfo}>
-            <Text style={styles.name}>{driverData.user.firstname} {driverData.user.lastname}</Text>
-            <Text style={styles.details}>
-              <Text style={styles.attribute}>Driver ID: </Text>
-              {driverData.user.driverProfile?.id || 'N/A'}
+            <Text style={styles.driverName}>
+              {driverData.user.firstname} {driverData.user.lastname}
             </Text>
-            <Text style={styles.details}>
-              <Text style={styles.attribute}>Van Service:</Text> 
-              {driverData.user.driverProfile?.hasVan ? ' Enrolled' : ' Not enrolled'}
+            <Text style={styles.driverId}>
+              ID: {driverData.user.driverProfile?.id || 'PENDING'}
             </Text>
-            <Text style={styles.details}>
-              <Text style={styles.attribute}>Phone:</Text> 
-              {driverData.user.mobile || 'not given'}
+            <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
+              <Text style={styles.statusText}>{status.text}</Text>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.detailsGrid}>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>License ID</Text>
+            <Text style={styles.detailValue}>{driverData.user.driverProfile?.licenseId || 'N/A'}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>NIC Number</Text>
+            <Text style={styles.detailValue}>{driverData.user.nic || 'N/A'}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Mobile Phone</Text>
+            <Text style={styles.detailValue}>{driverData.user.mobile || 'N/A'}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>District</Text>
+            <Text style={styles.detailValue}>{driverData.user.district || 'N/A'}</Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Van Service</Text>
+            <Text style={styles.detailValue}>
+              {driverData.user.driverProfile?.hasVan ? 'Enrolled' : 'Not Enrolled'}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Experience</Text>
+            <Text style={styles.detailValue}>
+              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)} Years
             </Text>
           </View>
         </View>
-      </View>
-      
-      <View style={styles.section}>
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statValue}>42</Text>
-            <Text style={styles.statLabel}>Trips</Text>
+
+        <View style={styles.qrSection}>
+          <View style={{ 
+            width: 60, 
+            height: 60, 
+            backgroundColor: '#ecf0f1', 
+            borderRadius: 8,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+            <Ionicons name="qr-code-sharp" size={40} color="#7f8c8d" />
           </View>
-          <View style={styles.statCard}>
+          <Text style={styles.qrText}>Scan for verification</Text>
+        </View>
+      </View>
+
+      {/* License Information */}
+      <View style={styles.licenseCard}>
+        <View style={styles.licenseHeader}>
+          <FontAwesome name="id-card" size={20} color={theme.colors.primary} />
+          <Text style={styles.licenseTitle}>License Information</Text>
+        </View>
+        
+        <View style={styles.licenseDetails}>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>License Types</Text>
+            <Text style={styles.detailValue}>
+              {driverData.user.driverProfile?.licenseType?.join(', ') || 'N/A'}
+            </Text>
+          </View>
+          <View style={styles.detailItem}>
+            <Text style={styles.detailLabel}>Expiry Date</Text>
+            <Text style={styles.detailValue}>
+              {formatDate(driverData.user.driverProfile?.licenseExpiry)}
+            </Text>
+          </View>
+        </View>
+        
+        <View style={styles.detailItem}>
+          <Text style={styles.detailLabel}>Languages</Text>
+          <Text style={styles.detailValue}>
+            {driverData.user.driverProfile?.languages?.join(', ') || 'N/A'}
+          </Text>
+        </View>
+
+        {/* ID Images Collapsible Section */}
+        <IdImagesSection 
+          frontImage={driverData.user.driverProfile?.licenseFront}
+          backImage={driverData.user.driverProfile?.licenseBack}
+        />
+      </View>
+
+      {/* Performance Stats */}
+      <View style={styles.statsCard}>
+        <Text style={styles.statsHeader}>Performance Overview</Text>
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {driverData.user.driverProfile?.rating || 'N/A'}
+              {driverData.user.driverProfile?.rating?.toFixed(1) || '0.0'}
             </Text>
             <Text style={styles.statLabel}>Rating</Text>
           </View>
-          <View style={styles.statCard}>
+          <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)} yrs
+              {driverData.user.driverProfile?.ratingCount || '0'}
             </Text>
-            <Text style={styles.statLabel}>Experience</Text>
+            <Text style={styles.statLabel}>Reviews</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>
+              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)}
+            </Text>
+            <Text style={styles.statLabel}>Years Exp.</Text>
           </View>
         </View>
       </View>
-      
-      <View style={styles.separator} />
-    </View>
-
-  )
-}
+    </ScrollView>
+  );
+};
 
 export default DriverProfileOverview;
