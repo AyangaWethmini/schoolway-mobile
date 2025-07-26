@@ -75,7 +75,8 @@ const WithVanDashboard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    minHeight: '100%',
     padding: 20,
   },
   welcomeText: {

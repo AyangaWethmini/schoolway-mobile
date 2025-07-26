@@ -7,7 +7,9 @@ export default function Dashboard() {
   const { user } = useAuth();
 
   return (
-    <ScrollView style={styles.scrollView}>
+    <ScrollView style={styles.scrollView}
+  contentContainerStyle={{ paddingBottom: 40 }}
+  keyboardShouldPersistTaps="handled">
       {user?.hasVan ? <WithVanDashboard /> : <NoVanDashboard />}
     </ScrollView>
   );
