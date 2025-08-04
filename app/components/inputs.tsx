@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 
+
 import {
     FlatList,
     Modal,
@@ -844,6 +845,7 @@ interface NumberInputProps extends Omit<BaseInputProps, 'value'> {
     maxValue?: number;
     onValueChange?: (value: number | null) => void;
     value?: number | null;
+    hideButtons?: boolean;
     allowZero?: boolean;
 }
 
@@ -856,6 +858,7 @@ export const NumberInput = ({
     maxValue = 999,
     onValueChange,
     value,
+    hideButtons = true,
     allowZero = false,
     passstyle,
     ...props
@@ -877,6 +880,7 @@ export const NumberInput = ({
         inputContainer: {
             flexDirection: 'row',
             alignItems: 'center',
+            justifyContent: hideButtons ? 'center' : 'space-between',
             borderWidth: 1,
             borderColor: error ? theme.colors.error : 
                         isFocused ? theme.colors.primary : 
@@ -999,22 +1003,22 @@ export const NumberInput = ({
         <View style={inputStyles.container}>
             {label && <Text style={inputStyles.label}>{label}</Text>}
             <View style={inputStyles.inputContainer}>
-                {/* Decrement Button */}
-                <TouchableOpacity
-                    style={[
-                        inputStyles.button,
-                        !canDecrement() && inputStyles.buttonDisabled,
-                    ]}
-                    onPress={decrementValue}
-                    disabled={!canDecrement()}
-                >
-                    <Text style={[
-                        inputStyles.buttonText,
-                        !canDecrement() && inputStyles.buttonTextDisabled,
-                    ]}>−</Text>
-                </TouchableOpacity>
+                {!hideButtons && (
+                    <TouchableOpacity
+                        style={[
+                            inputStyles.button,
+                            !canDecrement() && inputStyles.buttonDisabled,
+                        ]}
+                        onPress={decrementValue}
+                        disabled={!canDecrement()}
+                    >
+                        <Text style={[
+                            inputStyles.buttonText,
+                            !canDecrement() && inputStyles.buttonTextDisabled,
+                        ]}>−</Text>
+                    </TouchableOpacity>
+                )}
 
-                {/* Input Field */}
                 <TextInput
                     style={[inputStyles.input, passstyle]}
                     placeholder={placeholder}
@@ -1025,25 +1029,27 @@ export const NumberInput = ({
                     editable={!disabled}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    maxLength={3} // Reasonable limit for age/grade inputs
+                    maxLength={3}
                     {...props}
                 />
 
-                {/* Increment Button */}
-                <TouchableOpacity
-                    style={[
-                        inputStyles.button,
-                        !canIncrement() && inputStyles.buttonDisabled,
-                    ]}
-                    onPress={incrementValue}
-                    disabled={!canIncrement()}
-                >
-                    <Text style={[
-                        inputStyles.buttonText,
-                        !canIncrement() && inputStyles.buttonTextDisabled,
-                    ]}>+</Text>
-                </TouchableOpacity>
+                {!hideButtons && (
+                    <TouchableOpacity
+                        style={[
+                            inputStyles.button,
+                            !canIncrement() && inputStyles.buttonDisabled,
+                        ]}
+                        onPress={incrementValue}
+                        disabled={!canIncrement()}
+                    >
+                        <Text style={[
+                            inputStyles.buttonText,
+                            !canIncrement() && inputStyles.buttonTextDisabled,
+                        ]}>+</Text>
+                    </TouchableOpacity>
+                )}
             </View>
+
             
             {/* Helper text showing range */}
             {!error && (
