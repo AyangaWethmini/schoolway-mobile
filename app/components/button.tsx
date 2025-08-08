@@ -33,7 +33,7 @@ export const Button = ({title, varient = 'primary', passstyles=null, disabled = 
                            'transparent',
             borderColor:
                         varient === 'outlined-primary' ? theme.colors.primary :
-                        varient === 'outlined-primaryDark' ? theme.colors.accent1 :
+                        varient === 'outlined-primaryDark' ? theme.colors.accentblue :
                         varient === 'outlined-secondary' ? theme.colors.secondary :
                         varient === 'outlined-secondaryDark' ? theme.colors.secondaryDark :
                         'transparent',
@@ -43,7 +43,7 @@ export const Button = ({title, varient = 'primary', passstyles=null, disabled = 
         text: {
             color: 
                    varient === 'outlined-primary' ? theme.colors.primary : 
-                   varient === 'outlined-primaryDark' ? theme.colors.accent1 : 
+                   varient === 'outlined-primaryDark' ? theme.colors.accentblue : 
                    varient === 'outlined-secondary' ? theme.colors.secondary :
                    varient === 'outlined-secondaryDark' ? theme.colors.secondaryDark : 
                    varient === 'primary-transparent' ? theme.colors.primary :
