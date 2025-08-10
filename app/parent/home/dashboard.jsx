@@ -1,6 +1,8 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import AddButton from '../../components/AddButton';
 import CurvedHeader from '../../components/CurvedHeader';
@@ -9,6 +11,8 @@ import Spacer from '../../components/Spacer';
 import { Button } from "../../components/button";
 import { useTheme } from "../../theme/ThemeContext";
 import { baseStyles } from "../../theme/theme";
+
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const Dashboard = () => {
   const router = useRouter();  
@@ -64,6 +68,39 @@ const Dashboard = () => {
       isAssigned: false
     }
   ]);
+
+   useEffect(() => {
+    const fetchChildren = async () => {
+      try {
+         const session = await AsyncStorage.getItem('user_session'); // Get logged-in user ID
+        
+        if (!session) {
+          console.error("No user session found");
+          return;
+        }
+
+          const user = JSON.parse(session);
+
+          const response = await fetch(`${API_URL}/child/parent/${user.user.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            }
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch children");
+          }
+
+          const data = await response.json();
+          setChildren(data); // Save to state
+      } catch (error) {
+        console.error("Error fetching children:", error);
+      }
+    };
+
+    fetchChildren();
+  }, []);
 
   const getStatusColor = (status) => {
     const {theme} = useTheme();
@@ -127,7 +164,7 @@ const Dashboard = () => {
                     <View style={styles.cardHeader}>
                       <SWText style={styles.childName}>{child.name}</SWText>
                       <View style={styles.gradeContainer}>
-                        <SWText style={styles.childGrade}>{child.grade}</SWText>
+                        <SWText style={styles.childGrade}>Grade {child.grade}</SWText>
                       </View>
                     </View>
                     
@@ -150,7 +187,7 @@ const Dashboard = () => {
                       <Button
                         title="View Details"
                         varient="primary-transparent"
-                        onPress={() => router.push('/parent/childView')}
+                        onPress={() => router.push(`/parent/childView/${child.id}`)}
                         passstyles={child.isAssigned ? { flex: 1 } : null}
                       />
                       {!child.isAssigned && (

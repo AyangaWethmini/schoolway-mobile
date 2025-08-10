@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
@@ -113,19 +114,30 @@ const AddChild = () => {
     });
 
     try {
-      const response = await fetch(`${API_URL}/child`, {
-        method: 'POST',
-        body: formData,
-        // Note: Do NOT set Content-Type manually; let fetch set it automatically
-      });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit');
+      const session = await AsyncStorage.getItem('user_session'); // Get ID from storage
+
+      
+      if (session){
+         const user = JSON.parse(session);
+
+         formData.append('userId',user.user.id);
+         console.log("User ID:", user.user.id);
+         const response = await fetch(`${API_URL}/child`, {
+          method: 'POST',
+          body: formData,
+          // Note: Do NOT set Content-Type manually; let fetch set it automatically
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to submit');
+        }
+
+        const result = await response.json();
+        Alert.alert('Success', 'Child information added successfully!');
+        router.back();
+       
       }
-
-      const result = await response.json();
-      Alert.alert('Success', 'Child information added successfully!');
-      router.back();
 
     } catch (error) {
       console.error('Error submitting child:', error);

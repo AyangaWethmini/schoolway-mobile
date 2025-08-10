@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-
 import {
   Alert,
   Dimensions,
@@ -12,16 +11,18 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { Button } from "../components/button";
-import TextInputComponent from '../components/inputs';
-import SWText from '../components/SWText';
-import { useTheme } from "../theme/ThemeContext";
+import { Button } from "../../components/button";
+import TextInputComponent from '../../components/inputs';
+import SWText from '../../components/SWText';
+import { useTheme } from "../../theme/ThemeContext";
 
 const { width } = Dimensions.get('window');
 
 const ChildView = ({ navigation, route }) => {
   const { theme } = useTheme();
   const router = useRouter();  
+
+  const { id } = useLocalSearchParams();
   
   const [isEditMode, setIsEditMode] = useState(false);
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
@@ -30,7 +31,7 @@ const ChildView = ({ navigation, route }) => {
   // Student data state
   const [studentData, setStudentData] = useState({
     name: 'Duleepa Edirisinghe',
-    age: '8',
+    age: id,
     grade: 'Grade 3',
     school: 'St. Mary\'s Elementary',
     pickupAddress: '123 Main Street, Colombo 03',
