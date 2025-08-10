@@ -147,8 +147,8 @@ const AddChild = () => {
         <View style={styles.formContainer}>
           {/* Name, Age, Grade */}
           <TextInputComponent placeholder="Enter Child's name" value={childName} onChangeText={setChildName} />
-          <NumberInput placeholder="Enter Child's age" value={age} hideButtons={false} onChangeText={setAge} />
-          <NumberInput placeholder="Enter Child's Grade" value={grade} hideButtons={false} onChangeText={setGrade} />
+          <NumberInput placeholder="Enter Child's age" value={age}  onChangeText={setAge} />
+          <NumberInput placeholder="Enter Child's Grade" value={grade} onChangeText={setGrade} />
 
           {/* Searchable School Dropdown */}
           <TouchableOpacity onPress={() => setShowModal(true)} style={styles.inputGroup}>
@@ -193,7 +193,8 @@ const AddChild = () => {
           <DropdownInput placeholder="Select End Time" options={[
             { label: '11:00 AM', value: '11:00' },
             { label: '12:00 PM', value: '12:00' },
-            { label: '01:00 PM', value: '13:00' }
+            { label: '01:10 PM', value: '13:10' },
+            { label: '01:30 PM', value: '13:30' },
           ]} selectedValue={schoolEndTime} onSelect={setSchoolEndTime} />
 
           {/* Special Notes */}

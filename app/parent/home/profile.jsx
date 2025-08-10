@@ -49,10 +49,7 @@ const Profile = () => {
       const session = await AsyncStorage.getItem('user_session');
       if (session) {
         const user = JSON.parse(session);
-        console.log('User session:', user);
 
-        // Now fetch profile using user.id
-        console.log(`${API_URL}/parent/${user.user.id}`);
         const res = await fetch(`${API_URL}/parent/${user.user.id}`, {
           method: 'GET',
           headers: {
@@ -67,13 +64,16 @@ const Profile = () => {
 
         const data = await res.json();
         setProfile(data);
-      } else {
+      } 
+      else {
         throw new Error('No session found');
       }
-    } catch (err) {
+    } 
+    catch (err) {
       console.error('Error:', err);
       setError(err.message);
-    } finally {
+    } 
+    finally {
       setLoading(false);
     }
   }
@@ -136,7 +136,8 @@ const Profile = () => {
 
     if (!newPassword) {
       validationErrors.newPassword = 'New password is required';
-    } else if (newPassword.length < 6) {
+    } 
+    else if (newPassword.length < 6) {
       validationErrors.newPassword = 'Password must be at least 6 characters';
     }
 
@@ -174,9 +175,11 @@ const Profile = () => {
       setNewPassword('');
       setConfirmPassword('');
 
-    } catch (error) {
+    } 
+    catch (error) {
       Alert.alert('Error', error.message);
-    } finally {
+    } 
+    finally {
       setpasswordLoading(false);
     }
   };
