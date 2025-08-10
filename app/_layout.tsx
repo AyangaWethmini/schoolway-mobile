@@ -3,7 +3,7 @@ import { router, Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as SystemUI from 'expo-system-ui';
 import { useEffect, useState } from 'react';
-import { StatusBar } from 'react-native';
+import { Platform, StatusBar } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './auth/AuthContext';
 import KeyboardAvoidingView from './components/KeyboardAvoidingView';
@@ -109,6 +109,7 @@ export default function RootLayout() {
               backgroundColor="#FAF8F8"
               scrollEnabled={true}
               dismissKeyboardOnTap={true}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
               <AppNavigator />
             </KeyboardAvoidingView>

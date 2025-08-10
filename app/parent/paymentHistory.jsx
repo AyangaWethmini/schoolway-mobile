@@ -5,11 +5,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native';
 import Spacer from '../components/Spacer';
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 
@@ -78,9 +78,9 @@ const PaymentHistory = ({ navigation }) => {
 
         <View style={[styles.header, { backgroundColor : theme.colors.primary } ]}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Payment History</Text>
+          <SWText uberBold style={styles.headerTitle}>Payment History</SWText>
         </View>
 
         <Spacer height={50}/>
@@ -89,26 +89,26 @@ const PaymentHistory = ({ navigation }) => {
         {paymentHistory.length === 0 ? (
           <View style={styles.emptyState}>
             <Ionicons name="document-text-outline" size={48} color="#ccc" />
-            <Text style={styles.emptyStateText}>No payment history yet</Text>
+            <SWText style={styles.emptyStateText}>No payment history yet</SWText>
           </View>
         ) : (
           paymentHistory.map(payment => (
             <View key={payment.id} style={styles.historyCard}>
               <View style={styles.historyHeader}>
                 <View style={styles.historyInfo}>
-                  <Text style={styles.historyChildName}>{payment.childName}</Text>
-                  <Text style={styles.historyVanService}>{payment.vanService}</Text>
+                  <SWText style={styles.historyChildName}>{payment.childName}</SWText>
+                  <SWText style={styles.historyVanService}>{payment.vanService}</SWText>
                 </View>
                 <View style={styles.historyAmount}>
-                  <Text style={styles.historyAmountText}>Rs. {payment.amount}</Text>
+                  <SWText uberBold style={styles.historyAmountText}>Rs. {payment.amount}</SWText>
                   <View style={[styles.statusBadge, { backgroundColor: getStatusColor(payment.status) }]}>
-                    <Text style={styles.statusText}>{payment.status}</Text>
+                    <SWText style={styles.statusText}>{payment.status}</SWText>
                   </View>
                 </View>
               </View>
               <View style={styles.historyFooter}>
-                <Text style={styles.historyDate}>{formatDate(payment.date)}</Text>
-                <Text style={styles.transactionId}>ID: {payment.transactionId}</Text>
+                <SWText style={styles.historyDate}>{formatDate(payment.date)}</SWText>
+                <SWText style={styles.transactionId}>ID: {payment.transactionId}</SWText>
               </View>
             </View>
           ))
@@ -142,8 +142,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight:'bold',
-    color: '#000',
+    color: 'white',
   },
   section: {
     marginHorizontal: 16,
@@ -184,7 +183,6 @@ const styles = StyleSheet.create({
   },
   historyAmountText: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: '#333',
     marginBottom: 4,
   },

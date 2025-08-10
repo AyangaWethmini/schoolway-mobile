@@ -34,13 +34,14 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "http://10.55.254.116:3000/api"
+      "apiUrl": "http://192.168.1.5:3000/api"
     }
   }
 }

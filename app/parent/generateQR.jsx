@@ -5,20 +5,20 @@ import { useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
 import { useEffect, useRef, useState } from 'react';
 import {
-    ActivityIndicator,
-    Alert,
-    Dimensions,
-    Platform,
-    SafeAreaView,
-    ScrollView,
-    Share,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Share,
+  StyleSheet,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import { useAuth } from '../auth/AuthContext';
+import SWText from '../components/SWText';
 import { useTheme } from '../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
@@ -50,7 +50,6 @@ const GenerateQR = () => {
       marginTop: theme.spacing.md,
       fontSize: theme.fontSizes.medium,
       color: theme.colors.textgreydark,
-      fontWeight: '500',
     },
     contentContainer: {
       alignItems: 'center',
@@ -92,7 +91,6 @@ const GenerateQR = () => {
     },
     childName: {
       fontSize: theme.fontSizes.medium + 2,
-      fontWeight: 'bold',
       color: theme.colors.accentblue,
       marginBottom: theme.spacing.xs,
     },
@@ -136,7 +134,6 @@ const GenerateQR = () => {
     buttonText: {
       color: 'white',
       fontSize: theme.fontSizes.medium,
-      fontWeight: 'bold',
       marginLeft: theme.spacing.sm,
     },
     disabledButton: {
@@ -152,7 +149,6 @@ const GenerateQR = () => {
     },
     instructionsTitle: {
       fontSize: theme.fontSizes.medium,
-      fontWeight: 'bold',
       color: '#856404',
       marginBottom: theme.spacing.sm,
     },
@@ -282,7 +278,7 @@ const GenerateQR = () => {
       <View style={styles.container}>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
-          <Text style={styles.loadingText}>Generating unique QR code...</Text>
+          <SWText style={styles.loadingText}>Generating unique QR code...</SWText>
         </View>
       </View>
     );
@@ -298,16 +294,16 @@ return (
         >
             <View style={styles.container}>
                 <View style={styles.contentContainer}>
-                    <Text style={styles.title}>Student QR Code</Text>
-                    <Text style={styles.subtitle}>
+                    <SWText h1>Student QR Code</SWText>
+                    <SWText h2 style={styles.subtitle}>
                         This QR code uniquely identifies your child for attendance tracking
-                    </Text>
+                    </SWText>
 
                     <View style={styles.childInfo}>
-                        <Text style={styles.childName}>{childName ? childName : 'Duleepa Anjana'}</Text>
-                        <Text style={styles.childId}>Student ID: 
+                        <SWText uberBold style={styles.childName}>{childName ? childName : 'Duleepa Anjana'}</SWText>
+                        <SWText style={styles.childId}>Student ID: 
                             {childId ? childId : ' Stu-100203'}
-                        </Text>
+                        </SWText>
                     </View>
 
                     <View style={styles.qrContainer}>
@@ -322,9 +318,9 @@ return (
                         />
                         
                         <View style={styles.qrInfo}>
-                            <Text style={styles.qrInfoText}>
+                            <SWText style={styles.qrInfoText}>
                                 Generated: {new Date().toLocaleDateString()}
-                            </Text>
+                            </SWText>
                         </View>
                     </View>
 
@@ -339,15 +335,15 @@ return (
                             ) : (
                                 <>
                                     <Ionicons name="download-outline" size={20} color="white" />
-                                    <Text style={styles.buttonText}>
+                                    <SWText uberBold style={styles.buttonText}>
                                         Download
-                                    </Text>
+                                    </SWText>
                                 </>
                             )}
                             {isDownloading && (
-                                <Text style={styles.buttonText}>
+                                <SWText uberBold style={styles.buttonText}>
                                     Saving...
-                                </Text>
+                                </SWText>
                             )}
                         </TouchableOpacity>
 
@@ -356,20 +352,20 @@ return (
                             onPress={shareQR}
                         >
                             <MaterialIcons name="share" size={18} color="white" />
-                            <Text style={styles.buttonText}>Share</Text>
+                            <SWText uberBold style={styles.buttonText}>Share</SWText>
                         </TouchableOpacity>
                     </View>
 
                     <View style={styles.instructionsContainer}>
-                        <Text style={styles.instructionsTitle}>How to use:</Text>
-                        <Text style={styles.instructionText}>
+                        <SWText uberBold style={styles.instructionsTitle}>How to use:</SWText>
+                        <SWText uberMedium style={styles.instructionText}>
                             • Show this QR code to the driver for attendance{'\n'}
                             • Get a physical copy of this and leave it with your child{'\n'}
                             • Each scan will record the time and location{'\n'}
                             • This will keep you notified about the child's safety{'\n'}
                             • Keep the QR code accessible on your phone{'\n'}
                             • Download and save as backup
-                        </Text>
+                        </SWText>
                     </View>
                 </View>
             </View>

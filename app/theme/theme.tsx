@@ -5,6 +5,8 @@ export interface Theme {
     colors : {
         primary : string;
         secondary : string;
+        accent1:string;
+        secondaryDark: string;
         accentblue : string;
         backgroud : string;
         textblack : string;
@@ -88,9 +90,12 @@ export const lightTheme: Theme = {
     
     
     colors : {
-        primary: "#FFC825",
-        secondary: "#030303",
-        accentblue: "#2B3674",
+        accentblue: "#005672",
+        primary: "#0099cc",
+        accent1:"#00bcd4",
+        secondary: "#00d4aa",
+        secondaryDark: "#029779",
+
         backgroud: "#FAF8F8",
         textblack: "#090A0A",
         textwhite : "#ffffff",

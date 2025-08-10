@@ -9,12 +9,12 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
-  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
 import { Button } from "../components/button";
+import TextInputComponent from '../components/inputs';
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 const { width } = Dimensions.get('window');
@@ -74,16 +74,16 @@ const ChildView = ({ navigation, route }) => {
  
   const InfoRow = ({ label, value, field }) => (
     <View style={styles.infoRow}>
-      <Text style={styles.infoLabel}>{label}:</Text>
+      <SWText style={styles.infoLabel}>{label}:</SWText>
       {isEditMode ? (
-        <TextInput
+        <TextInputComponent
           style={styles.editInput}
           value={value}
           onChangeText={(text) => setStudentData(prev => ({ ...prev, [field]: text }))}
           multiline={field === 'pickupAddress' || field === 'dropoffAddress' || field === 'specialNotes'}
         />
       ) : (
-        <Text style={styles.infoValue}>{value}</Text>
+        <SWText style={styles.infoValue}>{value}</SWText>
       )}
     </View>
   );
@@ -99,11 +99,11 @@ const ChildView = ({ navigation, route }) => {
         {/* Header */}
         <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Student Details</Text>
+          <SWText uberBold style={styles.headerTitle}>Student Details</SWText>
           <TouchableOpacity onPress={handleEdit} style={styles.editButton}>
-            <Ionicons name={isEditMode ? "close" : "create"} size={24} color="#000" />
+            <Ionicons name={isEditMode ? "close" : "create"} size={24} color="white" />
           </TouchableOpacity>
         </View>
 
@@ -112,31 +112,31 @@ const ChildView = ({ navigation, route }) => {
           <View style={styles.avatarContainer} pointerEvents="none">
             <Ionicons name="person-circle" size={80} color={'grey'} />
           </View>
-          <Text style={styles.studentName} pointerEvents="none">{studentData.name}</Text>
-          <Text style={styles.studentGrade} pointerEvents="none">{studentData.grade} • {studentData.school}</Text>
+          <SWText h1 style={styles.studentName} pointerEvents="none">{studentData.name}</SWText>
+          <SWText style={styles.studentGrade} pointerEvents="none">{studentData.grade} • {studentData.school}</SWText>
         </View>
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
           <TouchableOpacity style={styles.actionButton} onPress={handleMarkAttendance}>
             <Ionicons name="checkmark-circle" size={24} color={theme.colors.backgroundLightGreen} />
-            <Text style={styles.actionText}>Mark Attendance</Text>
+            <SWText style={styles.actionText}>Mark Attendance</SWText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/parent/childAttendance')}>
             <Ionicons name="calendar" size={24} color={theme.colors.accentblue} />
-            <Text style={styles.actionText}>View Calendar</Text>
+            <SWText style={styles.actionText}>View Calendar</SWText>
           </TouchableOpacity>
         </View>
         <View style={styles.quickActions}>
           <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/parent/generateQR')}>
             <Ionicons name="qr-code" size={24} color={theme.colors.accentblue} />
-            <Text style={styles.actionText}>Generate a QR code</Text>
+            <SWText style={styles.actionText}>Generate a QR code</SWText>
           </TouchableOpacity>
         </View>
 
         {/* Student Information - Add pointerEvents="box-none" for scrollable areas */}
         <View style={[styles.infoCard, styles.scrollableCard]} pointerEvents="box-none">
-          <Text style={styles.sectionTitle} pointerEvents="none">Personal Information</Text>
+          <SWText style={styles.sectionTitle} pointerEvents="none">Personal Information</SWText>
           <InfoRow label="Full Name" value={studentData.name} field="name" />
           <InfoRow label="Age" value={studentData.age} field="age" />
           <InfoRow label="Grade" value={studentData.grade} field="grade" />
@@ -146,7 +146,7 @@ const ChildView = ({ navigation, route }) => {
 
         {/* Transport Information */}
         <View style={[styles.infoCard, styles.scrollableCard]} pointerEvents="box-none">
-          <Text style={styles.sectionTitle} pointerEvents="none">Transport Information</Text>
+          <SWText style={styles.sectionTitle} pointerEvents="none">Transport Information</SWText>
           <InfoRow label="Pickup Address" value={studentData.pickupAddress} field="pickupAddress" />
           <InfoRow label="Drop-off Address" value={studentData.dropoffAddress} field="dropoffAddress" />
           { !(!studentData.vanNumber || studentData.vanNumber.trim() === '') &&
@@ -162,7 +162,7 @@ const ChildView = ({ navigation, route }) => {
               />
               <Button
                 title="Add a Review"
-                varient="outlined-black"
+                varient="outlined-primary"
                 onPress={() => router.push('/parent/addReview')}
               />
             </View>
@@ -178,14 +178,14 @@ const ChildView = ({ navigation, route }) => {
         </View>
 
         <View style={[styles.infoCard, styles.scrollableCard]} pointerEvents="box-none">
-          <Text style={styles.sectionTitle} pointerEvents="none">Contact Information</Text>
+          <SWText style={styles.sectionTitle} pointerEvents="none">Contact Information</SWText>
           <InfoRow label="Parent Contact" value={studentData.parentContact} field="parentContact" />
           <InfoRow label="Emergency Contact" value={studentData.emergencyContact} field="emergencyContact" />
         </View>
 
         {isEditMode && (
           <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-            <Text style={styles.saveButtonText}>Save Changes</Text>
+            <SWText style={styles.saveButtonText}>Save Changes</SWText>
           </TouchableOpacity>
         )}
       </ScrollView>
@@ -199,8 +199,8 @@ const ChildView = ({ navigation, route }) => {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Mark Tomorrow's Attendance</Text>
-            <Text style={styles.modalSubtitle}>for {studentData.name}</Text>
+            <SWText style={styles.modalTitle}>Mark Tomorrow's Attendance</SWText>
+            <SWText style={styles.modalSubtitle}>for {studentData.name}</SWText>
             
             <View style={styles.attendanceOptions}>
               <TouchableOpacity
@@ -211,7 +211,7 @@ const ChildView = ({ navigation, route }) => {
                 onPress={() => setAttendanceStatus('present')}
               >
                 <Ionicons name="checkmark-circle" size={30} color={theme.colors.backgroundLightGreen} />
-                <Text style={styles.optionText}>Present</Text>
+                <SWText style={styles.optionText}>Present</SWText>
               </TouchableOpacity>
               
               <TouchableOpacity
@@ -222,7 +222,7 @@ const ChildView = ({ navigation, route }) => {
                 onPress={() => setAttendanceStatus('absent')}
               >
                 <Ionicons name="close-circle" size={30} color={theme.colors.backgroundLightRed} />
-                <Text style={styles.optionText}>Absent</Text>
+                <SWText style={styles.optionText}>Absent</SWText>
               </TouchableOpacity>
             </View>
 
@@ -231,14 +231,14 @@ const ChildView = ({ navigation, route }) => {
                 style={styles.cancelButton}
                 onPress={() => setShowAttendanceModal(false)}
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <SWText style={styles.cancelButtonText}>Cancel</SWText>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.confirmButton, {backgroundColor : theme.colors.secondary} ,!attendanceStatus && styles.disabledButton]}
                 onPress={submitAttendance}
                 disabled={!attendanceStatus}
               >
-                <Text style={styles.confirmButtonText}>Confirm</Text>
+                <SWText style={styles.confirmButtonText}>Confirm</SWText>
               </TouchableOpacity>
             </View>
           </View>
@@ -274,8 +274,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#000',
+    color: 'white',
     flex: 1,
     textAlign: 'center',
     marginLeft: -29, // Compensate for edit button
@@ -302,8 +301,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   studentName: {
-    fontSize: 24,
-    fontWeight: 'bold',
     color: '#333',
     marginBottom: 5,
   },

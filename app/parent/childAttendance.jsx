@@ -6,11 +6,11 @@ import {
   SafeAreaView,
   ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View
 } from 'react-native';
-import TextHeading from '../components/TextHeading';
+import Spacer from '../components/Spacer';
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 const { width } = Dimensions.get('window');
@@ -94,18 +94,18 @@ const SchoolVanScreen = ({ navigation }) => {
 
         <View style={[styles.header, { backgroundColor : theme.colors.primary } ]}>
           <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>Attendance</Text>
+          <SWText uberBold style={styles.headerTitle}>Attendance</SWText>
         </View>
 
         <View style={styles.calendarCard}>
-          <TextHeading>Attendance Calendar - {getMonthName(selectedDate)} {selectedDate.getFullYear()}</TextHeading>
-          
+          <SWText h2>Attendance Calendar - {getMonthName(selectedDate)} {selectedDate.getFullYear()}</SWText>
+          <Spacer/>
           {/* Calendar Header */}
           <View style={styles.calendarHeader}>
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <Text key={day} style={styles.dayHeader}>{day}</Text>
+              <SWText key={day} bold style={styles.dayHeader}>{day}</SWText>
             ))}
           </View>
 
@@ -124,13 +124,12 @@ const SchoolVanScreen = ({ navigation }) => {
                     isToday && styles.today
                   ]}
                 >
-                  <Text style={[
+                  <SWText style={[
                     styles.dayText, { color : getAttendanceTextColor(date) } ,
                     !isCurrentMonth && styles.otherMonthText,
-                    isToday && styles.todayText
-                  ]}>
+                  ]} bold={isToday}  >
                     {date.getDate()}
-                  </Text>
+                  </SWText>
                 </View>
               );
             })}
@@ -140,15 +139,15 @@ const SchoolVanScreen = ({ navigation }) => {
           <View style={styles.legend}>
             <View style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: theme.colors.backgroundLightGreen }]} />
-              <Text style={styles.legendText}>Present</Text>
+              <SWText style={styles.legendText}>Present</SWText>
             </View>
             <View style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: theme.colors.backgroundLightRed }]} />
-              <Text style={styles.legendText}>Absent</Text>
+              <SWText style={styles.legendText}>Absent</SWText>
             </View>
             <View style={styles.legendItem}>
               <View style={[styles.legendColor, { backgroundColor: '#f0f0f0' }]} />
-              <Text style={styles.legendText}>No Record</Text>
+              <SWText style={styles.legendText}>No Record</SWText>
             </View>
           </View>
         </View>
@@ -181,8 +180,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight:'bold',
-    color: '#000',
+    color: 'white',
   },
   calendarCard: {
     backgroundColor: '#fff',
@@ -207,9 +205,6 @@ const styles = StyleSheet.create({
   },
   dayHeader: {
     width: (width - 80) / 7,
-    textAlign: 'center',
-    fontSize: 14,
-    fontWeight: 'bold',
     color: '#666',
   },
   calendarGrid: {
@@ -233,9 +228,6 @@ const styles = StyleSheet.create({
   },
   today: {
     borderWidth: 2,
-  },
-  todayText: {
-    fontWeight: 'bold',
   },
   legend: {
     flexDirection: 'row',
