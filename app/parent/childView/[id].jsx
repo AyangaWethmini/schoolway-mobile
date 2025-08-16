@@ -1,9 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
 import {
   Alert,
   Dimensions,
+  Image,
   Modal,
   SafeAreaView,
   ScrollView,
@@ -15,6 +18,8 @@ import { Button } from "../../components/button";
 import TextInputComponent from '../../components/inputs';
 import SWText from '../../components/SWText';
 import { useTheme } from "../../theme/ThemeContext";
+
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const { width } = Dimensions.get('window');
 
@@ -43,6 +48,38 @@ const ChildView = ({ navigation, route }) => {
     vanRoute: 'Route A - Morning',
     monthlyFee: 'Rs. 15,000'
   });
+
+  useEffect(() => {
+    if (!id) return; 
+
+    async function fetchStudent() {
+      try {
+        const response = await fetch(`${API_URL}/child/childView/${id}`);
+        if (!response.ok) throw new Error('Failed to fetch child data');
+        const data = await response.json();
+        console.log('Fetched student data:', data);
+        setStudentData({
+          name: data.name,
+          age: data.age,
+          grade: `Grade ${data.grade}`,
+          school: data.School.schoolName,
+          pickupAddress: data.pickupAddress || '',
+          dropoffAddress: data.dropoffAddress || '',
+          parentContact: data.UserProfile.mobile || '',
+          emergencyContact: data.emergencyContact || '',
+          specialNotes: data.specialNotes || '',
+          vanNumber: data.Van?.vanNumber || '',
+          vanRoute: data.Van?.route || '',
+          monthlyFee: data.Van?.monthlyFee ? `Rs. ${data.Van.monthlyFee}` : '',
+          profilePicture: data.profilePicture,
+        });
+      } catch (error) {
+        Alert.alert('Error', error.message);
+      }
+    }
+
+    fetchStudent();
+  }, [id]);
 
   const handleBack = () => {
     router.back();
@@ -99,7 +136,7 @@ const ChildView = ({ navigation, route }) => {
       >
         {/* Header */}
         <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>   
             <Ionicons name="arrow-back" size={24} color="white" />
           </TouchableOpacity>
           <SWText uberBold style={styles.headerTitle}>Student Details</SWText>
@@ -111,7 +148,15 @@ const ChildView = ({ navigation, route }) => {
         {/* Student Profile Card - Add pointerEvents="box-none" to allow scroll through */}
         <View style={[styles.profileCard, styles.scrollableCard]} pointerEvents="box-none">
           <View style={styles.avatarContainer} pointerEvents="none">
-            <Ionicons name="person-circle" size={80} color={'grey'} />
+            {studentData.profilePicture ? (
+              <Image
+                source={{ uri: studentData.profilePicture }}
+                style={{ width: 80, height: 80, borderRadius: 40 }}
+                resizeMode="cover"
+              />
+          ) : (
+              <Ionicons name="person-circle" size={80} color={'grey'} />
+          )}
           </View>
           <SWText h1 style={styles.studentName} pointerEvents="none">{studentData.name}</SWText>
           <SWText style={styles.studentGrade} pointerEvents="none">{studentData.grade} • {studentData.school}</SWText>

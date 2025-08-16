@@ -41,7 +41,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "http://10.22.163.251:3000/api"
+      "apiUrl": "http://10.21.90.142:3000/api"
     }
   }
 }
