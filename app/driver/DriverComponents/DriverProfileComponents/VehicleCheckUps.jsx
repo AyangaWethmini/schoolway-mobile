@@ -1,6 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import SWText from '../../../components/SWText';
 import { useTheme } from '../../../theme/ThemeContext';
 
 const DocumentItem = ({ 
@@ -55,8 +56,8 @@ const DocumentItem = ({
   return (
     <View style={styles.documentItem}>
       <View style={{ flex: 1 }}>
-        <Text style={styles.documentName}>{name}</Text>
-        <Text style={styles.documentDate}>Valid until: {validUntil}</Text>
+        <SWText style={styles.documentName}>{name}</SWText>
+        <SWText style={styles.documentDate}>Valid until: {validUntil}</SWText>
       </View>
       <View style={styles.documentActions}>
         <TouchableOpacity 
@@ -64,14 +65,14 @@ const DocumentItem = ({
           onPress={onUpload}
         >
           <FontAwesome name="upload" size={12} color="white" />
-          <Text style={styles.smallButtonText}>{uploadLabel}</Text>
+          <SWText style={styles.smallButtonText}>{uploadLabel}</SWText>
         </TouchableOpacity>
         <TouchableOpacity 
           style={[styles.smallButton, { backgroundColor: theme.colors.accentblue }]}
           onPress={onRemind}
         >
           <FontAwesome name="bell" size={12} color="white" />
-          <Text style={styles.smallButtonText}>{remindLabel}</Text>
+          <SWText style={styles.smallButtonText}>{remindLabel}</SWText>
         </TouchableOpacity>
       </View>
     </View>
@@ -254,7 +255,7 @@ const LicenseAndVehicleCheckups = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.sectionTitle}>License & Vehicle Status</Text>
+      <SWText style={styles.sectionTitle}>License & Vehicle Status</SWText>
       
       {/* License Expiration Section */}
       <TouchableOpacity 
@@ -263,7 +264,7 @@ const LicenseAndVehicleCheckups = () => {
         onPress={() => setShowLicenseInfo(!showLicenseInfo)}
       >
         <View style={styles.dropdownHeader}>
-          <Text style={styles.dropdownTitle}>Driving License Status</Text>
+          <SWText style={styles.dropdownTitle}>Driving License Status</SWText>
           <FontAwesome 
             name={showLicenseInfo ? "chevron-up" : "chevron-down"} 
             size={12} 
@@ -275,21 +276,21 @@ const LicenseAndVehicleCheckups = () => {
           <>
             <View style={styles.alertStatus}>
               <View style={[styles.statusDot, { backgroundColor: licenseAlertColor }]} />
-              <Text style={[styles.statusText, { color: licenseAlertColor }]}>
+              <SWText style={[styles.statusText, { color: licenseAlertColor }]}>
                 {licenseAlertLevel === 'expired' ? 'License Expired' :
                  licenseAlertLevel === 'urgent' ? 'Expiring Soon' :
                  licenseAlertLevel === 'warning' ? 'Renewal Recommended' : 'Valid'}
-              </Text>
+              </SWText>
             </View>
             
-            <Text style={styles.dateInfo}>
-              <Text style={{ fontWeight: '500' }}>Expiry Date:</Text> {formatDate(licenseExpiryDate)}
-            </Text>
+            <SWText style={styles.dateInfo}>
+              <SWText style={{ fontWeight: '500' }}>Expiry Date:</SWText> {formatDate(licenseExpiryDate)}
+            </SWText>
             
             {daysUntilExpiry > 0 ? (
-              <Text style={styles.alertInfo}>Your driving license will expire in {daysUntilExpiry} days. {daysUntilExpiry <= 30 ? 'Please renew it as soon as possible.' : 'Plan for renewal ahead of time.'}</Text>
+              <SWText style={styles.alertInfo}>Your driving license will expire in {daysUntilExpiry} days. {daysUntilExpiry <= 30 ? 'Please renew it as soon as possible.' : 'Plan for renewal ahead of time.'}</SWText>
             ) : (
-              <Text style={styles.alertInfo}>Your driving license has expired. You must renew it immediately before continuing to drive.</Text>
+              <SWText style={styles.alertInfo}>Your driving license has expired. You must renew it immediately before continuing to drive.</SWText>
             )}
             
             {(daysUntilExpiry <= 30 || daysUntilExpiry < 0) && (
@@ -297,7 +298,7 @@ const LicenseAndVehicleCheckups = () => {
                 style={styles.button} 
                 onPress={() => console.log('Upload new license document')}
               >
-                <Text style={styles.buttonText}>Upload New License Document</Text>
+                <SWText style={styles.buttonText}>Upload New License Document</SWText>
               </TouchableOpacity>
             )}
           </>
@@ -313,7 +314,7 @@ const LicenseAndVehicleCheckups = () => {
         onPress={() => setShowVehicleCheckups(!showVehicleCheckups)}
       >
         <View style={styles.dropdownHeader}>
-          <Text style={styles.dropdownTitle}>Vehicle Condition Status</Text>
+          <SWText style={styles.dropdownTitle}>Vehicle Condition Status</SWText>
           <FontAwesome 
             name={showVehicleCheckups ? "chevron-up" : "chevron-down"} 
             size={12} 
@@ -325,49 +326,49 @@ const LicenseAndVehicleCheckups = () => {
           <>
             <View style={styles.alertStatus}>
               <View style={[styles.statusDot, { backgroundColor: checkupAlertColor }]} />
-              <Text style={[styles.statusText, { color: checkupAlertColor }]}>
+              <SWText style={[styles.statusText, { color: checkupAlertColor }]}>
                 {checkupAlertLevel === 'critical' ? 'Critical: Severely Overdue' :
                  checkupAlertLevel === 'overdue' ? 'Checkup Overdue' :
                  checkupAlertLevel === 'upcoming' ? 'Checkup Soon' : 
                  checkupAlertLevel === 'healthy' ? 'Vehicle in Good Standing' : 'Status Good'}
-              </Text>
+              </SWText>
             </View>
             
-            <Text style={styles.dateInfo}>
-              <Text style={{ fontWeight: '500' }}>Last Checkup:</Text> {formatDate(lastCheckupDate)}
-            </Text>
+            <SWText style={styles.dateInfo}>
+              <SWText style={{ fontWeight: '500' }}>Last Checkup:</SWText> {formatDate(lastCheckupDate)}
+            </SWText>
             
-            <Text style={styles.dateInfo}>
-              <Text style={{ fontWeight: '500' }}>Next Due:</Text> {formatDate(nextCheckupDate)}
-            </Text>
+            <SWText style={styles.dateInfo}>
+              <SWText style={{ fontWeight: '500' }}>Next Due:</SWText> {formatDate(nextCheckupDate)}
+            </SWText>
             
             {daysUntilNextCheckup > 0 ? (
               <>
-                <Text style={styles.alertInfo}>
+                <SWText style={styles.alertInfo}>
                   Next vehicle condition test is in {daysUntilNextCheckup} days. 
                   {daysUntilNextCheckup <= 30 
                     ? 'Please prepare for the test.' 
                     : 'Your vehicle is up to date with required inspections.'}
-                </Text>
+                </SWText>
                 {daysUntilNextCheckup > 30 && (
-                  <Text style={[styles.alertInfo, { color: '#4CAF50', fontWeight: '500' }]}>
+                  <SWText style={[styles.alertInfo, { color: '#4CAF50', fontWeight: '500' }]}>
                     STATUS: Vehicle is in good condition and compliant with all requirements.
-                  </Text>
+                  </SWText>
                 )}
               </>
             ) : (
               <>
-                <Text style={styles.alertInfo}>Your vehicle condition test is overdue by {Math.abs(daysUntilNextCheckup)} days. Please schedule it immediately.</Text>
+                <SWText style={styles.alertInfo}>Your vehicle condition test is overdue by {Math.abs(daysUntilNextCheckup)} days. Please schedule it immediately.</SWText>
                 {Math.abs(daysUntilNextCheckup) > 30 && (
-                  <Text style={[styles.alertInfo, { color: theme.colors.error, fontWeight: '600' }]}>
+                  <SWText style={[styles.alertInfo, { color: theme.colors.error, fontWeight: '600' }]}>
                     WARNING: Vehicle condition check is overdue by more than 30 days. Vehicle operation may be restricted until inspection is completed.
-                  </Text>
+                  </SWText>
                 )}
               </>
             )}
             
             <View style={styles.documentList}>
-              <Text style={styles.documentListTitle}>Required Documents</Text>
+              <SWText style={styles.documentListTitle}>Required Documents</SWText>
               
               <DocumentItem 
                 name="Emissions Test" 
@@ -410,9 +411,9 @@ const LicenseAndVehicleCheckups = () => {
                 ]} 
                 onPress={() => console.log('Remind owner')}
               >
-                <Text style={styles.buttonText}>
+                <SWText style={styles.buttonText}>
                   {daysUntilNextCheckup > 30 ? 'Set General Reminder' : 'Remind Owner'}
-                </Text>
+                </SWText>
               </TouchableOpacity>
               
               {daysUntilNextCheckup <= 0 && (
@@ -420,7 +421,7 @@ const LicenseAndVehicleCheckups = () => {
                   style={[styles.button, { flex: 1, marginLeft: 8, backgroundColor: theme.colors.primary }]} 
                   onPress={() => console.log('Schedule inspection')}
                 >
-                  <Text style={[styles.buttonText, { color: theme.colors.textblack }]}>Schedule Inspection</Text>
+                  <SWText style={[styles.buttonText, { color: theme.colors.textblack }]}>Schedule Inspection</SWText>
                 </TouchableOpacity>
               )}
             </View>

@@ -1,6 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import SWText from '../../../components/SWText';
 import { useTheme } from '../../../theme/ThemeContext';
 
 const IdImagesSection = ({ frontImage, backImage }) => {
@@ -21,8 +22,8 @@ const IdImagesSection = ({ frontImage, backImage }) => {
       paddingVertical: 8,
     },
     sectionTitle: {
-      fontSize: 14,
-      fontWeight: '600',
+      // fontSize: 14,
+      // fontWeight: '600',
       color: '#2c3e50',
       flex: 1,
     },
@@ -32,7 +33,7 @@ const IdImagesSection = ({ frontImage, backImage }) => {
       paddingHorizontal: 8,
     },
     expandText: {
-      fontSize: 12,
+      // fontSize: 12,
       color: theme.colors.primary,
       marginRight: 4,
     },
@@ -49,9 +50,9 @@ const IdImagesSection = ({ frontImage, backImage }) => {
       alignItems: 'center',
     },
     imageLabel: {
-      fontSize: 12,
+      // fontSize: 12,
       color: '#7f8c8d',
-      fontWeight: '600',
+      // fontWeight: '600',
       marginBottom: 8,
       textAlign: 'center',
     },
@@ -74,7 +75,7 @@ const IdImagesSection = ({ frontImage, backImage }) => {
       alignItems: 'center',
     },
     noImageText: {
-      fontSize: 12,
+      // fontSize: 12,
       color: '#7f8c8d',
       textAlign: 'center',
     },
@@ -86,11 +87,11 @@ const IdImagesSection = ({ frontImage, backImage }) => {
         style={styles.sectionHeader}
         onPress={() => setIsExpanded(!isExpanded)}
       >
-        <Text style={styles.sectionTitle}>License Images</Text>
+        <SWText style={styles.sectionTitle} sm uberBold>License Images</SWText>
         <View style={styles.expandButton}>
-          <Text style={styles.expandText}>
+          <SWText style={styles.expandText} xs uberBold>
             {isExpanded ? 'Hide' : 'View'}
-          </Text>
+          </SWText>
           <FontAwesome 
             name={isExpanded ? "chevron-up" : "chevron-down"} 
             size={12} 
@@ -103,7 +104,7 @@ const IdImagesSection = ({ frontImage, backImage }) => {
         <View style={styles.imagesContainer}>
           <View style={styles.imageRow}>
             <View style={styles.imageItem}>
-              <Text style={styles.imageLabel}>License Front</Text>
+              <SWText style={styles.imageLabel} xs>License Front</SWText>
               {frontImage ? (
                 <Image 
                   source={{ uri: frontImage }} 
@@ -112,13 +113,13 @@ const IdImagesSection = ({ frontImage, backImage }) => {
               ) : (
                 <View style={styles.noImageContainer}>
                   <FontAwesome name="image" size={24} color="#bdc3c7" />
-                  <Text style={styles.noImageText}>No image uploaded</Text>
+                  <SWText style={styles.noImageText} xs>No image uploaded</SWText>
                 </View>
               )}
             </View>
 
             <View style={styles.imageItem}>
-              <Text style={styles.imageLabel}>License Back</Text>
+              <SWText style={styles.imageLabel} xs>License Back</SWText>
               {backImage ? (
                 <Image 
                   source={{ uri: backImage }} 
@@ -127,7 +128,7 @@ const IdImagesSection = ({ frontImage, backImage }) => {
               ) : (
                 <View style={styles.noImageContainer}>
                   <FontAwesome name="image" size={24} color="#bdc3c7" />
-                  <Text style={styles.noImageText}>No image uploaded</Text>
+                  <SWText style={styles.noImageText} xs>No image uploaded</SWText>
                 </View>
               )}
             </View>

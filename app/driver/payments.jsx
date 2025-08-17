@@ -1,55 +1,65 @@
-import { Ionicons } from '@expo/vector-icons'
-import { StyleSheet, Text, View } from 'react-native'
+import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, View } from 'react-native';
+import CurvedHeader from '../components/CurvedHeader';
+import SWText from '../components/SWText';
+import { useTheme } from '../theme/ThemeContext';
 
 export default function Payments() {
+  const { theme } = useTheme();
+
   return (
+    <>
+    <CurvedHeader 
+          title="Payments" 
+          theme={theme}
+        />
     <View style={styles.container}>
-      
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Recent Payments</Text>
+        <SWText style={styles.cardTitle} md uberBold>Recent Payments</SWText>
         <View style={styles.paymentRow}>
-          <Text style={styles.paymentLabel}>June 2024</Text>
-          <Text style={styles.paymentAmount}>Rs. 45,000</Text>
+          <SWText style={styles.paymentLabel} sm uberBold>June 2024</SWText>
+          <SWText style={styles.paymentAmount} sm uberBold>Rs. 45,000</SWText>
         </View>
         <View style={styles.paymentRow}>
-          <Text style={styles.paymentLabel}>May 2024</Text>
-          <Text style={styles.paymentAmount}>Rs. 45,000</Text>
+          <SWText style={styles.paymentLabel} sm uberBold>May 2024</SWText>
+          <SWText style={styles.paymentAmount} sm uberBold>Rs. 45,000</SWText>
         </View>
         <View style={styles.paymentRow}>
-          <Text style={styles.paymentLabel}>April 2024</Text>
-          <Text style={styles.paymentAmount}>Rs. 45,000</Text>
+          <SWText style={styles.paymentLabel} sm uberBold>April 2024</SWText>
+          <SWText style={styles.paymentAmount} sm uberBold>Rs. 45,000</SWText>
         </View>
       </View>
 
-      <Text style={styles.title}>Your Payment Information</Text>
+      <SWText style={styles.title} lg uberBold>Your Payment Information</SWText>
       <View style={styles.card}>
         <View style={styles.infoRow}>
-          <Text style={styles.cardTitle}>Salary Details</Text>
+          <SWText style={styles.cardTitle} md uberBold>Salary Details</SWText>
           {/* Update Info Button (not working yet) */}
           <Ionicons name="create-outline" size={24} color="#2B3674" />
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Account Name:</Text>
-          <Text style={styles.infoValue}>Saman Weerasinghe</Text>
+          <SWText style={styles.infoLabel} ellipsizeMode='' sm>Account Name:</SWText>
+          <SWText style={styles.infoValue} md>Saman Weerasinghe</SWText>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Account Number:</Text>
-          <Text style={styles.infoValue}>8307881234</Text>
+          <SWText style={styles.infoLabel} ellipsizeMode='' sm>Account Number:</SWText>
+          <SWText style={styles.infoValue} md>8307881234</SWText>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Bank:</Text>
-          <Text style={styles.infoValue}>BOC Bank</Text>
+          <SWText style={styles.infoLabel} ellipsizeMode='' sm>Bank:</SWText>
+          <SWText style={styles.infoValue} md>BOC Bank</SWText>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Base Salary:</Text>
-          <Text style={styles.infoValue}>Rs. 45,000</Text>
+          <SWText style={styles.infoLabel} ellipsizeMode='' sm>Base Salary:</SWText>
+          <SWText style={styles.infoValue} md>Rs. 45,000</SWText>
         </View>
         <View style={styles.infoRow}>
-          <Text style={styles.infoLabel}>Payment Status:</Text>
-          <Text style={[styles.infoValue, styles.statusPaid]}>Paid</Text>
+          <SWText style={styles.infoLabel} ellipsizeMode='' sm>Payment Status:</SWText>
+          <SWText style={[styles.infoValue, styles.statusPaid]} md>Paid</SWText>
         </View>
       </View>
     </View>
+    </>
   )
 }
 
@@ -60,12 +70,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#FAF8F8',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    // fontSize: 20,
+    // fontWeight: 'bold',
     marginBottom: 5,
     marginTop: 20,
     color: '#2B3674',
-    textAlign: 'center',
+    SWtextAlign: 'center',
   },
   card: {
     backgroundColor: 'white',
@@ -79,8 +89,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    // fontSize: 16,
+    // fontWeight: 'bold',
     color: '#2B3674',
     marginBottom: 15,
   },
@@ -92,12 +102,12 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f0f0f0',
   },
   infoLabel: {
-    fontSize: 14,
+    // fontSize: 14,
     color: '#666',
   },
   infoValue: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    // fontSize: 14,
+    // fontWeight: 'bold',
     color: '#2B3674',
   },
   statusPaid: {
@@ -111,12 +121,12 @@ const styles = StyleSheet.create({
     borderBottomColor: '#f0f0f0',
   },
   paymentLabel: {
-    fontSize: 14,
+    // fontSize: 14,
     color: '#666',
   },
   paymentAmount: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    // fontSize: 14,
+    // fontWeight: 'bold',
     color: '#2B3674',
   }
 })

@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import MapView, { Marker, Polyline } from 'react-native-maps';
 import Iionicon from 'react-native-vector-icons/Ionicons';
+import CurvedHeader from '../components/CurvedHeader';
+import SWText from '../components/SWText';
 import { useTheme } from '../theme/ThemeContext';
-
 const Map = () => {
   const { theme } = useTheme();
 
@@ -83,6 +84,10 @@ const Map = () => {
 
   return (
     <View style={styles.container}>
+      <CurvedHeader 
+          title="SchoolWay" 
+          theme={theme}
+        />
       <MapView
         style={styles.map}
         initialRegion={{
@@ -113,10 +118,10 @@ const Map = () => {
       
       {/* Route info panel */}
       <View style={styles.infoPanel}>
-        <Text style={styles.infoPanelTitle}>Pickup Route</Text>
-        <Text style={styles.infoPanelText}>
-          {studentPickups.length} students • Next: {studentPickups[0].name}
-        </Text>
+        <SWText style={styles.infoPanelTitle} sm>Pickup Route</SWText>
+        <SWText style={styles.infoPanelText} md uberBold>
+          {studentPickups.length} students   •   Next: {studentPickups[0].name}
+        </SWText>
       </View>
     </View>
   );
@@ -167,7 +172,7 @@ const styles = StyleSheet.create({
   },
   infoPanel: {
     position: 'absolute',
-    top: 50,
+    top: 100,
     left: 20,
     right: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
@@ -183,13 +188,13 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   infoPanelTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    // fontSize: 16,
+    // fontWeight: 'bold',
     color: '#333',
     marginBottom: 5,
   },
   infoPanelText: {
-    fontSize: 14,
+    // fontSize: 14,
     color: '#666',
   },
 });

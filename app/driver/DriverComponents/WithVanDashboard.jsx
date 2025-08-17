@@ -1,8 +1,9 @@
 import { useRouter } from 'expo-router';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../auth/AuthContext';
+import GradientBackground from '../../components/GradientBackground';
+import SWText from '../../components/SWText';
 import { useTheme } from '../../theme/ThemeContext';
-
 const WithVanDashboard = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
@@ -10,63 +11,122 @@ const WithVanDashboard = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Good Morning, {user?.firstname || 'Ranjith'}!</Text>
       
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Plan for today</Text>
+      <SWText style={[styles.welcomeText, { color: theme.primary }]} lg uberBold>
+        Good Morning, {user?.firstname || 'Ranjith'}!
+      </SWText>
+      
+      <View style={[styles.card]}>
+        <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+          Plan for today
+        </SWText>
         <View style={styles.routeInfo}>
-          <Text style={styles.routeSchool}>Kaluthara - Colombo 13</Text>
-          <Text style={styles.routeTime}>Start: 6:30 AM</Text>
-          <Text style={styles.routeTime}>End: 7:25 AM</Text>
-          <Text style={styles.routeStudents}>Pick up : 12 students</Text>
+          <SWText style={styles.routeSchool} md uberBold>
+            Kaluthara - Colombo 13
+          </SWText>
+          <SWText style={[styles.routeTime]} sm>
+            Start: 6:30 AM
+          </SWText>
+          <SWText style={[styles.routeTime]} sm>
+            End: 7:25 AM
+          </SWText>
+          <SWText style={[styles.routeStudents]} sm>
+            Pick up : 12 students
+          </SWText>
         </View>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{
             marginTop: 15,
-            backgroundColor: '#2B3674',
+            // backgroundColor: '#2B3674',
+            backgroundColor: theme.colors.primaryFade,
             paddingVertical: 10,
             borderRadius: 8,
             alignItems: 'center',
           }}
           onPress={() => router.push('./DriverComponents/travelPage')} // Fixed navigation path
         >
-          <Text style={{ color: 'white', fontWeight: 'bold', fontSize: 16 }}>
+          <SWText style={{ color: 'white' }} md uberBold>
             Start School Trip
-          </Text>
-        </TouchableOpacity>
+          </SWText>
+        </TouchableOpacity> */}
+        <GradientBackground
+          style={{
+            marginTop: 15,
+            paddingVertical: 10,
+            borderRadius: 8,
+            alignItems: 'center',
+          }}
+        >
+          <TouchableOpacity
+            style={{ width: '100%', alignItems: 'center' }}
+            onPress={() => router.push('./DriverComponents/travelPage')} // Fixed navigation path
+          >
+            <SWText style={{ color: 'white' }} md uberBold>
+              Start School Trip
+            </SWText>
+          </TouchableOpacity>
+        </GradientBackground>
       </View>
       
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Vehicle Status</Text>
+      <View style={[styles.card]}>
+        <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+          Vehicle Status
+        </SWText>
         <View style={styles.statusRow}>
           <View style={styles.statusItem}>
-            <Text style={styles.statusValue}>Toyota Hiace</Text>
-            <Text style={styles.statusLabel}>Vehicle</Text>
+            <SWText style={[styles.statusValue]} sm uberBold>
+              Toyota Hiace
+            </SWText>
+            <SWText style={[styles.statusLabel, { color: theme.colors.textSecondary }]} xs>
+              Vehicle
+            </SWText>
           </View>
           <View style={styles.statusItem}>
-            <Text style={styles.statusValue}>ABC-1234</Text>
-            <Text style={styles.statusLabel}>License</Text>
+            <SWText style={[styles.statusValue]} sm uberBold>
+              ABC-1234
+            </SWText>
+            <SWText style={[styles.statusLabel, { color: theme.colors.textSecondary }]} xs>
+              License
+            </SWText>
           </View>
           <View style={styles.statusItem}>
-            <Text style={styles.statusValue}>Active</Text>
-            <Text style={styles.statusLabel}>Status</Text>
+            <SWText style={[styles.statusValue]} sm uberBold>
+              Active
+            </SWText>
+            <SWText style={[styles.statusLabel, { color: theme.textSecondary }]} xs>
+              Status
+            </SWText>
           </View>
         </View>
       </View>
       
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Recent Activity</Text>
+      <View style={[styles.card]}>
+        <SWText style={[styles.cardTitle, { color: theme.primary }]} md uberBold>
+          Recent Activity
+        </SWText>
         <View style={styles.activityItem}>
-          <Text style={styles.activityDate}>Today, 7:30 AM</Text>
-          <Text style={styles.activityDesc}>School drop-off completed</Text>
+          <SWText style={[styles.activityDate, { color: theme.colors.textgreydark }]} xs>
+            Today, 7:30 AM
+          </SWText>
+          <SWText style={styles.activityDesc} sm uberBold>
+            School drop-off completed
+          </SWText>
         </View>
         <View style={styles.activityItem}>
-          <Text style={styles.activityDate}>Today, 6:45 AM</Text>
-          <Text style={styles.activityDesc}>Started morning route</Text>
+          <SWText style={[styles.activityDate, { color: theme.colors.textgreydark }]} xs>
+            Today, 6:45 AM
+          </SWText>
+          <SWText style={styles.activityDesc} sm uberBold>
+            Started morning route
+          </SWText>
         </View>
         <View style={styles.activityItem}>
-          <Text style={styles.activityDate}>Yesterday, 5:00 PM</Text>
-          <Text style={styles.activityDesc}>Evening drop-off completed</Text>
+          <SWText style={[styles.activityDate, { color: theme.colors.textgreydark }]} xs>
+            Yesterday, 5:00 PM
+          </SWText>
+          <SWText style={styles.activityDesc} sm uberBold>
+            Evening drop-off completed
+          </SWText>
         </View>
       </View>
     </View>
@@ -80,9 +140,9 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   welcomeText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2B3674',
+    // fontSize: 24,
+    // fontWeight: 'bold',
+    // color: '#2B3674',
     marginBottom: 20,
   },
   card: {
@@ -97,27 +157,27 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   cardTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2B3674',
+    // fontSize: 16,
+    // fontWeight: 'bold',
+    // color: '#2B3674',
     marginBottom: 15,
   },
   routeInfo: {
     marginTop: 5,
   },
   routeSchool: {
-    fontSize: 16,
-    fontWeight: '600',
+    // fontSize: 16,
+    // fontWeight: '600',
     marginBottom: 8,
   },
   routeTime: {
-    fontSize: 14,
-    color: '#666',
+    // fontSize: 14,
+    // color: '#666',
     marginBottom: 4,
   },
   routeStudents: {
-    fontSize: 14,
-    color: '#666',
+    // fontSize: 14,
+    // color: '#666',
     marginTop: 5,
   },
   statusRow: {
@@ -129,14 +189,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   statusValue: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#2B3674',
+    // fontSize: 14,
+    // fontWeight: 'bold',
+    // color: '#2B3674',
     marginBottom: 5,
   },
   statusLabel: {
-    fontSize: 12,
-    color: '#666',
+    // fontSize: 12,
+    // color: '#666',
   },
   activityItem: {
     marginBottom: 12,
@@ -145,13 +205,13 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   activityDate: {
-    fontSize: 12,
-    color: '#666',
+    // fontSize: 12,
+    // color: '#666',
     marginBottom: 3,
   },
   activityDesc: {
-    fontSize: 14,
-    fontWeight: '500',
+    // fontSize: 14,
+    // fontWeight: '500',
   },
 });
 

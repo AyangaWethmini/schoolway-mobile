@@ -4,12 +4,12 @@ import { useIsFocused } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../auth/AuthContext';
 import Loading3 from '../../../components/LoadingComponents/Loading4';
+import SWText from '../../../components/SWText';
 import { useTheme } from "../../../theme/ThemeContext";
 import IdImagesSection from './IdImageSection';
-
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 // IdImagesSection Component
@@ -39,14 +39,14 @@ const DriverProfileOverview = () => {
       elevation: 5,
     },
     cardTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
+      // fontSize: 18,
+      // fontWeight: 'bold',
       color: '#2c3e50',
       textAlign: 'center',
       marginBottom: 4,
     },
     cardSubtitle: {
-      fontSize: 14,
+      // fontSize: 14,
       color: '#7f8c8d',
       textAlign: 'center',
       marginBottom: 20,
@@ -77,15 +77,15 @@ const DriverProfileOverview = () => {
       flex: 1,
     },
     driverName: {
-      fontSize: 22,
-      fontWeight: 'bold',
+      fontSize: 26,
+      // fontWeight: 'bold',
       color: '#2c3e50',
       marginBottom: 4,
     },
     driverId: {
-      fontSize: 16,
+      // fontSize: 16,
       color: theme.colors.primary,
-      fontWeight: '600',
+      // fontWeight: '600',
       marginBottom: 8,
     },
     statusBadge: {
@@ -97,8 +97,8 @@ const DriverProfileOverview = () => {
     },
     statusText: {
       color: '#ffffff',
-      fontSize: 12,
-      fontWeight: '600',
+      // fontSize: 12,
+      // fontWeight: '600',
     },
     detailsGrid: {
       flexDirection: 'row',
@@ -110,16 +110,16 @@ const DriverProfileOverview = () => {
       marginBottom: 16,
     },
     detailLabel: {
-      fontSize: 12,
+      // fontSize: 12,
       color: '#7f8c8d',
-      fontWeight: '600',
+      // fontWeight: '600',
       marginBottom: 4,
       textTransform: 'uppercase',
     },
     detailValue: {
-      fontSize: 16,
+      // fontSize: 16,
       color: '#2c3e50',
-      fontWeight: '500',
+      // fontWeight: '500',
     },
     licenseCard: {
       backgroundColor: '#ffffff',
@@ -139,8 +139,8 @@ const DriverProfileOverview = () => {
       marginBottom: 16,
     },
     licenseTitle: {
-      fontSize: 16,
-      fontWeight: 'bold',
+      // fontSize: 16,
+      // fontWeight: 'bold',
       color: '#2c3e50',
       marginLeft: 8,
     },
@@ -162,8 +162,8 @@ const DriverProfileOverview = () => {
       elevation: 5,
     },
     statsHeader: {
-      fontSize: 16,
-      fontWeight: 'bold',
+      // fontSize: 16,
+      // fontWeight: 'bold',
       color: '#2c3e50',
       marginBottom: 16,
       textAlign: 'center',
@@ -176,15 +176,15 @@ const DriverProfileOverview = () => {
       alignItems: 'center',
     },
     statValue: {
-      fontSize: 24,
+      fontSize: 28,
       fontWeight: 'bold',
       color: theme.colors.primary,
       marginBottom: 4,
     },
     statLabel: {
-      fontSize: 12,
+      // fontSize: 12,
       color: '#7f8c8d',
-      fontWeight: '600',
+      // fontWeight: '600',
     },
     editButton: {
       position: 'absolute',
@@ -216,7 +216,7 @@ const DriverProfileOverview = () => {
     },
     warningText: {
       color: '#856404',
-      fontWeight: '600',
+      // fontWeight: '600',
       flex: 1,
       marginLeft: 8,
     },
@@ -231,7 +231,7 @@ const DriverProfileOverview = () => {
       borderTopColor: '#ecf0f1',
     },
     qrText: {
-      fontSize: 12,
+      // fontSize: 12,
       color: '#7f8c8d',
       marginTop: 8,
     },
@@ -287,7 +287,7 @@ const DriverProfileOverview = () => {
   if (isLoading || !driverData.user) {
     return (
       // <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
-      //   {/* <Text>Loading...</Text>
+      //   {/* <SWText>Loading...</SWText>
       // </View> */}
       <Loading3 showMessage={true} message="Loading profile..." style={{ backgroundColor: 'rgba(0,0,0.1)' }} />
 
@@ -305,19 +305,19 @@ const DriverProfileOverview = () => {
       {user?.approvalstatus !== 1 && (
         <View style={[styles.warningCard, user.approvalstatus === 2 && styles.rejectedCard]}>
           <FontAwesome name="exclamation-triangle" size={18} color={user.approvalstatus === 0 ? "#ffc107" : "#dc3545"} />
-          <Text style={[styles.warningText, user.approvalstatus === 2 && styles.rejectedText]}>
+          <SWText style={[styles.warningText, user.approvalstatus === 2 && styles.rejectedText]}>
             {user.approvalstatus === 0 
               ? "Your account request is pending approval!"
               : "Your account has been rejected. Please contact support for more information."
             }
-          </Text>
+          </SWText>
         </View>
       )}
 
       {/* Driver Identity Card */}
       <View style={styles.headerCard}>
-        <Text style={styles.cardTitle}>SCHOOLWAY DRIVER IDENTITY</Text>
-        <Text style={styles.cardSubtitle}>Official Driver Identification Document</Text>
+        <SWText style={styles.cardTitle} uberBold lg>SCHOOLWAY DRIVER IDENTITY</SWText>
+        <SWText style={styles.cardSubtitle} sm regular>Official Driver Identification Document</SWText>
         
         <View style={styles.profileSection}>
           <View style={styles.avatarContainer}>
@@ -339,46 +339,46 @@ const DriverProfileOverview = () => {
           </View>
           
           <View style={styles.profileInfo}>
-            <Text style={styles.driverName}>
+            <SWText style={styles.driverName} xl uberBold>
               {driverData.user.firstname} {driverData.user.lastname}
-            </Text>
-            <Text style={styles.driverId}>
+            </SWText>
+            <SWText style={styles.driverId} sm>
               ID: {driverData.user.driverProfile?.id || 'PENDING'}
-            </Text>
+            </SWText>
             <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
-              <Text style={styles.statusText}>{status.text}</Text>
+              <SWText style={styles.statusText} xs bold>{status.text}</SWText>
             </View>
           </View>
         </View>
 
         <View style={styles.detailsGrid}>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>License ID</Text>
-            <Text style={styles.detailValue}>{driverData.user.driverProfile?.licenseId || 'N/A'}</Text>
+            <SWText style={styles.detailLabel} xs>License ID</SWText>
+            <SWText style={styles.detailValue} sm>{driverData.user.driverProfile?.licenseId || 'N/A'}</SWText>
           </View>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>NIC Number</Text>
-            <Text style={styles.detailValue}>{driverData.user.nic || 'N/A'}</Text>
+            <SWText style={styles.detailLabel} xs>NIC Number</SWText>
+            <SWText style={styles.detailValue} sm>{driverData.user.nic || 'N/A'}</SWText>
           </View>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Mobile Phone</Text>
-            <Text style={styles.detailValue}>{driverData.user.mobile || 'N/A'}</Text>
+            <SWText style={styles.detailLabel} xs>Mobile Phone</SWText>
+            <SWText style={styles.detailValue} sm>{driverData.user.mobile || 'N/A'}</SWText>
           </View>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>District</Text>
-            <Text style={styles.detailValue}>{driverData.user.district || 'N/A'}</Text>
+            <SWText style={styles.detailLabel} xs>District</SWText>
+            <SWText style={styles.detailValue} sm>{driverData.user.district || 'N/A'}</SWText>
           </View>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Van Service</Text>
-            <Text style={styles.detailValue}>
+            <SWText style={styles.detailLabel} xs>Van Service</SWText>
+            <SWText style={styles.detailValue} sm>
               {driverData.user.driverProfile?.hasVan ? 'Enrolled' : 'Not Enrolled'}
-            </Text>
+            </SWText>
           </View>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Experience</Text>
-            <Text style={styles.detailValue}>
+            <SWText style={styles.detailLabel} xs>Experience</SWText>
+            <SWText style={styles.detailValue} sm>
               {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)} Years
-            </Text>
+            </SWText>
           </View>
         </View>
 
@@ -393,7 +393,7 @@ const DriverProfileOverview = () => {
           }}>
             <Ionicons name="qr-code-sharp" size={40} color="#7f8c8d" />
           </View>
-          <Text style={styles.qrText}>Scan for verification</Text>
+          <SWText style={styles.qrText} xs>Scan for verification</SWText>
         </View>
       </View>
 
@@ -401,29 +401,29 @@ const DriverProfileOverview = () => {
       <View style={styles.licenseCard}>
         <View style={styles.licenseHeader}>
           <FontAwesome name="id-card" size={20} color={theme.colors.primary} />
-          <Text style={styles.licenseTitle}>License Information</Text>
+          <SWText style={styles.licenseTitle} md uberBold>License Information</SWText>
         </View>
         
         <View style={styles.licenseDetails}>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>License Types</Text>
-            <Text style={styles.detailValue}>
+            <SWText style={styles.detailLabel} xs>License Types</SWText>
+            <SWText style={styles.detailValue} sm>
               {driverData.user.driverProfile?.licenseType?.join(', ') || 'N/A'}
-            </Text>
+            </SWText>
           </View>
           <View style={styles.detailItem}>
-            <Text style={styles.detailLabel}>Expiry Date</Text>
-            <Text style={styles.detailValue}>
+            <SWText style={styles.detailLabel} xs>Expiry Date</SWText>
+            <SWText style={styles.detailValue} sm>
               {formatDate(driverData.user.driverProfile?.licenseExpiry)}
-            </Text>
+            </SWText>
           </View>
         </View>
         
         <View style={styles.detailItem}>
-          <Text style={styles.detailLabel}>Languages</Text>
-          <Text style={styles.detailValue}>
+          <SWText style={styles.detailLabel} xs>Languages</SWText>
+          <SWText style={styles.detailValue} sm>
             {driverData.user.driverProfile?.languages?.join(', ') || 'N/A'}
-          </Text>
+          </SWText>
         </View>
 
         {/* ID Images Collapsible Section */}
@@ -435,25 +435,25 @@ const DriverProfileOverview = () => {
 
       {/* Performance Stats */}
       <View style={styles.statsCard}>
-        <Text style={styles.statsHeader}>Performance Overview</Text>
+        <SWText style={styles.statsHeader} md uberBold>Performance Overview</SWText>
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>
+            <SWText style={styles.statValue}>
               {driverData.user.driverProfile?.rating?.toFixed(1) || '0.0'}
-            </Text>
-            <Text style={styles.statLabel}>Rating</Text>
+            </SWText>
+            <SWText style={styles.statLabel} xs>Rating</SWText>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>
+            <SWText style={styles.statValue} xl uberBold>
               {driverData.user.driverProfile?.ratingCount || '0'}
-            </Text>
-            <Text style={styles.statLabel}>Reviews</Text>
+            </SWText>
+            <SWText style={styles.statLabel} xs>Reviews</SWText>
           </View>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>
+            <SWText style={styles.statValue}>
               {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)}
-            </Text>
-            <Text style={styles.statLabel}>Years Exp.</Text>
+            </SWText>
+            <SWText style={styles.statLabel} xs>Years Exp.</SWText>
           </View>
         </View>
       </View>

@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
 import { useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../auth/AuthContext';
+import CurvedHeader from '../components/CurvedHeader';
+import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 import VehicleInfo from './DriverComponents/DriverProfileComponents/DriverVanInfo';
 import DriverProfileOverview from './DriverComponents/DriverProfileComponents/ProfileInfo';
@@ -33,7 +35,7 @@ const LogoutButton = () => {
         }}
       >
         <Ionicons name="log-out-outline" size={24} style={{fontWeight: '600', color: 'white' }} />
-        <Text style={{ fontSize: 16, fontWeight: '600', color: 'white' }}>Logout</Text>
+        <SWText style={{ color: 'white' }} uberBold md>Logout</SWText>
       </TouchableOpacity>
     </>
   );
@@ -41,7 +43,8 @@ const LogoutButton = () => {
 
 export default function Profile() {
   const [activeTab, setActiveTab] = useState('Personal Info');
-
+  const { theme } = useTheme();
+   
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -60,11 +63,11 @@ export default function Profile() {
       backgroundColor: '#eee',
     },
     tabText: {
-      fontSize: 14,
+      // fontSize: 14,
       color: '#888',
     },
     activeTabText: {
-      fontWeight: 'bold',
+      // fontWeight: 'bold',
       color: '#000',
     },
     tabIndicator: {
@@ -99,6 +102,11 @@ export default function Profile() {
 
   return (
     <SafeAreaView style={styles.container}>
+      <CurvedHeader 
+          title="Payments" 
+          theme={theme}
+        />
+
       <View style={styles.tabs}>
         {['Personal Info', 'Van Info', 'Checkups'].map(tab => (
           <TouchableOpacity
@@ -106,14 +114,17 @@ export default function Profile() {
             onPress={() => setActiveTab(tab)}
             style={[styles.tab, activeTab === tab && styles.activeTab]}
           >
-            <Text
+            <SWText
               style={[
                 styles.tabText,
                 activeTab === tab && styles.activeTabText,
               ]}
+              sm = {activeTab === tab}
+              xs  ={!(activeTab === tab)}
+              uberBold={activeTab === tab}
             >
               {tab}
-            </Text>
+            </SWText>
             <View 
               style={[
                 activeTab !== tab && styles.inactiveTabIndicator, 

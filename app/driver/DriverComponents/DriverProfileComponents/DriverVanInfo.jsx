@@ -1,6 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import SWText from '../../../components/SWText';
 import { useTheme } from '../../../theme/ThemeContext';
 
 const VehicleInfo = () => {
@@ -229,7 +230,7 @@ const VehicleInfo = () => {
   
   return (
     <View style={styles.container}>
-      {/* <Text style={styles.sectionTitle}>Vehicle Information</Text> */}
+      {/* <SWText style={styles.sectionTitle}>Vehicle Information</SWText> */}
       
       <View style={styles.vehicleContainer}>
         <View style={styles.vehicleImageContainer}>
@@ -240,24 +241,24 @@ const VehicleInfo = () => {
         </View>
         
         <View style={styles.vehicleDetails}>
-          <Text style={styles.vehicleName}>Toyota Hiace (ABC-1234)</Text>
+          <SWText style={styles.vehicleName}>Toyota Hiace (ABC-1234)</SWText>
           
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Owner:</Text>
+            <SWText style={styles.detailLabel}>Owner:</SWText>
             <TouchableOpacity style={styles.profileLink} onPress={() => console.log('Navigate to owner profile')}>
-              <Text style={styles.linkText}>James Wilson</Text>
+              <SWText style={styles.linkText}>James Wilson</SWText>
               <FontAwesome name="external-link" size={12} color={theme.colors.accentblue} />
             </TouchableOpacity>
           </View>
           
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Capacity:</Text>
-            <Text style={styles.detailValue}>15 seats</Text>
+            <SWText style={styles.detailLabel}>Capacity:</SWText>
+            <SWText style={styles.detailValue}>15 seats</SWText>
           </View>
           
           <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Year:</Text>
-            <Text style={styles.detailValue}>2022</Text>
+            <SWText style={styles.detailLabel}>Year:</SWText>
+            <SWText style={styles.detailValue}>2022</SWText>
           </View>
         </View>
       </View>
@@ -267,7 +268,7 @@ const VehicleInfo = () => {
         onPress={() => setShowAssistantInfo(!showAssistantInfo)}
       >
         <View style={styles.dropdownHeader}>
-          <Text style={styles.assistantTitle}>Assistant Information</Text>
+          <SWText style={styles.assistantTitle}>Assistant Information</SWText>
           <FontAwesome 
             name={showAssistantInfo ? "chevron-up" : "chevron-down"} 
             size={12} 
@@ -278,16 +279,16 @@ const VehicleInfo = () => {
         {showAssistantInfo && (
           <View style={styles.assistantDetails}>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Name:</Text>
-              <Text style={styles.detailValue}>Sarah Johnson</Text>
+              <SWText style={styles.detailLabel}>Name:</SWText>
+              <SWText style={styles.detailValue}>Sarah Johnson</SWText>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Phone:</Text>
-              <Text style={styles.detailValue}>+94 77 234 5678</Text>
+              <SWText style={styles.detailLabel}>Phone:</SWText>
+              <SWText style={styles.detailValue}>+94 77 234 5678</SWText>
             </View>
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Experience:</Text>
-              <Text style={styles.detailValue}>3 years</Text>
+              <SWText style={styles.detailLabel}>Experience:</SWText>
+              <SWText style={styles.detailValue}>3 years</SWText>
             </View>
           </View>
         )}
@@ -300,7 +301,7 @@ const VehicleInfo = () => {
         onPress={() => setShowStudentList(!showStudentList)}
       >
         <View style={styles.dropdownHeader}>
-          <Text style={styles.assistantTitle}>Student List ({students.length})</Text>
+          <SWText style={styles.assistantTitle}>Student List ({students.length})</SWText>
           <FontAwesome 
             name={showStudentList ? "chevron-up" : "chevron-down"} 
             size={12} 
@@ -313,11 +314,11 @@ const VehicleInfo = () => {
             {students.map((student) => (
               <View key={student.id} style={styles.studentItem}>
                 <View style={styles.studentAvatar}>
-                  <Text style={styles.studentInitials}>{student.name.charAt(0)}</Text>
+                  <SWText style={styles.studentInitials}>{student.name.charAt(0)}</SWText>
                 </View>
                 <View style={styles.studentInfo}>
-                  <Text style={styles.studentName}>{student.name}</Text>
-                  <Text style={styles.studentDetails}>{student.grade} • {student.pickupLocation}</Text>
+                  <SWText style={styles.studentName}>{student.name}</SWText>
+                  <SWText style={styles.studentDetails}>{student.grade} • {student.pickupLocation}</SWText>
                 </View>
               </View>
             ))}
@@ -334,7 +335,7 @@ const VehicleInfo = () => {
         onPress={() => setShowSchoolsList(!showSchoolsList)}
       >
         <View style={styles.dropdownHeader}>
-          <Text style={styles.assistantTitle}>Destination Schools</Text>
+          <SWText style={styles.assistantTitle}>Destination Schools</SWText>
           <FontAwesome 
             name={showSchoolsList ? "chevron-up" : "chevron-down"} 
             size={12} 
@@ -351,20 +352,20 @@ const VehicleInfo = () => {
               <View key={school.id} style={styles.schoolItem}>
                 <View style={styles.schoolHeader}>
                   <View style={styles.schoolInfo}>
-                    <Text style={styles.schoolName}>{school.name}</Text>
-                    <Text style={styles.schoolLocation}>{school.location}</Text>
-                    <Text style={styles.studentCountText}>{school.studentCount} students</Text>
+                    <SWText style={styles.schoolName}>{school.name}</SWText>
+                    <SWText style={styles.schoolLocation}>{school.location}</SWText>
+                    <SWText style={styles.studentCountText}>{school.studentCount} students</SWText>
                   </View>
                   <View style={styles.timeContainer}>
-                    <Text style={styles.arrivalTime}>{school.arrivalTime}</Text>
-                    <Text style={styles.arrivalLabel}>Arrival</Text>
+                    <SWText style={styles.arrivalTime}>{school.arrivalTime}</SWText>
+                    <SWText style={styles.arrivalLabel}>Arrival</SWText>
                   </View>
                 </View>
               </View>
             ))}
             
             {schools.length === 0 && (
-              <Text style={styles.emptyStateText}>No schools scheduled for this route.</Text>
+              <SWText style={styles.emptyStateText}>No schools scheduled for this route.</SWText>
             )}
           </View>
         )}

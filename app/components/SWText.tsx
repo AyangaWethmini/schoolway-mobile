@@ -111,10 +111,10 @@ const SWText: React.FC<SWTextProps> = (props) => {
   } = props;
 
   // Determine font family
-  let fontFamily = theme.fonts.regular; // Default
+  let fontFamily = theme.fonts.uberMedium; // Default
   if (uberBold || h1 || h2 || button) fontFamily = theme.fonts.uberBold;
   if (uberMedium || h3 || label || semibold) fontFamily = theme.fonts.uberMedium;
-  if (regular) fontFamily = theme.fonts.regular;
+  if (regular) fontFamily = theme.fonts.uberMedium;
   
   // Determine font size
   let fontSize = theme.fontSizes.medium; // Default medium
