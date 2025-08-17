@@ -278,9 +278,9 @@ const DriverProfileOverview = () => {
 
   const getApprovalStatus = () => {
     switch (user.approvalstatus) {
-      case 1: return { text: 'VERIFIED', color: '#27ae60' };
-      case 2: return { text: 'PENDING VERIFICATION', color: '#f39c12' };
-      default: return { text: 'REJECTED DRIVER', color: '#e74c3c' };
+      case 1: return { text: 'VERIFIED', color: theme.colors.success };
+      case 2: return { text: 'PENDING VERIFICATION', color: theme.colors.warning };
+      default: return { text: 'REJECTED DRIVER', color: theme.colors.error };
     }
   };
 

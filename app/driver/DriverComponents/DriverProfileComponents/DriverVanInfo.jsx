@@ -1,6 +1,6 @@
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import SWText from '../../../components/SWText';
 import { useTheme } from '../../../theme/ThemeContext';
 
@@ -17,32 +17,53 @@ const VehicleInfo = () => {
     { id: 3, name: 'Ananda College', arrivalTime: '6:55 AM', location: 'Colombo 10', studentCount: 4 },
     { id: 4, name: 'Devi Balika Vidyalaya', arrivalTime: '7:10 AM', location: 'Colombo 08', studentCount: 3 }
   ];
+
+  // Mock data for students
+  const students = [
+    { id: 1, name: 'Amandi Perera', grade: 'Grade 5', pickupLocation: 'Colombo 7' },
+    { id: 2, name: 'Lehan Selaka', grade: 'Grade 3', pickupLocation: 'Colombo 5' },
+    { id: 3, name: 'Duleepa Edirisinghe', grade: 'Grade 4', pickupLocation: 'Colombo 6' },
+    { id: 4, name: 'Na wikramathnthri', grade: 'Grade 2', pickupLocation: 'Colombo 4' },
+  ];
   
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: theme.colors.backgroud,
-      borderRadius: theme.borderRadius.medium,
-      padding: theme.spacing.md,
-      
+      flex: 1,
+      backgroundColor: '#f8f9fa',
     },
-    sectionTitle: {
-      fontSize: theme.fontSizes.medium,
-      fontWeight: '600',
-      color: theme.colors.textblack,
-      marginBottom: theme.spacing.md,
+    vehicleCard: {
+      backgroundColor: '#ffffff',
+      margin: 16,
+      borderRadius: 12,
+      padding: 20,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    cardTitle: {
+      color: '#2c3e50',
+      textAlign: 'center',
+      marginBottom: 4,
+    },
+    cardSubtitle: {
+      color: '#7f8c8d',
+      textAlign: 'center',
+      marginBottom: 20,
     },
     vehicleContainer: {
       flexDirection: 'row',
-      marginBottom: theme.spacing.md,
+      marginBottom: 20,
     },
     vehicleImageContainer: {
-      width: 120,
-      height: 80,
-      borderRadius: theme.borderRadius.small,
+      width: 130,
+      height: 90,
+      borderRadius: 12,
       overflow: 'hidden',
-      marginRight: theme.spacing.md,
-      borderWidth: 1,
-      borderColor: theme.colors.textgreylight,
+      marginRight: 20,
+      borderWidth: 2,
+      borderColor: theme.colors.primary,
     },
     vehicleImage: {
       width: '100%',
@@ -54,323 +75,374 @@ const VehicleInfo = () => {
       justifyContent: 'space-between',
     },
     vehicleName: {
-      fontSize: theme.fontSizes.medium,
-      fontWeight: '600',
-      color: theme.colors.textblack,
-      marginBottom: theme.spacing.xs,
+      fontSize: 20,
+      color: '#2c3e50',
+      marginBottom: 8,
     },
-    detailRow: {
+    detailsGrid: {
       flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: theme.spacing.xs,
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    detailItem: {
+      width: '48%',
+      marginBottom: 12,
     },
     detailLabel: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textgreydark,
-      width: 80,
+      color: theme.colors.textgreylight,
+      marginBottom: 4,
+      textTransform: 'uppercase',
     },
     detailValue: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textblack,
-      flex: 1,
-    },
-    profileLink: {
-      flexDirection: 'row',
-      alignItems: 'center',
+      color: theme.colors.textdark,
     },
     linkText: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.accentblue,
-      marginRight: theme.spacing.xs,
+      color: theme.colors.primary,
+      textDecorationLine: 'underline',
     },
-    assistantDropdown: {
-      marginTop: theme.spacing.sm,
-      backgroundColor: theme.colors.backgroud,
-      borderRadius: theme.borderRadius.small,
-      padding: theme.spacing.sm,
-      marginBottom: theme.spacing.sm,
+    statusBadge: {
+      backgroundColor: theme.colors.success,
+      paddingHorizontal: 12,
+      paddingVertical: 4,
+      borderRadius: 20,
+      alignSelf: 'flex-start',
+      marginTop: 8,
     },
-    dropdownHeader: {
+    statusText: {
+      color: '#ffffff',
+    },
+    sectionCard: {
+      backgroundColor: '#ffffff',
+      margin: 16,
+      marginTop: 0,
+      borderRadius: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    sectionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      fontSize : theme.fontSizes.md,
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ecf0f1',
     },
-    assistantTitle: {
-      fontSize: theme.fontSizes.small + 1,
-      fontWeight: '600',
-      color: theme.colors.textblack,
+    sectionHeaderCollapsed: {
+      borderBottomWidth: 0,
+    },
+    sectionTitle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    sectionTitleText: {
+      color: '#2c3e50',
+      marginLeft: 8,
+    },
+    sectionContent: {
+      padding: 20,
     },
     assistantDetails: {
-      marginTop: theme.spacing.sm,
-      paddingTop: theme.spacing.sm,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.textgreylight,
-    },
-    separator: {
-      height: 1,
-      backgroundColor: theme.colors.textgreylight,
-      marginVertical: theme.spacing.sm,
-    },
-    studentListContainer: {
-      marginTop: theme.spacing.sm,
-      paddingTop: theme.spacing.sm,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.textgreylight,
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
     },
     studentItem: {
       flexDirection: 'row',
       alignItems: 'center',
-      padding: theme.spacing.sm,
+      paddingVertical: 12,
       borderBottomWidth: 1,
-      borderBottomColor: theme.colors.textgreylight,
+      borderBottomColor: '#ecf0f1',
+    },
+    studentAvatar: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      backgroundColor: theme.colors.primary,
+      alignItems: 'center',
+      justifyContent: 'center',
+      marginRight: 12,
+    },
+    studentInitials: {
+      color: '#ffffff',
+      // fontWeight: 'bold',
     },
     studentInfo: {
       flex: 1,
-      marginLeft: theme.spacing.sm,
     },
     studentName: {
-      fontSize: theme.fontSizes.small + 1,
-      fontWeight: '500',
-      color: theme.colors.textblack,
+      color: '#2c3e50',
+      marginBottom: 2,
     },
     studentDetails: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textgreydark,
-    },
-    studentAvatar: {
-      width: 36,
-      height: 36,
-      borderRadius: 18,
-      backgroundColor: theme.colors.textgreylight,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    studentInitials: {
-      fontSize: theme.fontSizes.small,
-      fontWeight: 'bold',
-      color: theme.colors.textblack,
-    },
-    schoolsContainer: {
-      marginTop: theme.spacing.sm,
-      paddingTop: theme.spacing.sm,
-      borderTopWidth: 1,
-      borderTopColor: theme.colors.textgreylight,
+      color: '#7f8c8d',
     },
     schoolItem: {
-      marginBottom: theme.spacing.sm,
-      backgroundColor: theme.colors.backgroud,
-      borderRadius: theme.borderRadius.small,
-      overflow: 'hidden',
-    },
-    schoolHeader: {
       flexDirection: 'row',
-      padding: theme.spacing.sm,
+      alignItems: 'center',
+      paddingVertical: 16,
+      paddingHorizontal: 16,
+      marginBottom: 12,
+      backgroundColor: '#f8f9fa',
+      borderRadius: 8,
+      borderLeftWidth: 4,
+      borderLeftColor: theme.colors.primary,
     },
     schoolInfo: {
       flex: 1,
     },
     schoolName: {
-      fontSize: theme.fontSizes.small + 2,
-      fontWeight: '600',
-      color: theme.colors.textgreydark,
-      marginBottom: theme.spacing.xs,
+      color: '#2c3e50',
+      marginBottom: 4,
     },
     schoolLocation: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textgreydark,
+      color: '#7f8c8d',
+      marginBottom: 4,
+    },
+    studentCountText: {
+      color: theme.colors.primary,
+      fontWeight: '500',
     },
     timeContainer: {
       alignItems: 'center',
-      justifyContent: 'center',
       backgroundColor: theme.colors.primary,
-      paddingHorizontal: theme.spacing.sm,
-      paddingVertical: theme.spacing.xs,
-      borderRadius: theme.borderRadius.small,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 8,
       minWidth: 80,
     },
     arrivalTime: {
-      fontSize: theme.fontSizes.small,
+      color: '#ffffff',
       fontWeight: 'bold',
-      color: theme.colors.textblack,
+      marginBottom: 2,
     },
     arrivalLabel: {
-      fontSize: theme.fontSizes.small - 2,
-      color: theme.colors.textblack,
+      color: '#ffffff',
+      opacity: 0.8,
     },
-    studentCountText: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.accentblue,
-      marginTop: theme.spacing.xs,
-      fontWeight: '500',
-    },
-    routeLine: {
-      position: 'absolute',
-      left: 15,
-      top: 0,
-      bottom: 0,
-      width: 2,
-      backgroundColor: theme.colors.primary,
-      zIndex: -1,
+    emptyStateContainer: {
+      alignItems: 'center',
+      paddingVertical: 40,
     },
     emptyStateText: {
+      color: '#7f8c8d',
       textAlign: 'center',
-      color: theme.colors.textgreydark,
-      padding: theme.spacing.md,
-    }
+      marginTop: 8,
+    },
+    statsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      paddingVertical: 16,
+    },
+    statItem: {
+      alignItems: 'center',
+    },
+    statValue: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: theme.colors.primary,
+      marginBottom: 4,
+    },
+    statLabel: {
+      color: '#7f8c8d',
+    },
   });
-
-  // Mock data for students
-  const students = [
-    { id: 1, name: 'Amandi Perera', grade: 'Grade 5', pickupLocation: 'Colombo 7' },
-    { id: 2, name: 'Lehan Selaka', grade: 'Grade 3', pickupLocation: 'Colombo 5' },
-    { id: 3, name: 'Duleepa Edirisinghe', grade: 'Grade 4', pickupLocation: 'Colombo 6' },
-    { id: 4, name: 'Na wikramathnthri', grade: 'Grade 2', pickupLocation: 'Colombo 4' },
-  ];
   
   return (
-    <View style={styles.container}>
-      {/* <SWText style={styles.sectionTitle}>Vehicle Information</SWText> */}
-      
-      <View style={styles.vehicleContainer}>
-        <View style={styles.vehicleImageContainer}>
-          <Image 
-            source={require('../../../../assets/images/dummy/van.jpeg')} 
-            style={styles.vehicleImage}
-          />
-        </View>
+    <ScrollView style={styles.container}>
+      {/* Vehicle Information Card */}
+      <View style={styles.vehicleCard}>
+        <SWText style={styles.cardTitle} uberBold lg>VEHICLE INFORMATION</SWText>
+        <SWText style={styles.cardSubtitle} sm regular>Current Assigned Vehicle Details</SWText>
         
-        <View style={styles.vehicleDetails}>
-          <SWText style={styles.vehicleName}>Toyota Hiace (ABC-1234)</SWText>
+        <View style={styles.vehicleContainer}>
+          <View style={styles.vehicleImageContainer}>
+            <Image 
+              source={require('../../../../assets/images/dummy/van.jpeg')} 
+              style={styles.vehicleImage}
+            />
+          </View>
           
-          <View style={styles.detailRow}>
-            <SWText style={styles.detailLabel}>Owner:</SWText>
-            <TouchableOpacity style={styles.profileLink} onPress={() => console.log('Navigate to owner profile')}>
-              <SWText style={styles.linkText}>James Wilson</SWText>
-              <FontAwesome name="external-link" size={12} color={theme.colors.accentblue} />
+          <View style={styles.vehicleDetails}>
+            <SWText style={styles.vehicleName} xl uberBold>Toyota Hiace</SWText>
+            <SWText style={styles.detailValue} sm>License: ABC-1234</SWText>
+            <View style={styles.statusBadge}>
+              <SWText style={styles.statusText} xs bold>ACTIVE</SWText>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.detailsGrid}>
+          <View style={styles.detailItem}>
+            <SWText style={styles.detailLabel} xs>Vehicle Owner</SWText>
+            <TouchableOpacity onPress={() => console.log('Navigate to owner profile')}>
+              <SWText style={styles.linkText} sm>James Wilson</SWText>
             </TouchableOpacity>
           </View>
-          
-          <View style={styles.detailRow}>
-            <SWText style={styles.detailLabel}>Capacity:</SWText>
-            <SWText style={styles.detailValue}>15 seats</SWText>
+          <View style={styles.detailItem}>
+            <SWText style={styles.detailLabel} xs>Seating Capacity</SWText>
+            <SWText style={styles.detailValue} sm>15 Passengers</SWText>
           </View>
-          
-          <View style={styles.detailRow}>
-            <SWText style={styles.detailLabel}>Year:</SWText>
-            <SWText style={styles.detailValue}>2022</SWText>
+          <View style={styles.detailItem}>
+            <SWText style={styles.detailLabel} xs>Manufacturing Year</SWText>
+            <SWText style={styles.detailValue} sm>2022</SWText>
+          </View>
+          <View style={styles.detailItem}>
+            <SWText style={styles.detailLabel} xs>Fuel Type</SWText>
+            <SWText style={styles.detailValue} sm>Diesel</SWText>
+          </View>
+          <View style={[styles.detailItem]}>
+            <SWText style={styles.detailLabel} xs>Travel Path</SWText>
+            <View style={[styles.detailValueContainer, { flexDirection: 'row', gap: 10, alignItems: 'center' }]}>
+              <SWText style={styles.detailValue} sm>Kalutara</SWText>
+              {/* <SWText style={styles.detailValue} sm>to</SWText> */}
+              <Ionicons name="swap-horizontal" size={18} color={theme.colors.primary} />
+              <SWText style={styles.detailValue} sm>Colombo 7</SWText>
+            </View>
+          </View>
+        </View>
+
+        {/* Quick Stats */}
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <SWText style={styles.statValue}>{students.length}</SWText>
+            <SWText style={styles.statLabel} xs>Students</SWText>
+          </View>
+          <View style={styles.statItem}>
+            <SWText style={styles.statValue}>{schools.length}</SWText>
+            <SWText style={styles.statLabel} xs>Schools</SWText>
+          </View>
+          <View style={styles.statItem}>
+            <SWText style={styles.statValue}>4.8</SWText>
+            <SWText style={styles.statLabel} xs>Rating</SWText>
           </View>
         </View>
       </View>
-      
-      <TouchableOpacity 
-        style={styles.assistantDropdown}
-        onPress={() => setShowAssistantInfo(!showAssistantInfo)}
-      >
-        <View style={styles.dropdownHeader}>
-          <SWText style={styles.assistantTitle}>Assistant Information</SWText>
+
+      {/* Assistant Information */}
+      <View style={styles.sectionCard}>
+        <TouchableOpacity 
+          style={[styles.sectionHeader, !showAssistantInfo && styles.sectionHeaderCollapsed]}
+          onPress={() => setShowAssistantInfo(!showAssistantInfo)}
+        >
+          <View style={styles.sectionTitle}>
+            <FontAwesome name="user-plus" size={18} color={theme.colors.primary} />
+            <SWText style={styles.sectionTitleText} md uberBold>Assistant Information</SWText>
+          </View>
           <FontAwesome 
             name={showAssistantInfo ? "chevron-up" : "chevron-down"} 
-            size={12} 
-            color={theme.colors.textgreydark} 
+            size={16} 
+            color="#7f8c8d" 
           />
-        </View>
+        </TouchableOpacity>
         
         {showAssistantInfo && (
-          <View style={styles.assistantDetails}>
-            <View style={styles.detailRow}>
-              <SWText style={styles.detailLabel}>Name:</SWText>
-              <SWText style={styles.detailValue}>Sarah Johnson</SWText>
-            </View>
-            <View style={styles.detailRow}>
-              <SWText style={styles.detailLabel}>Phone:</SWText>
-              <SWText style={styles.detailValue}>+94 77 234 5678</SWText>
-            </View>
-            <View style={styles.detailRow}>
-              <SWText style={styles.detailLabel}>Experience:</SWText>
-              <SWText style={styles.detailValue}>3 years</SWText>
+          <View style={styles.sectionContent}>
+            <View style={styles.assistantDetails}>
+              <View style={styles.detailItem}>
+                <SWText style={styles.detailLabel} xs>Full Name</SWText>
+                <SWText style={styles.detailValue} sm>Sarah Johnson</SWText>
+              </View>
+              <View style={styles.detailItem}>
+                <SWText style={styles.detailLabel} xs>Contact Number</SWText>
+                <SWText style={styles.detailValue} sm>+94 77 234 5678</SWText>
+              </View>
+              <View style={styles.detailItem}>
+                <SWText style={styles.detailLabel} xs>Experience</SWText>
+                <SWText style={styles.detailValue} sm>3 Years</SWText>
+              </View>
+              <View style={styles.detailItem}>
+                <SWText style={styles.detailLabel} xs>Emergency Contact</SWText>
+                <SWText style={styles.detailValue} sm>+94 77 345 6789</SWText>
+              </View>
             </View>
           </View>
         )}
-      </TouchableOpacity>
+      </View>
       
-      <View style={styles.separator} />
-      
-      <TouchableOpacity 
-        style={styles.assistantDropdown}
-        onPress={() => setShowStudentList(!showStudentList)}
-      >
-        <View style={styles.dropdownHeader}>
-          <SWText style={styles.assistantTitle}>Student List ({students.length})</SWText>
+      {/* Student List */}
+      <View style={styles.sectionCard}>
+        <TouchableOpacity 
+          style={[styles.sectionHeader, !showStudentList && styles.sectionHeaderCollapsed]}
+          onPress={() => setShowStudentList(!showStudentList)}
+        >
+          <View style={styles.sectionTitle}>
+            <FontAwesome name="users" size={18} color={theme.colors.primary} />
+            <SWText style={styles.sectionTitleText} md uberBold>
+              Assigned Students ({students.length})
+            </SWText>
+          </View>
           <FontAwesome 
             name={showStudentList ? "chevron-up" : "chevron-down"} 
-            size={12} 
-            color={theme.colors.textgreydark} 
+            size={16} 
+            color="#7f8c8d" 
           />
-        </View>
+        </TouchableOpacity>
         
         {showStudentList && (
-          <View style={styles.studentListContainer}>
-            {students.map((student) => (
-              <View key={student.id} style={styles.studentItem}>
+          <View style={styles.sectionContent}>
+            {students.map((student, index) => (
+              <View key={student.id} style={[styles.studentItem, index === students.length - 1 && { borderBottomWidth: 0 }]}>
                 <View style={styles.studentAvatar}>
-                  <SWText style={styles.studentInitials}>{student.name.charAt(0)}</SWText>
+                  <SWText style={styles.studentInitials} sm uberBold>{student.name.charAt(0)}</SWText>
                 </View>
                 <View style={styles.studentInfo}>
-                  <SWText style={styles.studentName}>{student.name}</SWText>
-                  <SWText style={styles.studentDetails}>{student.grade} • {student.pickupLocation}</SWText>
+                  <SWText style={styles.studentName} md uberBold>{student.name}</SWText>
+                  <SWText style={styles.studentDetails} sm>{student.grade} • Pickup: {student.pickupLocation}</SWText>
                 </View>
+                <FontAwesome name="phone" size={16} color={theme.colors.primary} />
               </View>
             ))}
           </View>
         )}
-       
-      </TouchableOpacity>
+      </View>
       
-      <View style={styles.separator} />
-      
-      {/* Schools dropdown */}
-      <TouchableOpacity 
-        style={styles.assistantDropdown}
-        onPress={() => setShowSchoolsList(!showSchoolsList)}
-      >
-        <View style={styles.dropdownHeader}>
-          <SWText style={styles.assistantTitle}>Destination Schools</SWText>
+      {/* Schools Route */}
+      <View style={styles.sectionCard}>
+        <TouchableOpacity 
+          style={[styles.sectionHeader, !showSchoolsList && styles.sectionHeaderCollapsed]}
+          onPress={() => setShowSchoolsList(!showSchoolsList)}
+        >
+          <View style={styles.sectionTitle}>
+            <FontAwesome name="map-marker" size={18} color={theme.colors.primary} />
+            <SWText style={styles.sectionTitleText} md uberBold>Route & Schools</SWText>
+          </View>
           <FontAwesome 
             name={showSchoolsList ? "chevron-up" : "chevron-down"} 
-            size={12} 
-            color={theme.colors.textgreydark} 
+            size={16} 
+            color="#7f8c8d" 
           />
-        </View>
+        </TouchableOpacity>
         
         {showSchoolsList && (
-          <View style={styles.schoolsContainer}>
-            {/* Route line to connect the schools */}
-            {schools.length > 1 && <View style={styles.routeLine} />}
-            
-            {schools.map((school) => (
-              <View key={school.id} style={styles.schoolItem}>
-                <View style={styles.schoolHeader}>
+          <View style={styles.sectionContent}>
+            {schools.length > 0 ? (
+              schools.map((school) => (
+                <View key={school.id} style={styles.schoolItem}>
                   <View style={styles.schoolInfo}>
-                    <SWText style={styles.schoolName}>{school.name}</SWText>
-                    <SWText style={styles.schoolLocation}>{school.location}</SWText>
-                    <SWText style={styles.studentCountText}>{school.studentCount} students</SWText>
+                    <SWText style={styles.schoolName} md uberBold>{school.name}</SWText>
+                    <SWText style={styles.schoolLocation} sm>{school.location}</SWText>
+                    <SWText style={styles.studentCountText} xs>{school.studentCount} students</SWText>
                   </View>
                   <View style={styles.timeContainer}>
-                    <SWText style={styles.arrivalTime}>{school.arrivalTime}</SWText>
-                    <SWText style={styles.arrivalLabel}>Arrival</SWText>
+                    <SWText style={styles.arrivalTime} sm>{school.arrivalTime}</SWText>
+                    <SWText style={styles.arrivalLabel} xs>Arrival</SWText>
                   </View>
                 </View>
+              ))
+            ) : (
+              <View style={styles.emptyStateContainer}>
+                <Ionicons name="school-outline" size={48} color="#7f8c8d" />
+                <SWText style={styles.emptyStateText} sm>No schools assigned to this route yet.</SWText>
               </View>
-            ))}
-            
-            {schools.length === 0 && (
-              <SWText style={styles.emptyStateText}>No schools scheduled for this route.</SWText>
             )}
           </View>
         )}
-      </TouchableOpacity>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 

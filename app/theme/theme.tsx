@@ -15,6 +15,8 @@ export interface Theme {
         textgreydark : string;
         textgreylight : string;
         error : string;
+        success : string;
+        warning : string;
 
         // status tag colors
         statusorange : string;
@@ -103,6 +105,9 @@ export const lightTheme: Theme = {
         textwhite : "#ffffff",
         textgreydark: "#71727A",
         textgreylight: "#8F9098",
+
+        success: "#27ae60",
+        warning: "#f39c12",
         error: "#FF0000",
 
 

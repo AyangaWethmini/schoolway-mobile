@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import SWText from '../../../components/SWText';
 import { useTheme } from '../../../theme/ThemeContext';
 
@@ -19,19 +19,19 @@ const DocumentItem = ({
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: theme.spacing.sm,
-      borderBottomWidth: 0.5,
-      borderBottomColor: theme.colors.textgreylight,
+      paddingVertical: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ecf0f1',
+    },
+    documentInfo: {
+      flex: 1,
     },
     documentName: {
-      fontSize: theme.fontSizes.small + 1,
-      fontWeight: '500',
-      color: theme.colors.textblack,
+      color: '#2c3e50',
       marginBottom: 2,
     },
     documentDate: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textgreydark,
+      color: '#7f8c8d',
     },
     documentActions: {
       flexDirection: 'row',
@@ -42,22 +42,20 @@ const DocumentItem = ({
       justifyContent: 'center',
       paddingVertical: 6,
       paddingHorizontal: 10,
-      borderRadius: theme.borderRadius.small,
+      borderRadius: 16,
       marginLeft: 6,
     },
     smallButtonText: {
       color: 'white',
-      fontSize: theme.fontSizes.small - 1,
       marginLeft: 4,
-      fontWeight: '500',
     }
   });
 
   return (
     <View style={styles.documentItem}>
-      <View style={{ flex: 1 }}>
-        <SWText style={styles.documentName}>{name}</SWText>
-        <SWText style={styles.documentDate}>Valid until: {validUntil}</SWText>
+      <View style={styles.documentInfo}>
+        <SWText style={styles.documentName} sm uberBold>{name}</SWText>
+        <SWText style={styles.documentDate} xs>Valid until: {validUntil}</SWText>
       </View>
       <View style={styles.documentActions}>
         <TouchableOpacity 
@@ -65,26 +63,24 @@ const DocumentItem = ({
           onPress={onUpload}
         >
           <FontAwesome name="upload" size={12} color="white" />
-          <SWText style={styles.smallButtonText}>{uploadLabel}</SWText>
+          <SWText style={styles.smallButtonText} xs uberBold>{uploadLabel}</SWText>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.smallButton, { backgroundColor: theme.colors.accentblue }]}
+          style={[styles.smallButton, { backgroundColor: '#3498db' }]}
           onPress={onRemind}
         >
-          <FontAwesome name="bell" size={12} color="white" />
-          <SWText style={styles.smallButtonText}>{remindLabel}</SWText>
+          <FontAwesome name="bell" size={10} color="white" />
+          <SWText style={styles.smallButtonText} xs uberBold>{remindLabel}</SWText>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-
-
 const LicenseAndVehicleCheckups = () => {
   const { theme } = useTheme();
-  const [showLicenseInfo, setShowLicenseInfo] = useState(true);
-  const [showVehicleCheckups, setShowVehicleCheckups] = useState(true);
+  const [showLicenseInfo, setShowLicenseInfo] = useState(false);
+  const [showVehicleCheckups, setShowVehicleCheckups] = useState(false);
   
   // Mock data - in real app this would come from API or state
   const licenseExpiryDate = "2024-07-15"; // Format: YYYY-MM-DD
@@ -95,8 +91,6 @@ const LicenseAndVehicleCheckups = () => {
   const today = new Date();
   const expiryDate = new Date(licenseExpiryDate);
   const daysUntilExpiry = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-  
-  // Last checkup reference (used for display only)
   
   // Calculate days until next checkup
   const nextCheckupDateObj = new Date(nextCheckupDate);
@@ -114,7 +108,7 @@ const LicenseAndVehicleCheckups = () => {
     if (daysUntilNextCheckup < 0 && Math.abs(daysUntilNextCheckup) > 30) return 'critical';
     if (daysUntilNextCheckup < 0) return 'overdue';
     if (daysUntilNextCheckup <= 30) return 'upcoming';
-    if (daysUntilNextCheckup > 30) return 'healthy'; // 2+ months is a healthy state
+    if (daysUntilNextCheckup > 30) return 'healthy';
     return 'ok';
   };
   
@@ -124,20 +118,20 @@ const LicenseAndVehicleCheckups = () => {
   // Get appropriate colors based on alert level
   const getLicenseAlertColor = () => {
     switch (licenseAlertLevel) {
-      case 'expired': return theme.colors.error;
-      case 'urgent': return '#FF6B00'; // Orange
-      case 'warning': return theme.colors.primary; // Yellow
-      default: return '#4CAF50'; // Green
+      case 'expired': return '#e74c3c';
+      case 'urgent': return '#FF6B00';
+      case 'warning': return '#f39c12';
+      default: return '#27ae60';
     }
   };
   
   const getCheckupAlertColor = () => {
     switch (checkupAlertLevel) {
-      case 'critical': return '#8B0000'; // Dark Red for critical/severe warning
-      case 'overdue': return theme.colors.error;
-      case 'upcoming': return '#FF6B00'; // Orange
-      case 'healthy': return '#4CAF50'; // Bright green for healthy status
-      default: return '#4CAF50'; // Green
+      case 'critical': return '#8B0000';
+      case 'overdue': return '#e74c3c';
+      case 'upcoming': return '#FF6B00';
+      case 'healthy': return '#27ae60';
+      default: return '#27ae60';
     }
   };
   
@@ -151,182 +145,216 @@ const LicenseAndVehicleCheckups = () => {
   
   const styles = StyleSheet.create({
     container: {
-      backgroundColor: theme.colors.backgroud,
-      borderRadius: theme.borderRadius.medium,
-      padding: theme.spacing.md,
-      marginTop: theme.spacing.md,
+      flex: 1,
+      backgroundColor: '#f8f9fa',
     },
-    sectionTitle: {
-      fontSize: theme.fontSizes.medium,
-      fontWeight: '600',
-      color: theme.colors.textblack,
-      marginBottom: theme.spacing.sm,
+    sectionCard: {
+      backgroundColor: '#ffffff',
+      margin: 16,
+      marginTop: 0,
+      borderRadius: 12,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 5,
     },
-    alertContainer: {
-      borderRadius: theme.borderRadius.small,
-      padding: theme.spacing.sm,
-      marginBottom: theme.spacing.md,
-    },
-    alertHeader: {
+    sectionHeader: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      marginBottom: theme.spacing.sm,
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: '#ecf0f1',
     },
-    alertTitle: {
-      fontSize: theme.fontSizes.medium - 2,
-      fontWeight: '600',
-      color: theme.colors.textblack,
+    sectionHeaderCollapsed: {
+      borderBottomWidth: 0,
     },
-    alertInfo: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textgreydark,
-      marginBottom: theme.spacing.sm,
+    sectionTitle: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    sectionTitleText: {
+      color: '#2c3e50',
+      marginLeft: 8,
+    },
+    sectionContent: {
+      padding: 20,
     },
     alertStatus: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: theme.spacing.sm,
+      marginBottom: 12,
     },
     statusDot: {
       width: 12,
       height: 12,
       borderRadius: 6,
-      marginRight: theme.spacing.xs,
+      marginRight: 8,
     },
     statusText: {
-      fontSize: theme.fontSizes.small,
       fontWeight: '500',
     },
     dateInfo: {
-      fontSize: theme.fontSizes.small,
-      color: theme.colors.textgreydark,
-      marginBottom: theme.spacing.xs,
+      color: '#7f8c8d',
+      marginBottom: 8,
     },
-    separator: {
-      height: 1,
-      backgroundColor: theme.colors.textgreylight,
-      marginVertical: theme.spacing.sm,
+    alertInfo: {
+      color: '#7f8c8d',
+      marginBottom: 16,
+      lineHeight: 20,
     },
-    button: {
-      backgroundColor: theme.colors.accentblue,
-      padding: theme.spacing.sm,
-      borderRadius: theme.borderRadius.small,
+    actionButton: {
+      backgroundColor: theme.colors.primary,
+      paddingVertical: 12,
+      paddingHorizontal: 16,
+      borderRadius: 8,
       alignItems: 'center',
-      marginTop: theme.spacing.sm,
+      marginTop: 8,
     },
-    buttonText: {
-      color: theme.colors.textwhite,
-      fontWeight: '600',
-      fontSize: theme.fontSizes.small,
+    actionButtonText: {
+      color: '#ffffff',
     },
-    dropdownHeader: {
+    buttonRow: {
       flexDirection: 'row',
-      alignItems: 'center',
       justifyContent: 'space-between',
-      paddingVertical: theme.spacing.sm,
+      marginTop: 16,
     },
-    dropdownTitle: {
-      fontSize: theme.fontSizes.small + 1,
-      fontWeight: '600',
-      color: theme.colors.textblack,
+    buttonHalf: {
+      flex: 1,
+      marginHorizontal: 4,
     },
-    contentContainer: {
-      backgroundColor: theme.colors.backgroud,
-      padding: theme.spacing.sm,
-      borderRadius: theme.borderRadius.small,
-      borderWidth: 1,
-      borderColor: theme.colors.textgreylight,
-    },
-    // Document list container styles (only keeping container styles)
     documentList: {
-      marginTop: theme.spacing.md,
+      marginTop: 16,
+      paddingTop: 16,
       borderTopWidth: 1,
-      borderTopColor: theme.colors.textgreylight,
-      paddingTop: theme.spacing.sm,
+      borderTopColor: '#ecf0f1',
     },
     documentListTitle: {
-      fontSize: theme.fontSizes.small + 2,
-      fontWeight: '600',
-      color: theme.colors.textblack,
-      marginBottom: theme.spacing.sm,
-    }
+      color: '#2c3e50',
+      marginBottom: 12,
+    },
+    warningCard: {
+      backgroundColor: '#fff3cd',
+      margin: 16,
+      borderRadius: 8,
+      padding: 16,
+      borderLeftWidth: 4,
+      borderLeftColor: '#ffc107',
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    criticalCard: {
+      backgroundColor: '#f8d7da',
+      borderLeftColor: '#dc3545',
+    },
+    warningText: {
+      color: '#856404',
+      flex: 1,
+      marginLeft: 8,
+    },
+    criticalText: {
+      color: '#721c24',
+    },
   });
 
   return (
-    <View style={styles.container}>
-      <SWText style={styles.sectionTitle}>License & Vehicle Status</SWText>
-      
-      {/* License Expiration Section */}
-      <TouchableOpacity 
-        style={[styles.contentContainer, { borderLeftWidth: 3, borderLeftColor: licenseAlertColor }]
-        }
-        onPress={() => setShowLicenseInfo(!showLicenseInfo)}
-      >
-        <View style={styles.dropdownHeader}>
-          <SWText style={styles.dropdownTitle}>Driving License Status</SWText>
+    <ScrollView style={styles.container}>
+      {/* Warning Cards for Critical States */}
+      {(licenseAlertLevel === 'expired' || checkupAlertLevel === 'critical') && (
+        <View style={[styles.warningCard, licenseAlertLevel === 'expired' && styles.criticalCard]}>
+          <FontAwesome 
+            name="exclamation-triangle" 
+            size={18} 
+            color={licenseAlertLevel === 'expired' ? "#dc3545" : "#ffc107"} 
+          />
+          <SWText style={[styles.warningText, licenseAlertLevel === 'expired' && styles.criticalText]} sm uberBold>
+            {licenseAlertLevel === 'expired' 
+              ? "URGENT: Your driving license has expired! You must renew immediately."
+              : "WARNING: Vehicle inspection is severely overdue. Please schedule immediately."
+            }
+          </SWText>
+        </View>
+      )}
+
+      {/* License Status Section */}
+      <View style={styles.sectionCard}>
+        <TouchableOpacity 
+          style={[styles.sectionHeader, !showLicenseInfo && styles.sectionHeaderCollapsed]}
+          onPress={() => setShowLicenseInfo(!showLicenseInfo)}
+        >
+          <View style={styles.sectionTitle}>
+            <FontAwesome name="id-card" size={18} color={theme.colors.primary} />
+            <SWText style={styles.sectionTitleText} md uberBold>Driving License Status</SWText>
+          </View>
           <FontAwesome 
             name={showLicenseInfo ? "chevron-up" : "chevron-down"} 
-            size={12} 
-            color={theme.colors.textgreydark} 
+            size={16} 
+            color="#7f8c8d" 
           />
-        </View>
+        </TouchableOpacity>
         
         {showLicenseInfo && (
-          <>
+          <View style={styles.sectionContent}>
             <View style={styles.alertStatus}>
               <View style={[styles.statusDot, { backgroundColor: licenseAlertColor }]} />
-              <SWText style={[styles.statusText, { color: licenseAlertColor }]}>
+              <SWText style={[styles.statusText, { color: licenseAlertColor }]} sm uberBold>
                 {licenseAlertLevel === 'expired' ? 'License Expired' :
                  licenseAlertLevel === 'urgent' ? 'Expiring Soon' :
                  licenseAlertLevel === 'warning' ? 'Renewal Recommended' : 'Valid'}
               </SWText>
             </View>
             
-            <SWText style={styles.dateInfo}>
-              <SWText style={{ fontWeight: '500' }}>Expiry Date:</SWText> {formatDate(licenseExpiryDate)}
+            <SWText style={styles.dateInfo} sm>
+              <SWText uberBold>Expiry Date:</SWText> {formatDate(licenseExpiryDate)}
             </SWText>
             
             {daysUntilExpiry > 0 ? (
-              <SWText style={styles.alertInfo}>Your driving license will expire in {daysUntilExpiry} days. {daysUntilExpiry <= 30 ? 'Please renew it as soon as possible.' : 'Plan for renewal ahead of time.'}</SWText>
+              <SWText style={styles.alertInfo} sm>
+                Your driving license will expire in {daysUntilExpiry} days. 
+                {daysUntilExpiry <= 30 ? ' Please renew it as soon as possible.' : ' Plan for renewal ahead of time.'}
+              </SWText>
             ) : (
-              <SWText style={styles.alertInfo}>Your driving license has expired. You must renew it immediately before continuing to drive.</SWText>
+              <SWText style={styles.alertInfo} sm>
+                Your driving license has expired. You must renew it immediately before continuing to drive.
+              </SWText>
             )}
             
             {(daysUntilExpiry <= 30 || daysUntilExpiry < 0) && (
               <TouchableOpacity 
-                style={styles.button} 
+                style={styles.actionButton} 
                 onPress={() => console.log('Upload new license document')}
               >
-                <SWText style={styles.buttonText}>Upload New License Document</SWText>
+                <SWText style={styles.actionButtonText} sm uberBold>Upload New License Document</SWText>
               </TouchableOpacity>
             )}
-          </>
+          </View>
         )}
-      </TouchableOpacity>
-      
-      <View style={styles.separator} />
+      </View>
       
       {/* Vehicle Checkups Section */}
-      <TouchableOpacity 
-        style={[styles.contentContainer, { borderLeftWidth: 3, borderLeftColor: checkupAlertColor }]
-        }
-        onPress={() => setShowVehicleCheckups(!showVehicleCheckups)}
-      >
-        <View style={styles.dropdownHeader}>
-          <SWText style={styles.dropdownTitle}>Vehicle Condition Status</SWText>
+      <View style={styles.sectionCard}>
+        <TouchableOpacity 
+          style={[styles.sectionHeader, !showVehicleCheckups && styles.sectionHeaderCollapsed]}
+          onPress={() => setShowVehicleCheckups(!showVehicleCheckups)}
+        >
+          <View style={styles.sectionTitle}>
+            <FontAwesome name="car" size={18} color={theme.colors.primary} />
+            <SWText style={styles.sectionTitleText} md uberBold>Vehicle Condition Status</SWText>
+          </View>
           <FontAwesome 
             name={showVehicleCheckups ? "chevron-up" : "chevron-down"} 
-            size={12} 
-            color={theme.colors.textgreydark} 
+            size={16} 
+            color="#7f8c8d" 
           />
-        </View>
+        </TouchableOpacity>
         
         {showVehicleCheckups && (
-          <>
+          <View style={styles.sectionContent}>
             <View style={styles.alertStatus}>
               <View style={[styles.statusDot, { backgroundColor: checkupAlertColor }]} />
-              <SWText style={[styles.statusText, { color: checkupAlertColor }]}>
+              <SWText style={[styles.statusText, { color: checkupAlertColor }]} sm uberBold>
                 {checkupAlertLevel === 'critical' ? 'Critical: Severely Overdue' :
                  checkupAlertLevel === 'overdue' ? 'Checkup Overdue' :
                  checkupAlertLevel === 'upcoming' ? 'Checkup Soon' : 
@@ -334,33 +362,35 @@ const LicenseAndVehicleCheckups = () => {
               </SWText>
             </View>
             
-            <SWText style={styles.dateInfo}>
-              <SWText style={{ fontWeight: '500' }}>Last Checkup:</SWText> {formatDate(lastCheckupDate)}
+            <SWText style={styles.dateInfo} sm>
+              <SWText uberBold>Last Checkup:</SWText> {formatDate(lastCheckupDate)}
             </SWText>
             
-            <SWText style={styles.dateInfo}>
-              <SWText style={{ fontWeight: '500' }}>Next Due:</SWText> {formatDate(nextCheckupDate)}
+            <SWText style={styles.dateInfo} sm>
+              <SWText uberBold>Next Due:</SWText> {formatDate(nextCheckupDate)}
             </SWText>
             
             {daysUntilNextCheckup > 0 ? (
               <>
-                <SWText style={styles.alertInfo}>
+                <SWText style={styles.alertInfo} sm>
                   Next vehicle condition test is in {daysUntilNextCheckup} days. 
                   {daysUntilNextCheckup <= 30 
-                    ? 'Please prepare for the test.' 
-                    : 'Your vehicle is up to date with required inspections.'}
+                    ? ' Please prepare for the test.' 
+                    : ' Your vehicle is up to date with required inspections.'}
                 </SWText>
                 {daysUntilNextCheckup > 30 && (
-                  <SWText style={[styles.alertInfo, { color: '#4CAF50', fontWeight: '500' }]}>
+                  <SWText style={[styles.alertInfo, { color: '#27ae60' }]} sm bold>
                     STATUS: Vehicle is in good condition and compliant with all requirements.
                   </SWText>
                 )}
               </>
             ) : (
               <>
-                <SWText style={styles.alertInfo}>Your vehicle condition test is overdue by {Math.abs(daysUntilNextCheckup)} days. Please schedule it immediately.</SWText>
+                <SWText style={styles.alertInfo} sm>
+                  Your vehicle condition test is overdue by {Math.abs(daysUntilNextCheckup)} days. Please schedule it immediately.
+                </SWText>
                 {Math.abs(daysUntilNextCheckup) > 30 && (
-                  <SWText style={[styles.alertInfo, { color: theme.colors.error, fontWeight: '600' }]}>
+                  <SWText style={[styles.alertInfo, { color: '#e74c3c' }]} sm bold>
                     WARNING: Vehicle condition check is overdue by more than 30 days. Vehicle operation may be restricted until inspection is completed.
                   </SWText>
                 )}
@@ -368,7 +398,7 @@ const LicenseAndVehicleCheckups = () => {
             )}
             
             <View style={styles.documentList}>
-              <SWText style={styles.documentListTitle}>Required Documents</SWText>
+              <SWText style={styles.documentListTitle} md uberBold>Required Documents</SWText>
               
               <DocumentItem 
                 name="Emissions Test" 
@@ -399,36 +429,33 @@ const LicenseAndVehicleCheckups = () => {
               />
             </View>
             
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: theme.spacing.md }}>
+            <View style={styles.buttonRow}>
               <TouchableOpacity 
                 style={[
-                  styles.button, 
-                  { 
-                    flex: 1, 
-                    marginRight: daysUntilNextCheckup <= 0 ? 8 : 0,
-                    backgroundColor: daysUntilNextCheckup > 30 ? '#4CAF50' : theme.colors.accentblue 
-                  }
+                  styles.actionButton, 
+                  styles.buttonHalf,
+                  { backgroundColor: daysUntilNextCheckup > 30 ? '#27ae60' : '#3498db' }
                 ]} 
                 onPress={() => console.log('Remind owner')}
               >
-                <SWText style={styles.buttonText}>
+                <SWText style={styles.actionButtonText} sm uberBold>
                   {daysUntilNextCheckup > 30 ? 'Set General Reminder' : 'Remind Owner'}
                 </SWText>
               </TouchableOpacity>
               
               {daysUntilNextCheckup <= 0 && (
                 <TouchableOpacity 
-                  style={[styles.button, { flex: 1, marginLeft: 8, backgroundColor: theme.colors.primary }]} 
+                  style={[styles.actionButton, styles.buttonHalf, { backgroundColor: theme.colors.primary }]} 
                   onPress={() => console.log('Schedule inspection')}
                 >
-                  <SWText style={[styles.buttonText, { color: theme.colors.textblack }]}>Schedule Inspection</SWText>
+                  <SWText style={styles.actionButtonText} sm bold>Schedule Inspection</SWText>
                 </TouchableOpacity>
               )}
             </View>
-          </>
+          </View>
         )}
-      </TouchableOpacity>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
