@@ -64,7 +64,7 @@ const ChildView = ({ navigation, route }) => {
           grade: `Grade ${data.grade}`,
           school: data.School.schoolName,
           pickupAddress: data.pickupAddress || '',
-          dropoffAddress: data.dropoffAddress || '',
+          dropoffAddress: data.School.schoolName || '',
           parentContact: data.UserProfile.mobile || '',
           emergencyContact: data.emergencyContact || '',
           specialNotes: data.specialNotes || '',

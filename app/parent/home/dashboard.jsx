@@ -70,6 +70,9 @@ const Dashboard = () => {
   ]);
 
    useEffect(() => {
+
+    let intervalId;
+
     const fetchChildren = async () => {
       try {
          const session = await AsyncStorage.getItem('user_session'); // Get logged-in user ID
@@ -99,7 +102,12 @@ const Dashboard = () => {
       }
     };
 
-    fetchChildren();
+    fetchChildren(); 
+
+    intervalId = setInterval(fetchChildren, 30000);
+
+    return () => clearInterval(intervalId);
+
   }, []);
 
   const getStatusColor = (status) => {
@@ -150,11 +158,15 @@ const Dashboard = () => {
         <View style={styles.content}>
           <View style={styles.section}>
             <View style={styles.Headingview}>
-                <SWText uberBold xl darkPrimary >Your Children</SWText>
+              <SWText uberBold xl darkPrimary >Your Children</SWText>
               <AddButton 
                 text={'Add Child'}
                 onPress={() => router.push('/parent/addChild')}
               />
+              {/* <AddButton 
+                text={'Add Child'}
+                onPress={() => router.push('/parent/testMap')}
+              /> */}
             </View>
             <Spacer/>
             <ScrollView horizontal  contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
@@ -194,7 +206,7 @@ const Dashboard = () => {
                         <Button
                           title="Assign to Van"
                           varient="primary"
-                          onPress={() => router.push('/parent/vansearch')}
+                          onPress={() => router.push(`/parent/vansearch/${child.id}`)}
                         />
                       )}
                     </View>

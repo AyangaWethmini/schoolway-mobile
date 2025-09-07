@@ -41,7 +41,8 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "http://10.21.90.142:3000/api"
+      "apiUrl": "http://192.168.1.5:3000/api",
+      "googleMapsApiKey":"AIzaSyDdUFGFGKMOY2WQCTKUfmo4pNvvcSNnhMI"
     }
   }
 }
