@@ -31,19 +31,23 @@ const SchoolVanScreen = ({ navigation }) => {
 
   const [schoolVans, setSchoolVans] = useState([]);
 
-useEffect(() => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
 
         const childId = id;
         const reqRes = await fetch(`${API_URL}/vans/child/van-request/childRequest/${childId}`);
         const reqData = await reqRes.json();
-        setVanRequest(reqData || {});
-
+        setVanRequest(reqData && Object.keys(reqData).length ? reqData : null);
+        
         // 2. Fetch available vans
         const vansRes = await fetch(`${API_URL}/vans/child`);
         const vansData = await vansRes.json();
         setSchoolVans(vansData || {});
+
+        console.log("Fetched vans:", vansData);
+        console.log("Fetched request:", vanRequest);
+
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
