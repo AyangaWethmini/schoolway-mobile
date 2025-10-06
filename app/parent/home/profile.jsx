@@ -1,15 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
+import * as FileSystem from 'expo-file-system';
+import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
   SafeAreaView,
   ScrollView,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { useAuth } from '../../auth/AuthContext';
 import Button from '../../components/button';
@@ -18,6 +21,7 @@ import { TextInputComponent } from '../../components/inputs';
 import Spacer from '../../components/Spacer';
 import { useTheme } from "../../theme/ThemeContext";
 
+import { Image } from 'expo-image';
 import SWText from '../../components/SWText';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
@@ -43,53 +47,44 @@ const Profile = () => {
   const [editValue, setEditValue] = useState('');
   
 
- useEffect(() => {
-  async function loadSessionAndFetchProfile() {
-    try {
-      const session = await AsyncStorage.getItem('user_session');
-      if (session) {
-        const user = JSON.parse(session);
+  useEffect(() => {
+    async function loadSessionAndFetchProfile() {
+      try {
+        const session = await AsyncStorage.getItem('user_session');
+        if (session) {
+          const user = JSON.parse(session);
 
-        const res = await fetch(`${API_URL}/parent/${user.user.id}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+          const res = await fetch(`${API_URL}/parent/${user.user.id}`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || 'Failed to fetch profile');
+          if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(errorData.error || 'Failed to fetch profile');
+          }
+
+          const data = await res.json();
+          setProfile(data);
+        } 
+        else {
+          throw new Error('No session found');
         }
-
-        const data = await res.json();
-        setProfile(data);
       } 
-      else {
-        throw new Error('No session found');
+      catch (err) {
+        console.error('Error:', err);
+        setError(err.message);
+      } 
+      finally {
+        setLoading(false);
       }
-    } 
-    catch (err) {
-      console.error('Error:', err);
-      setError(err.message);
-    } 
-    finally {
-      setLoading(false);
     }
-  }
 
-  loadSessionAndFetchProfile();
-}, []);
+    loadSessionAndFetchProfile();
+  }, []);
 
-
-
-  // if (loading) {
-  //   return <SWText>Loading...</SWText>; 
-  // }
-
-  // if (error) {
-  //   return <SWText>Error: {error}</SWText>;
-  // }
 
   const handleUpdate = async () => {
     if (!editingField || !editValue || !profile) return;
@@ -124,6 +119,53 @@ const Profile = () => {
       setEditValue('');
     }
   };
+
+  const handlePickImage = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (permissionResult.granted === false) {
+      Alert.alert("Permission Required", "Please allow access to your gallery.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.7,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      await uploadProfilePicture(uri);
+    }
+  };
+
+  const uploadProfilePicture = async (imageUri) => {
+    try {
+      const base64 = await FileSystem.readAsStringAsync(imageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const response = await fetch(`${API_URL}/parent/profile-pic/${profile.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ profileImage: `data:image/jpeg;base64,${base64}` }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) throw new Error(result.message || 'Upload failed');
+
+      setProfile((prev) => ({ ...prev, dp: result.user.dp }));
+      Alert.alert('Success', 'Profile picture updated successfully!');
+    } catch (err) {
+      console.error(err);
+      Alert.alert('Error', err.message);
+    }
+  };
+
+
 
 
    const handleUpdatePassword = async () => {
@@ -288,7 +330,45 @@ const Profile = () => {
       paddingVertical: 20,
       paddingHorizontal: 10,
     },
+    loadingBackgroundContainer: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      padding: theme.spacing.lg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    loadingContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    loadingText: {
+      marginTop: theme.spacing.md,
+      fontSize: theme.fontSizes.medium,
+      color: theme.colors.textgreydark,
+    },
   });
+
+  if (loading) {
+    return (
+      <View style={styles.loadingBackgroundContainer}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <SWText style={styles.loadingText}>Loading...</SWText>
+        </View>
+      </View>
+    ); 
+  }
+
+  if (error) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <SWText style={styles.loadingText}>Error : {error}</SWText>
+        </View>
+      </View>
+    );
+  }
 
 
   return (
@@ -325,10 +405,24 @@ const Profile = () => {
         {activeTab === 'Personal Info' ? (
           <>
             <View style={styles.avatarContainer}>
-              <View style={styles.avatarCircle} />
-              <TouchableOpacity style={styles.editIcon} onPress={() => logout()}>
-                <Ionicons name="create-outline" size={16} color="#000" />
-              </TouchableOpacity>
+              <View>
+                <TouchableOpacity onPress={handlePickImage}>
+                  {profile?.dp ? (
+                    <Image
+                      source={{ uri: profile.dp }}
+                      style={styles.avatarCircle}
+                    />
+                  ) : (
+                    <View style={[styles.avatarCircle, { justifyContent: 'center', alignItems: 'center' }]}>
+                      <Ionicons name="person" size={50} color="#777" />
+                    </View>
+                  )}
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.editIcon} onPress={handlePickImage}>
+                  <Ionicons name="create-outline" size={16} color="#000" />
+                </TouchableOpacity>
+              </View>
             </View>
 
             <View style={styles.infoRow}>
@@ -466,17 +560,33 @@ const Profile = () => {
               </View>
             </View>
           </View>
-
-
-            <View style={styles.infoRow}>
-              <View style={styles.infoData}>
-                <SWText style={styles.label}>Language</SWText>
-                <View style={styles.inlineRow}>
-                  <SWText style={styles.value}>English</SWText>
-                  <Ionicons name="open-outline" size={16} color="#000" />
-                </View>
+          <View style={styles.infoRow}>
+            <View style={styles.infoData}>
+              <SWText style={styles.label}>Language</SWText>
+              <View style={styles.inlineRow}>
+                <SWText style={styles.value}>English</SWText>
+                <Ionicons name="open-outline" size={16} color="#000" />
               </View>
             </View>
+          </View>
+           <View style={styles.infoRow}>
+            <View style={styles.infoData}>
+              <SWText style={styles.label}>Log out</SWText>
+              <View style={styles.inlineRow}>
+                <SWText style={styles.value}>Log out from your account</SWText>
+              </View>
+            </View>
+            <View>
+              <View style={styles.rowIcon}>
+                <TouchableOpacity
+                  onPress={() => logout()}
+                >
+                  <Ionicons name="arrow-forward-outline" size={20} color="#000" />
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+
           </>
         ) : (
           <View style={styles.securityContainer}>

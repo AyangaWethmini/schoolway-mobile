@@ -3,7 +3,14 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  ActivityIndicator,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import AddButton from '../../components/AddButton';
 import CurvedHeader from '../../components/CurvedHeader';
 import SWText from '../../components/SWText';
@@ -18,56 +25,9 @@ const Dashboard = () => {
   const router = useRouter();  
   const {theme} = useTheme();
 
-  const [children, setChildren] = useState([
-    {
-      id: 1,
-      name: 'Duleepa',
-      grade: '5th Grade',
-      vanNumber: 'VAN-001',
-      pickupTime: '7:30 AM',
-      dropoffTime: '3:45 PM',
-      status: 'On the way',
-      driver: 'John Smith',
-      contact: '+1 234-567-8901',
-      isAssigned: true
-    },
-    {
-      id: 2,
-      name: 'Lehan',
-      grade: '3rd Grade',
-      vanNumber: 'VAN-001',
-      pickupTime: '7:30 AM',
-      dropoffTime: '3:45 PM',
-      status: 'In School',
-      driver: 'John Smith',
-      contact: '+1 234-567-8901',
-      isAssigned: true
-    },
-    {
-      id: 3,
-      name: 'Ayanga',
-      grade: '1st Grade',
-      vanNumber: null,
-      pickupTime: null,
-      dropoffTime: null,
-      status: 'At home',
-      driver: null,
-      contact: null,
-      isAssigned: false
-    },
-    {
-      id: 4,
-      name: 'Dineth',
-      grade: '2nd Grade',
-      vanNumber: null,
-      pickupTime: null,
-      dropoffTime: null,
-      status: 'Not Assigned',
-      driver: null,
-      contact: null,
-      isAssigned: false
-    }
-  ]);
+  const [children, setChildren] = useState([]);
+
+  const [loading, setLoading] = useState(true);
 
    useEffect(() => {
 
@@ -99,6 +59,8 @@ const Dashboard = () => {
           setChildren(data); // Save to state
       } catch (error) {
         console.error("Error fetching children:", error);
+      } finally {
+        setLoading(false); 
       }
     };
 
@@ -110,17 +72,23 @@ const Dashboard = () => {
 
   }, []);
 
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <SWText style={{ marginTop: 10, color: '#666' }}>Loading...</SWText>
+      </SafeAreaView>
+    );
+  }
+
   const getStatusColor = (status) => {
-    const {theme} = useTheme();
     switch (status.toLowerCase()) {
-      case 'on the way':
+       case 'on_van':
         return theme.colors.statusorange
-      case 'in school':
+      case 'at_school':
         return theme.colors.statusgreen
-      case 'at home':
+      case 'at_home':
         return theme.colors.statusblue
-      case 'not assigned':
-        return theme.colors.statusgrey
       default:
         return theme.colors.statusgrey
     }
@@ -128,14 +96,12 @@ const Dashboard = () => {
 
   const getStatusBackgroundColor = (status) => {
     switch (status.toLowerCase()) {
-      case 'on the way':
+      case 'on_van':
         return theme.colors.statusbackgroundorange
-      case 'in school':
+      case 'at_school':
         return theme.colors.statusbackgroundgreen
-      case 'at home':
+      case 'at_home':
         return theme.colors.statusbackgroundblue
-      case 'not assigned':
-        return theme.colors.statusbackgroundgrey
       default:
         return theme.colors.statusbackgroundgrey
     }
@@ -159,14 +125,10 @@ const Dashboard = () => {
           <View style={styles.section}>
             <View style={styles.Headingview}>
               <SWText uberBold xl darkPrimary >Your Children</SWText>
-              <AddButton 
-                text={'Add Child'}
-                onPress={() => router.push('/parent/addChild')}
-              />
-              {/* <AddButton 
-                text={'Add Child'}
-                onPress={() => router.push('/parent/testMap')}
-              /> */}
+                <AddButton 
+                  text={'Add Child'}
+                  onPress={() => router.push('/parent/addChild')}
+                />
             </View>
             <Spacer/>
             <ScrollView horizontal  contentContainerStyle={{ flexGrow: 1 }} showsHorizontalScrollIndicator={false}>
@@ -179,13 +141,17 @@ const Dashboard = () => {
                         <SWText style={styles.childGrade}>Grade {child.grade}</SWText>
                       </View>
                     </View>
-                    
+
+                    {child.status ==='NOT_ASSIGNED' ? child.isAssigned = false : child.isAssigned = true } 
+                     {console.log(child)}
                     <View style={styles.cardContent}>
                       {child.isAssigned ? (
                         <View style={styles.assignmentInfo}>
                           <View style={styles.vanInfoContainer}>
                             <SWText style={styles.vanLabel}>Van</SWText>
-                            <SWText style={[styles.vanNumber, { color : theme.colors.accentblue }]}>{child.vanNumber}</SWText>
+                            <SWText style={[styles.vanNumber, { color : theme.colors.accentblue }]}>
+                              {child.Van ? child.Van.makeAndModel : 'Loading...'}
+                            </SWText>
                           </View>
                         </View>
                       ) : (
@@ -252,7 +218,7 @@ const Dashboard = () => {
                         styles.statusBadgeText,
                         { color: getStatusColor(child.status) }
                       ]}>
-                        {child.status}
+                        {child.status.replace(/_/g, ' ')}
                       </SWText>
                     </View>
                   </View>

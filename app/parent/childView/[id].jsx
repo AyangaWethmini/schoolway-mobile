@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import {
+  ActivityIndicator,
   Alert,
   Dimensions,
   Image,
@@ -12,7 +13,7 @@ import {
   ScrollView,
   StyleSheet,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
 import { Button } from "../../components/button";
 import TextInputComponent from '../../components/inputs';
@@ -34,23 +35,11 @@ const ChildView = ({ navigation, route }) => {
   const [attendanceStatus, setAttendanceStatus] = useState('');
 
   // Student data state
-  const [studentData, setStudentData] = useState({
-    name: 'Duleepa Edirisinghe',
-    age: id,
-    grade: 'Grade 3',
-    school: 'St. Mary\'s Elementary',
-    pickupAddress: '123 Main Street, Colombo 03',
-    dropoffAddress: 'St. Mary\'s Elementary, Colombo 05',
-    parentContact: '+94 77 123 4567',
-    emergencyContact: '+94 71 987 6543',
-    specialNotes: 'No known allergies',
-    vanNumber: 'VAN-001',
-    vanRoute: 'Route A - Morning',
-    monthlyFee: 'Rs. 15,000'
-  });
+  const [studentData, setStudentData] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return; 
+    if (!id) return;
 
     async function fetchStudent() {
       try {
@@ -63,23 +52,35 @@ const ChildView = ({ navigation, route }) => {
           age: data.age,
           grade: `Grade ${data.grade}`,
           school: data.School.schoolName,
-          pickupAddress: data.pickupAddress || '',
-          dropoffAddress: data.School.schoolName || '',
-          parentContact: data.UserProfile.mobile || '',
-          emergencyContact: data.emergencyContact || '',
-          specialNotes: data.specialNotes || '',
-          vanNumber: data.Van?.vanNumber || '',
-          vanRoute: data.Van?.route || '',
-          monthlyFee: data.Van?.monthlyFee ? `Rs. ${data.Van.monthlyFee}` : '',
+          pickupAddress: data.pickupAddress || 'Not Provided',
+          dropoffAddress: data.School.schoolName || 'Not Assigned',
+          parentContact: data.UserProfile.mobile || 'Not Provided',
+          emergencyContact: data.emergencyContact || 'Not Provided',
+          specialNotes: data.specialNotes || 'Not Provided',
+          hasVan: data.Van ? true : false ,
+          vanModel: data.Van?.makeAndModel || 'Not Assigned',
+          vanRoute: data.Van?.route || 'Not Assigned',
+          monthlyFee: data.Van?.monthlyFee ? `Rs. ${data.Van.monthlyFee}` : 'Not Assigned',
           profilePicture: data.profilePicture,
         });
       } catch (error) {
         Alert.alert('Error', error.message);
+      } finally {
+        setLoading(false); // <-- stop loading in both success or failure
       }
     }
 
     fetchStudent();
   }, [id]);
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <SWText style={{ marginTop: 10, color: '#666' }}>Loading student data...</SWText>
+      </SafeAreaView>
+    );
+  }
 
   const handleBack = () => {
     router.back();
@@ -168,13 +169,20 @@ const ChildView = ({ navigation, route }) => {
             <Ionicons name="checkmark-circle" size={24} color={theme.colors.backgroundLightGreen} />
             <SWText style={styles.actionText}>Mark Attendance</SWText>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/parent/childAttendance')}>
+          
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => router.push('/parent/childAttendance')}
+          >
             <Ionicons name="calendar" size={24} color={theme.colors.accentblue} />
             <SWText style={styles.actionText}>View Calendar</SWText>
           </TouchableOpacity>
         </View>
         <View style={styles.quickActions}>
-          <TouchableOpacity style={styles.actionButton} onPress={() => router.push('/parent/generateQR')}>
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => router.push(`/parent/generateQR/${id}`)}
+          >
             <Ionicons name="qr-code" size={24} color={theme.colors.accentblue} />
             <SWText style={styles.actionText}>Generate a QR code</SWText>
           </TouchableOpacity>
@@ -195,9 +203,9 @@ const ChildView = ({ navigation, route }) => {
           <SWText style={styles.sectionTitle} pointerEvents="none">Transport Information</SWText>
           <InfoRow label="Pickup Address" value={studentData.pickupAddress} field="pickupAddress" />
           <InfoRow label="Drop-off Address" value={studentData.dropoffAddress} field="dropoffAddress" />
-          { !(!studentData.vanNumber || studentData.vanNumber.trim() === '') &&
+          { (studentData.hasVan ) &&
           <>
-            <InfoRow label="Van Number" value={studentData.vanNumber} field="vanNumber" />
+            <InfoRow label="Van Number" value={studentData.vanModel} field="vanModel" />
             <InfoRow label="Van Route" value={studentData.vanRoute} field="vanRoute" />
             <InfoRow label="Monthly Fee" value={studentData.monthlyFee} field="monthlyFee" />
             <View style={[{ flexDirection: 'row',     justifyContent: 'space-between',}]}> 
@@ -214,7 +222,9 @@ const ChildView = ({ navigation, route }) => {
             </View>
           </>
           }
-          {   (!studentData.vanNumber || studentData.vanNumber.trim() === '') &&
+
+          {console.log( " studentData : ", studentData )}
+          { (!studentData.hasVan) &&
             <Button
               title="Assign to Van"
               varient="secondary"

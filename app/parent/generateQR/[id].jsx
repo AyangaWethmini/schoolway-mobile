@@ -1,5 +1,7 @@
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
+import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import { useLocalSearchParams } from 'expo-router';
 import * as Sharing from 'expo-sharing';
@@ -16,23 +18,27 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import QRCode from 'react-native-qrcode-svg';
-import { useAuth } from '../auth/AuthContext';
-import SWText from '../components/SWText';
-import { useTheme } from '../theme/ThemeContext';
+import { useAuth } from '../../auth/AuthContext';
+import SWText from '../../components/SWText';
+import { useTheme } from '../../theme/ThemeContext';
 
 const { width } = Dimensions.get('window');
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
+
 
 const GenerateQR = () => {
   const { user } = useAuth();
   const { theme } = useTheme();
-  const params = useLocalSearchParams();
-  const { childId, childName } = params;
-  
+
+  const {id }  = useLocalSearchParams();
+  const childId = id; 
   const [isLoading, setIsLoading] = useState(true);
   const [qrData, setQrData] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
   const qrCodeRef = useRef(null);
+  const [childName, setChildName] = useState('Not Found'); // Placeholder name
+
+  // Styles
 
   const styles = StyleSheet.create({
     container: {
@@ -161,32 +167,28 @@ const GenerateQR = () => {
 
   // Generate unique QR data for the child
   useEffect(() => {
-    const generateQRData = async () => {
-      setIsLoading(true);
-      
-      // Simulate loading time (1-2 seconds)
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Generate unique QR data
-      const timestamp = Date.now();
-      const uniqueId = `CHILD_${childId}_${timestamp}`;
-      const qrPayload = {
-        type: 'STUDENT_ATTENDANCE',
-        childId: childId,
-        childName: childName,
-        parentId: user.id,
-        uniqueId: uniqueId,
-        generatedAt: new Date().toISOString(),
-        school: user.school || 'Unknown School',
-        grade: user.grade || 'Unknown Grade'
-      };
-      
-      setQrData(JSON.stringify(qrPayload));
-      setIsLoading(false);
+  const fetchQrFromBackend = async () => {
+      try {
+        setIsLoading(true);
+        console.log('Fetching QR for childId:', childId);
+
+        const response = await fetch(`${API_URL}/child/QRcode/${childId}`);
+        if (!response.ok) throw new Error('Failed to fetch child');
+
+        setChildName(response.name);
+
+        const data = await response.json();
+        setQrData(data.qrCode); 
+      } catch (error) {
+        console.error('Error fetching QR:', error);
+        Alert.alert('Error', 'Unable to load QR code');
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    generateQRData();
-  }, [childId, childName, user]);
+    fetchQrFromBackend();
+  }, [childId]);
 
   const downloadQR = async () => {
     try {
@@ -306,23 +308,18 @@ return (
                         </SWText>
                     </View>
 
-                    <View style={styles.qrContainer}>
-                        <QRCode
-                            value={qrData}
-                            size={width * 0.6}
-                            color="black"
-                            backgroundColor="white"
-                            logoSize={30}
-                            logoBackgroundColor="white"
-                            getRef={(ref) => (qrCodeRef.current = ref)}
+                    {qrData ? (
+                      <View style={styles.qrContainer}>
+                        <SWText h3 style={{ marginBottom: 10 }}>Scan this QR</SWText>
+                        <Image
+                          source={{ uri: qrData }}
+                          style={{ width: width * 0.6, height: width * 0.6, borderRadius: 8 }}
+                          resizeMode="contain"
                         />
-                        
-                        <View style={styles.qrInfo}>
-                            <SWText style={styles.qrInfoText}>
-                                Generated: {new Date().toLocaleDateString()}
-                            </SWText>
-                        </View>
-                    </View>
+                      </View>
+                    ) : (
+                      <SWText style={styles.qrInfoText}>QR code not available</SWText>
+                    )}
 
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity

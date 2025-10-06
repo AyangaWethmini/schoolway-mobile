@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import {
   Dimensions,
@@ -13,6 +14,8 @@ import Spacer from '../components/Spacer';
 import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
+
 const { width } = Dimensions.get('window');
 
 
@@ -21,7 +24,8 @@ const SchoolVanScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const router = useRouter();  
   
-
+  const { id } = useLocalSearchParams();
+  
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const handleBack = () => {
