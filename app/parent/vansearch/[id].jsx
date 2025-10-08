@@ -72,7 +72,7 @@ const SchoolVanScreen = ({ navigation }) => {
     router.back();
   };
 
-  const handleRequest = async (vanId) => {
+  const handleRequest = async (vanId,estimatedFare) => {
     try {
 
       const childId = id ;
@@ -82,7 +82,9 @@ const SchoolVanScreen = ({ navigation }) => {
       const res = await fetch(`${API_URL}/vans/child/van-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ vanId, childId}),
+        body: JSON.stringify(
+          { vanId, childId , estimatedFare}
+        ),
       });
 
       if (!res.ok) throw new Error("Failed to create request");
@@ -323,7 +325,7 @@ const SchoolVanScreen = ({ navigation }) => {
                   <Button
                     title="Request This Van"
                     varient="secondary"
-                    onPress={() => handleRequest(van.id)}
+                    onPress={() => handleRequest(van.id, van.estimatedFare) }
                   />
                 </View>
               ))}
