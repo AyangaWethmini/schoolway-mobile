@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
+  Image,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -41,7 +42,7 @@ const SchoolVanScreen = ({ navigation }) => {
         setVanRequest(reqData && Object.keys(reqData).length ? reqData : null);
         
         // 2. Fetch available vans
-        const vansRes = await fetch(`${API_URL}/vans/child`);
+        const vansRes = await fetch(`${API_URL}/vans/child/van-search/${childId}`);
         const vansData = await vansRes.json();
         setSchoolVans(vansData || {});
 
@@ -213,28 +214,114 @@ const SchoolVanScreen = ({ navigation }) => {
               <Spacer/>
               {schoolVans.map((van) => (
                 <View key={van.id} style={styles.vanCard}>
-                  <View style={styles.vanHeader}>
-                    <SWText style={styles.vanName}>{van.makeAndModel} ({van.licensePlateNumber})</SWText>
-                    {/* {renderDriverImages(van.drivers)} */}
-                  </View>
-                  
-                  <View style={styles.vanDetails}>
-                    <View style={styles.detailRow}>
-                      <Ionicons name="time-outline" size={16} color="#666" />
-                      <SWText style={styles.detailText}>{van.startTime
-                          ? new Date(van.startTime).toLocaleTimeString()
-                          : "N/A"}</SWText>
-                    </View>
-                    <View style={styles.detailRow}>
-                      <Ionicons name="location-outline" size={16} color="#666" />
-                      <SWText style={styles.detailText}>{van.Path
-                          ? `${van.Path.routeStart} → ${van.Path.routeEnd}`
-                          : "No route assigned"}</SWText>
+                  {/* Header Section with Image and Basic Info */}
+                  <View style={styles.cardHeader}>
+                    {van.photoUrl && (
+                      <Image
+                        source={{ uri: van.photoUrl }}
+                        style={styles.vanImage}
+                        resizeMode="cover"
+                      />
+                    )}
+                    
+                    <View style={styles.headerInfo}>
+                      <SWText style={styles.vanName}>
+                        {van.makeAndModel}
+                      </SWText>
+                      <SWText style={styles.licensePlate}>
+                        {van.licensePlateNumber}
+                      </SWText>
+                      
+                      {/* Owner Info */}
+                      <View style={styles.ownerRow}>
+                        <Ionicons name="person-circle-outline" size={16} color="#666" />
+                        <SWText style={styles.ownerText}>
+                          {van.UserProfile?.firstname} {van.UserProfile?.lastname}
+                        </SWText>
+                      </View>
                     </View>
                   </View>
 
+                  {/* Key Features - Compact Grid */}
+                  <View style={styles.featuresGrid}>
+                    <View style={styles.featureItem}>
+                      <Ionicons name="people" size={18} color="#4CAF50" />
+                      <SWText style={styles.featureText}>{van.seatingCapacity} seats</SWText>
+                    </View>
+                    
+                    <View style={styles.featureItem}>
+                      <Ionicons 
+                        name={van.acCondition ? "snow" : "close-circle"} 
+                        size={18} 
+                        color={van.acCondition ? "#2196F3" : "#999"} 
+                      />
+                      <SWText style={styles.featureText}>
+                        {van.acCondition ? "AC" : "Non-AC"}
+                      </SWText>
+                    </View>
+                    
+                    <View style={styles.featureItem}>
+                      <Ionicons 
+                        name="car-sport" 
+                        size={18} 
+                        color={van.hasDriver ? "#4CAF50" : "#999"} 
+                      />
+                      <SWText style={styles.featureText}>
+                        {van.hasDriver ? "Driver" : "No Driver"}
+                      </SWText>
+                    </View>
+                    
+                    <View style={styles.featureItem}>
+                      <Ionicons 
+                        name="person-add" 
+                        size={18} 
+                        color={van.hasAssistant ? "#4CAF50" : "#999"} 
+                      />
+                      <SWText style={styles.featureText}>
+                        {van.hasAssistant ? "Assistant" : "No Asst."}
+                      </SWText>
+                    </View>
+                  </View>
+
+                  {/* Route & Pricing Row */}
+                  <View style={styles.routePriceRow}>
+                    <View style={styles.routeInfo}>
+                      <Ionicons name="navigate-circle" size={16} color="#FF9800" />
+                      <SWText style={styles.routeText}>
+                        {van.Path 
+                          ? `${van.Path.totalDistance.toFixed(1)} km • ${van.Path.estimatedDuration} min`
+                          : 'Route not assigned'}
+                      </SWText>
+                    </View>
+                    
+                    <View style={styles.priceTag}>
+                      <SWText style={styles.priceLabel}>Fare</SWText>
+                      <SWText style={styles.priceAmount}>
+                        Rs. {van.estimatedFare.toFixed(2)}
+                      </SWText>
+                    </View>
+                  </View>
+
+                  {/* Ratings Row */}
+                  <View style={styles.ratingsRow}>
+                    <View style={styles.ratingItem}>
+                      <Ionicons name="star" size={14} color="#FFD700" />
+                      <SWText style={styles.ratingText}>
+                        Private: Rs. {van.privateRating}/km
+                      </SWText>
+                    </View>
+                    <View style={styles.ratingDivider} />
+                    <View style={styles.ratingItem}>
+                      <Ionicons name="star" size={14} color="#FFD700" />
+                      <SWText style={styles.ratingText}>
+                        Student: Rs. {van.studentRating}/km
+                      </SWText>
+                    </View>
+                  </View>
+
+                  {/* Action Button */}
                   <Button
-                    title="Request"
+                    title="Request This Van"
                     varient="secondary"
                     onPress={() => handleRequest(van.id)}
                   />
@@ -329,71 +416,133 @@ const styles = StyleSheet.create({
   vanCard: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    padding: 20,
+    padding: 16,
     marginBottom: 15,
     shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  vanHeader: {
+  cardHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
+    marginBottom: 12,
+  },
+  vanImage: {
+    width: 90,
+    height: 90,
+    borderRadius: 8,
+    marginRight: 12,
+  },
+  headerInfo: {
+    flex: 1,
+    justifyContent: 'center',
   },
   vanName: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#000',
+    marginBottom: 2,
+  },
+  licensePlate: {
+    fontSize: 13,
+    color: '#666',
+    marginBottom: 6,
+  },
+  ownerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  ownerText: {
+    fontSize: 13,
+    color: '#666',
+    marginLeft: 4,
+  },
+  featuresGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 12,
+    paddingVertical: 8,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+    borderColor: '#f0f0f0',
+  },
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '50%',
+    marginBottom: 6,
+  },
+  featureText: {
+    fontSize: 13,
+    color: '#333',
+    marginLeft: 6,
+    fontWeight: '500',
+  },
+  routePriceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderColor: '#f0f0f0',
+  },
+  routeInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
     flex: 1,
   },
-  driversContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  driverAvatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    borderWidth: 2,
-    borderColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  driverInitial: {
-    color: '#fff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  vanDetails: {
-    marginBottom: 15,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  detailText: {
-    fontSize: 14,
+  routeText: {
+    fontSize: 12,
     color: '#666',
-    marginLeft: 8,
+    marginLeft: 6,
   },
-  requestButton: {
-    backgroundColor: '#000',
-    paddingVertical: 12,
+  priceTag: {
+    backgroundColor: '#f8f9fa',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: 'flex-end',
   },
-  requestButtonText: {
-    color: '#fff',
-    fontSize: 16,
+  priceLabel: {
+    fontSize: 10,
+    color: '#999',
     fontWeight: '600',
   },
+  priceAmount: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#000',
+  },
+  ratingsRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    paddingVertical: 8,
+    backgroundColor: '#fafafa',
+    borderRadius: 6,
+  },
+  ratingItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  ratingDivider: {
+    width: 1,
+    height: 16,
+    backgroundColor: '#e0e0e0',
+    marginHorizontal: 8,
+  },
+  ratingText: {
+    fontSize: 12,
+    color: '#666',
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+
 });
 
 export default SchoolVanScreen;
