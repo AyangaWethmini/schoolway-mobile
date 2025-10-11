@@ -103,7 +103,7 @@ export default function Profile() {
   return (
     <SafeAreaView style={styles.container}>
       <CurvedHeader 
-          title="Payments" 
+          title="Information" 
           theme={theme}
         />
 
