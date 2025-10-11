@@ -1,7 +1,9 @@
 import { Ionicons } from '@expo/vector-icons';
+import MapView, { Marker } from 'react-native-maps';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
+import * as Location from 'expo-location';
 
 import {
   Alert,
@@ -18,6 +20,47 @@ import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 
 const PrivateHire = () => {
+  // Helper to get place name from coordinates
+  // Helper to get place name from coordinates
+  const getPlaceName = async (coords: LatLng, cb: (name: string) => void) => {
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        cb('Permission denied');
+        return;
+      }
+      const geocode = await Location.reverseGeocodeAsync(coords);
+      if (geocode && geocode.length > 0) {
+        const place = geocode[0];
+        cb(`${place.name || place.street || ''}, ${place.city || place.region || ''}`);
+      } else {
+        cb('Selected location');
+      }
+    } catch {
+      cb('Selected location');
+    }
+  };
+  // Map picker states
+  type LatLng = { latitude: number; longitude: number };
+  const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
+  const [destinationCoords, setDestinationCoords] = useState<LatLng | null>(null);
+  const [showPickupMap, setShowPickupMap] = useState(false);
+  const [showDestinationMap, setShowDestinationMap] = useState(false);
+  // Search bar states for map pickers
+  const [pickupSearch, setPickupSearch] = useState('');
+  const [destinationSearch, setDestinationSearch] = useState('');
+  const [pickupMapRegion, setPickupMapRegion] = useState({
+    latitude: 7.8731,
+    longitude: 80.7718,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0.1,
+  });
+  const [destinationMapRegion, setDestinationMapRegion] = useState({
+    latitude: 7.8731,
+    longitude: 80.7718,
+    latitudeDelta: 0.1,
+    longitudeDelta: 0.1,
+  });
   const router = useRouter();
   const { theme } = useTheme();
   
@@ -236,6 +279,7 @@ const PrivateHire = () => {
     },
     searchButton: {
       marginTop: 20,
+      backgroundColor: '#1a1a1a',
     },
     vanSelectionContainer: {
       paddingHorizontal: 10,
@@ -658,6 +702,9 @@ const PrivateHire = () => {
               value={formData.destination}
               onChangeText={(text) => setFormData({...formData, destination: text})}
             />
+            <TouchableOpacity onPress={() => setShowDestinationMap(true)} style={{marginTop: 8}}>
+              <SWText style={{color: '#008080'}}>Select on Map</SWText>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.inputGroup}>
@@ -668,8 +715,130 @@ const PrivateHire = () => {
               value={formData.pickupLocation}
               onChangeText={(text) => setFormData({...formData, pickupLocation: text})}
             />
+            <TouchableOpacity onPress={() => setShowPickupMap(true)} style={{marginTop: 8}}>
+              <SWText style={{color: '#008080'}}>Select on Map</SWText>
+            </TouchableOpacity>
           </View>
 
+          {/* Map Modal for Pickup Location */}
+          <Modal visible={showPickupMap} animationType="slide">
+            <View style={{flex: 1}}>
+              <View style={{padding: 12, backgroundColor: '#fff', zIndex: 2}}>
+                <TextInput
+                  style={{borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, marginBottom: 8}}
+                  placeholder="Search pickup location..."
+                  value={pickupSearch}
+                  onChangeText={setPickupSearch}
+                  onSubmitEditing={async () => {
+                    if (pickupSearch.trim()) {
+                      try {
+                        const results = await Location.geocodeAsync(pickupSearch);
+                        if (results && results.length > 0) {
+                          const loc = results[0];
+                          setPickupMapRegion({
+                            latitude: loc.latitude,
+                            longitude: loc.longitude,
+                            latitudeDelta: 0.05,
+                            longitudeDelta: 0.05,
+                          });
+                          setPickupCoords({ latitude: loc.latitude, longitude: loc.longitude });
+                        } else {
+                          Alert.alert('Location not found');
+                        }
+                      } catch {
+                        Alert.alert('Error searching location');
+                      }
+                    }
+                  }}
+                  returnKeyType="search"
+                />
+              </View>
+              <MapView
+                style={{flex: 1}}
+                region={pickupMapRegion}
+                onPress={(e) => {
+                  setPickupCoords({
+                    latitude: e.nativeEvent.coordinate.latitude,
+                    longitude: e.nativeEvent.coordinate.longitude
+                  });
+                  setPickupMapRegion({
+                    ...pickupMapRegion,
+                    latitude: e.nativeEvent.coordinate.latitude,
+                    longitude: e.nativeEvent.coordinate.longitude
+                  });
+                }}
+              >
+                {pickupCoords && <Marker coordinate={pickupCoords} />}
+              </MapView>
+              <Button title="Confirm Pickup Location" varient="primary" onPress={async () => {
+                setShowPickupMap(false);
+                if (pickupCoords) {
+                  await getPlaceName(pickupCoords, (name) => setFormData({...formData, pickupLocation: name}));
+                }
+                setPickupSearch('');
+              }} />
+            </View>
+          </Modal>
+
+          {/* Map Modal for Destination Location */}
+          <Modal visible={showDestinationMap} animationType="slide">
+            <View style={{flex: 1}}>
+              <View style={{padding: 12, backgroundColor: '#fff', zIndex: 2}}>
+                <TextInput
+                  style={{borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, marginBottom: 8}}
+                  placeholder="Search destination location..."
+                  value={destinationSearch}
+                  onChangeText={setDestinationSearch}
+                  onSubmitEditing={async () => {
+                    if (destinationSearch.trim()) {
+                      try {
+                        const results = await Location.geocodeAsync(destinationSearch);
+                        if (results && results.length > 0) {
+                          const loc = results[0];
+                          setDestinationMapRegion({
+                            latitude: loc.latitude,
+                            longitude: loc.longitude,
+                            latitudeDelta: 0.05,
+                            longitudeDelta: 0.05,
+                          });
+                          setDestinationCoords({ latitude: loc.latitude, longitude: loc.longitude });
+                        } else {
+                          Alert.alert('Location not found');
+                        }
+                      } catch {
+                        Alert.alert('Error searching location');
+                      }
+                    }
+                  }}
+                  returnKeyType="search"
+                />
+              </View>
+              <MapView
+                style={{flex: 1}}
+                region={destinationMapRegion}
+                onPress={(e) => {
+                  setDestinationCoords({
+                    latitude: e.nativeEvent.coordinate.latitude,
+                    longitude: e.nativeEvent.coordinate.longitude
+                  });
+                  setDestinationMapRegion({
+                    ...destinationMapRegion,
+                    latitude: e.nativeEvent.coordinate.latitude,
+                    longitude: e.nativeEvent.coordinate.longitude
+                  });
+                }}
+              >
+                {destinationCoords && <Marker coordinate={destinationCoords} />}
+              </MapView>
+              <Button title="Confirm Destination Location" varient="primary" onPress={async () => {
+                setShowDestinationMap(false);
+                if (destinationCoords) {
+                  await getPlaceName(destinationCoords, (name) => setFormData({...formData, destination: name}));
+                }
+                setDestinationSearch('');
+              }} />
+            </View>
+          </Modal>
           <View style={styles.dateRow}>
             <View style={[styles.inputGroup, {flex: 1, marginRight: 8}]}>
               <SWText style={styles.inputLabel}>Departure Date *</SWText>
