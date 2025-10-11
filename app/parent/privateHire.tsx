@@ -18,9 +18,13 @@ import {
 import { Button } from "../components/button";
 import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const PrivateHire = () => {
-  // Helper to get place name from coordinates
+  
   // Helper to get place name from coordinates
   const getPlaceName = async (coords: LatLng, cb: (name: string) => void) => {
     try {
@@ -42,8 +46,21 @@ const PrivateHire = () => {
   };
   // Map picker states
   type LatLng = { latitude: number; longitude: number };
+  type Van = {
+    id: number;
+    name: string;
+    capacity: number;
+    type: string;
+    pricePerDay: number;
+    driver: string;
+    contact: string;
+    features: string[];
+    rating: number;
+    image: string;
+  };
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [destinationCoords, setDestinationCoords] = useState<LatLng | null>(null);
+  const [selectedVan, setSelectedVan] = useState<Van | null>(null);
   const [showPickupMap, setShowPickupMap] = useState(false);
   const [showDestinationMap, setShowDestinationMap] = useState(false);
   // Search bar states for map pickers
@@ -66,7 +83,7 @@ const PrivateHire = () => {
   
   const [activeTab, setActiveTab] = useState('request');
   const [showVanSelection, setShowVanSelection] = useState(false);
-  const [selectedVan, setSelectedVan] = useState(null);
+  // (Removed duplicate, now using typed version above)
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   // Date picker states
@@ -629,13 +646,80 @@ const PrivateHire = () => {
     setFormData({...formData, returnDate: formatDate(currentDate)});
   };
 
-  const handleSearch = () => {
-    if (!formData.destination || !formData.pickupLocation || !formData.departureDate || !formData.passengers) {
-      Alert.alert('Missing Information', 'Please fill in all required fields');
-      return;
+  const handleSearch = async () => {
+  if (
+    !formData.destination ||
+    !formData.pickupLocation ||
+    !formData.departureDate ||
+    !formData.passengers
+  ) {
+    Alert.alert('Missing Information', 'Please fill in all required fields');
+    return;
+  }
+
+  let userId = null;
+  try {
+    const session = await AsyncStorage.getItem('user_session');
+    if (session) {
+      const user = JSON.parse(session);
+      userId = user?.user?.id;
+      console.log('User ID:', userId);
     }
+  } catch (error) {
+    console.error('Error retrieving user ID:', error);
+    Alert.alert('Error', 'Could not retrieve user session.');
+    return;
+  }
+
+  if (!userId) {
+    Alert.alert('Error', 'User ID not found. Please log in again.');
+    return;
+  }
+
+  // Prepare payload
+    const payload = {
+      userId,
+      pickupLat: pickupCoords?.latitude ?? null,
+      pickupLng: pickupCoords?.longitude ?? null,
+      destinationLat: destinationCoords?.latitude ?? null,
+      destinationLng: destinationCoords?.longitude ?? null,
+      departureDate: departureDate ? departureDate.toISOString() : null,
+      returnDate: returnDate ? returnDate.toISOString() : null,
+      noOfPassengers: Number(formData.passengers),
+      fare: 0, // Set later when van is selected
+      notes: formData.additionalNotes || '',
+      status: 'PENDING',
+      vanId: selectedVan?.id ?? null
+    };
+
+  console.log('API_URL:', API_URL);
+  console.log('Payload:', payload);
+
+  try {
+    const response = await fetch(`${API_URL}/private-hire`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', errorText);
+      throw new Error('Failed to submit private hire request.');
+    }
+
+    const data = await response.json();
+    console.log('Private hire request submitted:', data);
+
+    Alert.alert('Request Submitted', 'Your private hire request has been saved.');
     setShowVanSelection(true);
-  };
+  } catch (error) {
+    console.error('Submission failed:', error.message);
+    Alert.alert('Error', 'Could not submit your request. Please try again.');
+  }
+};
 
   const handleVanRequest = (van) => {
     setSelectedVan(van);
@@ -891,7 +975,7 @@ const PrivateHire = () => {
 
           <Button
             title="Search Available Vans"
-            varient="outlined-black"
+            
             onPress={handleSearch}
             passstyles={styles.searchButton}
           />
