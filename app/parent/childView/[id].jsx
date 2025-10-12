@@ -4,16 +4,16 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 
 import {
-  ActivityIndicator,
-  Alert,
-  Dimensions,
-  Image,
-  Modal,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    Alert,
+    Dimensions,
+    Image,
+    Modal,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { Button } from "../../components/button";
 import TextInputComponent from '../../components/inputs';
@@ -217,7 +217,10 @@ const ChildView = ({ navigation, route }) => {
               <Button
                 title="Add a Review"
                 varient="outlined-primary"
-                onPress={() => router.push('/parent/addReview')}
+                onPress={() => router.push({
+                  pathname: '/parent/addReview',
+                  params: { id: id }
+                })}
               />
             </View>
           </>
