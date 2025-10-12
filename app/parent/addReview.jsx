@@ -21,34 +21,26 @@ const AddReview = ({ navigation, onBack }) => {
 
     const [rating, setRating] = useState(0);
     const [comment, setComment] = useState('');
-    const [selectedChild, setSelectedChild] = useState(null);
     const [reviewType, setReviewType] = useState('driver'); // 'driver' or 'van'
 
     // Mock data - replace with actual data from your app's state/API
-    const childrenWithDrivers = [
-        {
-            id: 1,
-            name: 'Duleepa Edirisinghe',
-            school: 'Ananda College',
-            driver: {
-                id: 1,
-                name: 'Kamal Perera',
-                photo: null, // Add driver photo URL if available
-                vanNumber: 'WP CAB-1234',
-                phone: '+94 77 123 4567',
-                experience: '5 years'
-            },
-            van: {
-                id: 1,
-                number: 'WP CAB-1234',
-                model: 'Toyota Hiace',
-                capacity: '12 seats',
-                condition: 'Good',
-                amenities: ['AC', 'First Aid Kit', 'Seat Belts']
-            }
-        },
-        // Add more children if parent has multiple children
-    ];
+    const currentDriver = {
+        id: 1,
+        name: 'Kamal Perera',
+        photo: null, // Add driver photo URL if available
+        vanNumber: 'WP CAB-1234',
+        phone: '+94 77 123 4567',
+        experience: '5 years'
+    };
+
+    const currentVan = {
+        id: 1,
+        number: 'WP CAB-1234',
+        model: 'Toyota Hiace',
+        capacity: '12 seats',
+        condition: 'Good',
+        amenities: ['AC', 'First Aid Kit', 'Seat Belts']
+    };
 
     const handleBack = () => {
         router.back();
@@ -70,23 +62,17 @@ const AddReview = ({ navigation, onBack }) => {
             return;
         }
 
-        if (!selectedChild) {
-            Alert.alert('Child Selection Required', 'Please select which child this review is for.');
-            return;
-        }
-
         // Here you would typically send the review data to your backend
         const reviewData = {
-            childId: selectedChild.id,
             reviewType: reviewType,
-            targetId: reviewType === 'driver' ? selectedChild.driver.id : selectedChild.van.id,
+            targetId: reviewType === 'driver' ? currentDriver.id : currentVan.id,
             rating: rating,
             comment: comment,
             timestamp: new Date().toISOString()
         };
 
         console.log('Review submitted:', reviewData);
-        const targetName = reviewType === 'driver' ? selectedChild.driver.name : `Van ${selectedChild.van.number}`;
+        const targetName = reviewType === 'driver' ? currentDriver.name : `Van ${currentVan.number}`;
         Alert.alert('Success', `Your review for ${targetName} has been submitted successfully!`, [
             { text: 'OK', onPress: () => router.back() }
         ]);
@@ -112,40 +98,11 @@ const AddReview = ({ navigation, onBack }) => {
         return stars;
     };
 
-    const renderChildSelector = () => {
-        return (
-            <View style={styles.childSelectorContainer}>
-                <SWText style={styles.label}>Select Child</SWText>
-                {childrenWithDrivers.map((child) => (
-                    <TouchableOpacity
-                        key={child.id}
-                        style={[
-                            styles.childCard,
-                            selectedChild?.id === child.id && styles.selectedChildCard
-                        ]}
-                        onPress={() => setSelectedChild(child)}
-                    >
-                        <View style={styles.childInfo}>
-                            <SWText style={styles.childName}>{child.name}</SWText>
-                            <SWText style={styles.childSchool}>{child.school}</SWText>
-                        </View>
-                        <View style={styles.checkmarkContainer}>
-                            {selectedChild?.id === child.id && (
-                                <Ionicons name="checkmark-circle" size={24} color={theme.colors.primary} />
-                            )}
-                        </View>
-                    </TouchableOpacity>
-                ))}
-            </View>
-        );
-    };
 
     const renderReviewTypeSelector = () => {
-        if (!selectedChild) return null;
-
         return (
             <View style={styles.reviewTypeContainer}>
-                <SWText style={styles.label}>What would you like to review?</SWText>
+                <SWText style={styles.sectionTitle}>What would you like to review?</SWText>
                 <View style={styles.reviewTypeButtons}>
                     <TouchableOpacity
                         style={[
@@ -154,11 +111,13 @@ const AddReview = ({ navigation, onBack }) => {
                         ]}
                         onPress={() => handleReviewTypeChange('driver')}
                     >
-                        <Ionicons
-                            name="person"
-                            size={20}
-                            color={reviewType === 'driver' ? '#fff' : theme.colors.primary}
-                        />
+                        <View style={styles.reviewTypeIconContainer}>
+                            <Ionicons
+                                name="person"
+                                size={24}
+                                color={reviewType === 'driver' ? '#fff' : theme.colors.accentblue}
+                            />
+                        </View>
                         <SWText style={[
                             styles.reviewTypeButtonText,
                             reviewType === 'driver' && styles.activeReviewTypeButtonText
@@ -174,11 +133,13 @@ const AddReview = ({ navigation, onBack }) => {
                         ]}
                         onPress={() => handleReviewTypeChange('van')}
                     >
-                        <Ionicons
-                            name="car"
-                            size={20}
-                            color={reviewType === 'van' ? '#fff' : theme.colors.primary}
-                        />
+                        <View style={styles.reviewTypeIconContainer}>
+                            <Ionicons
+                                name="car"
+                                size={24}
+                                color={reviewType === 'van' ? '#fff' : theme.colors.accentblue}
+                            />
+                        </View>
                         <SWText style={[
                             styles.reviewTypeButtonText,
                             reviewType === 'van' && styles.activeReviewTypeButtonText
@@ -192,28 +153,36 @@ const AddReview = ({ navigation, onBack }) => {
     };
 
     const renderDriverInfo = () => {
-        if (!selectedChild || reviewType !== 'driver') return null;
+        if (reviewType !== 'driver') return null;
 
-        const driver = selectedChild.driver;
         return (
             <View style={styles.infoContainer}>
-                <SWText style={styles.label}>Driver Information</SWText>
-                <View style={styles.infoCard}>
+                <SWText style={styles.sectionTitle}>Driver Information</SWText>
+                <View style={styles.modernInfoCard}>
                     <View style={styles.driverHeader}>
                         <View style={styles.driverPhotoContainer}>
-                            {driver.photo ? (
-                                <Image source={{ uri: driver.photo }} style={styles.driverPhoto} />
+                            {currentDriver.photo ? (
+                                <Image source={{ uri: currentDriver.photo }} style={styles.driverPhoto} />
                             ) : (
                                 <View style={styles.driverPhotoPlaceholder}>
-                                    <Ionicons name="person" size={32} color="#666" />
+                                    <Ionicons name="person" size={32} color={theme.colors.textgreydark} />
                                 </View>
                             )}
                         </View>
                         <View style={styles.driverDetails}>
-                            <SWText style={styles.infoName}>{driver.name}</SWText>
-                            <SWText style={styles.infoDetail}>Van: {driver.vanNumber}</SWText>
-                            <SWText style={styles.infoDetail}>Experience: {driver.experience}</SWText>
-                            <SWText style={styles.infoDetail}>Phone: {driver.phone}</SWText>
+                            <SWText style={styles.infoName}>{currentDriver.name}</SWText>
+                            <View style={styles.detailRow}>
+                                <Ionicons name="car" size={16} color={theme.colors.textgreydark} />
+                                <SWText style={styles.infoDetail}>Van: {currentDriver.vanNumber}</SWText>
+                            </View>
+                            <View style={styles.detailRow}>
+                                <Ionicons name="time" size={16} color={theme.colors.textgreydark} />
+                                <SWText style={styles.infoDetail}>Experience: {currentDriver.experience}</SWText>
+                            </View>
+                            <View style={styles.detailRow}>
+                                <Ionicons name="call" size={16} color={theme.colors.textgreydark} />
+                                <SWText style={styles.infoDetail}>{currentDriver.phone}</SWText>
+                            </View>
                         </View>
                     </View>
                 </View>
@@ -222,30 +191,38 @@ const AddReview = ({ navigation, onBack }) => {
     };
 
     const renderVanInfo = () => {
-        if (!selectedChild || reviewType !== 'van') return null;
+        if (reviewType !== 'van') return null;
 
-        const van = selectedChild.van;
         return (
             <View style={styles.infoContainer}>
-                <SWText style={styles.label}>Van Information</SWText>
-                <View style={styles.infoCard}>
+                <SWText style={styles.sectionTitle}>Van Information</SWText>
+                <View style={styles.modernInfoCard}>
                     <View style={styles.vanHeader}>
                         <View style={styles.vanIconContainer}>
-                            <Ionicons name="car" size={40} color={theme.colors.primary} />
+                            <Ionicons name="car" size={40} color={theme.colors.accentblue} />
                         </View>
                         <View style={styles.vanDetails}>
-                            <SWText style={styles.infoName}>Van {van.number}</SWText>
-                            <SWText style={styles.infoDetail}>Model: {van.model}</SWText>
-                            <SWText style={styles.infoDetail}>Capacity: {van.capacity}</SWText>
-                            <SWText style={styles.infoDetail}>Condition: {van.condition}</SWText>
+                            <SWText style={styles.infoName}>Van {currentVan.number}</SWText>
+                            <View style={styles.detailRow}>
+                                <Ionicons name="car-sport" size={16} color={theme.colors.textgreydark} />
+                                <SWText style={styles.infoDetail}>Model: {currentVan.model}</SWText>
+                            </View>
+                            <View style={styles.detailRow}>
+                                <Ionicons name="people" size={16} color={theme.colors.textgreydark} />
+                                <SWText style={styles.infoDetail}>Capacity: {currentVan.capacity}</SWText>
+                            </View>
+                            <View style={styles.detailRow}>
+                                <Ionicons name="checkmark-circle" size={16} color={theme.colors.statusgreen} />
+                                <SWText style={styles.infoDetail}>Condition: {currentVan.condition}</SWText>
+                            </View>
                         </View>
                     </View>
                     <View style={styles.amenitiesContainer}>
                         <SWText style={styles.amenitiesTitle}>Amenities:</SWText>
                         <View style={styles.amenitiesList}>
-                            {van.amenities.map((amenity, index) => (
+                            {currentVan.amenities.map((amenity, index) => (
                                 <View key={index} style={styles.amenityItem}>
-                                    <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
+                                    <Ionicons name="checkmark-circle" size={16} color={theme.colors.statusgreen} />
                                     <SWText style={styles.amenityText}>{amenity}</SWText>
                                 </View>
                             ))}
@@ -258,9 +235,9 @@ const AddReview = ({ navigation, onBack }) => {
 
     const getReviewPrompt = () => {
         if (reviewType === 'driver') {
-            return `How would you rate ${selectedChild?.driver.name}'s service?`;
+            return `How would you rate ${currentDriver.name}'s service?`;
         } else {
-            return `How would you rate the van service (${selectedChild?.van.number})?`;
+            return `How would you rate the van service (${currentVan.number})?`;
         }
     };
 
@@ -273,8 +250,8 @@ const AddReview = ({ navigation, onBack }) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
+            <SafeAreaView style={styles.safeArea}>
                 <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
                     <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                         <Ionicons name="arrow-back" size={24} color="white" />
@@ -282,49 +259,52 @@ const AddReview = ({ navigation, onBack }) => {
                     <SWText uberBold style={styles.headerTitle}>Add Review</SWText>
                 </View>
 
-                <View style={styles.formContainer}>
-                    {renderChildSelector()}
-                    {renderReviewTypeSelector()}
-                    {renderDriverInfo()}
-                    {renderVanInfo()}
+                <ScrollView 
+                    style={styles.scrollView} 
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    scrollEventThrottle={16}
+                >
+                    <View style={styles.formContainer}>
+                        {renderReviewTypeSelector()}
+                        {renderDriverInfo()}
+                        {renderVanInfo()}
 
-                    {selectedChild && (
-                        <>
-                            <View style={styles.inputGroup}>
-                                <SWText style={styles.label}>Rating</SWText>
-                                <SWText style={styles.ratingSubtext}>{getReviewPrompt()}</SWText>
-                                <View style={styles.starsContainer}>
-                                    {renderStars()}
-                                </View>
-                                {rating > 0 && (
-                                    <SWText style={styles.ratingText}>
-                                        {rating} out of 5 stars
-                                    </SWText>
-                                )}
+                        <View style={styles.ratingSection}>
+                            <SWText style={styles.sectionTitle}>Rating</SWText>
+                            <SWText style={styles.ratingSubtext}>{getReviewPrompt()}</SWText>
+                            <View style={styles.starsContainer}>
+                                {renderStars()}
                             </View>
+                            {rating > 0 && (
+                                <SWText style={styles.ratingText}>
+                                    {rating} out of 5 stars
+                                </SWText>
+                            )}
+                        </View>
 
-                            <View style={styles.inputGroup}>
-                                <SWText style={styles.label}>Comments (Optional)</SWText>
-                                <MultilineTextInput
-                                    placeholder={getCommentPlaceholder()}
-                                    value={comment}
-                                    onChangeText={setComment}
-                                    numberOfLines={5}
-                                />
-                            </View>
-                        </>
-                    )}
-                </View>
-            </ScrollView>
+                        <View style={styles.commentSection}>
+                            <SWText style={styles.sectionTitle}>Comments (Optional)</SWText>
+                            <MultilineTextInput
+                                placeholder={getCommentPlaceholder()}
+                                value={comment}
+                                onChangeText={setComment}
+                                numberOfLines={5}
+                            />
+                        </View>
+                    </View>
+                </ScrollView>
+            </SafeAreaView>
 
             <View style={styles.bottomContainer}>
                 <Button
                     title="Submit Review"
-                    varient="outlined-black"
+                    varient="outlined-primaryDark"
                     onPress={handleSubmitReview}
                 />
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -333,8 +313,15 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f5f5f5',
     },
+    safeArea: {
+        flex: 1,
+    },
     scrollView: {
         flex: 1,
+    },
+    scrollContent: {
+        flexGrow: 1,
+        paddingBottom: 100, // Extra padding to account for fixed button
     },
     header: {
         flexDirection: 'row',
@@ -355,150 +342,146 @@ const styles = StyleSheet.create({
     formContainer: {
         padding: 20,
     },
-    inputGroup: {
-        marginBottom: 20,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: '500',
-        color: '#000',
-        marginBottom: 8,
-    },
-    childSelectorContainer: {
-        marginBottom: 20,
-    },
-    childCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 10,
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
-    },
-    selectedChildCard: {
-        borderColor: '#2B3674',
-        borderWidth: 2,
-        backgroundColor: '#f0f8ff',
-    },
-    childInfo: {
-        flex: 1,
-    },
-    childName: {
-        fontSize: 16,
+    sectionTitle: {
+        fontSize: 18,
         fontWeight: '600',
-        color: '#000',
-    },
-    childSchool: {
-        fontSize: 14,
-        color: '#666',
-        marginTop: 2,
-    },
-    checkmarkContainer: {
-        width: 30,
-        alignItems: 'center',
+        color: '#333',
+        marginBottom: 12,
     },
     reviewTypeContainer: {
-        marginBottom: 20,
+        marginBottom: 24,
     },
     reviewTypeButtons: {
         flexDirection: 'row',
-        gap: 10,
+        gap: 12,
     },
     reviewTypeButton: {
         flex: 1,
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: '#fff',
-        paddingVertical: 12,
+        paddingVertical: 20,
         paddingHorizontal: 16,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: '#2B3674',
-        gap: 8,
+        borderRadius: 16,
+        borderWidth: 2,
+        borderColor: '#e0e0e0',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     activeReviewTypeButton: {
         backgroundColor: '#2B3674',
         borderColor: '#2B3674',
+        shadowColor: '#2B3674',
+        shadowOpacity: 0.3,
+    },
+    reviewTypeIconContainer: {
+        marginBottom: 8,
     },
     reviewTypeButtonText: {
         fontSize: 14,
-        fontWeight: '500',
+        fontWeight: '600',
         color: '#2B3674',
     },
     activeReviewTypeButtonText: {
         color: '#fff',
     },
     infoContainer: {
-        marginBottom: 20,
+        marginBottom: 24,
     },
-    infoCard: {
+    modernInfoCard: {
         backgroundColor: '#fff',
-        padding: 15,
-        borderRadius: 10,
+        padding: 20,
+        borderRadius: 16,
         borderWidth: 1,
         borderColor: '#e0e0e0',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     driverHeader: {
         flexDirection: 'row',
-        alignItems: 'center',
+        alignItems: 'flex-start',
     },
     driverPhotoContainer: {
-        marginRight: 15,
+        marginRight: 16,
     },
     driverPhoto: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
     },
     driverPhotoPlaceholder: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
-        backgroundColor: '#f0f0f0',
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: '#f8f9fa',
         justifyContent: 'center',
         alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#e0e0e0',
     },
     driverDetails: {
         flex: 1,
     },
-    vanHeader: {
+    detailRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 15,
+        marginTop: 6,
+        gap: 8,
+    },
+    vanHeader: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginBottom: 16,
     },
     vanIconContainer: {
-        marginRight: 15,
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        marginRight: 16,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
         backgroundColor: '#f0f8ff',
         justifyContent: 'center',
         alignItems: 'center',
+        borderWidth: 2,
+        borderColor: '#e0e0e0',
     },
     vanDetails: {
         flex: 1,
     },
     infoName: {
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#000',
+        fontSize: 20,
+        fontWeight: '700',
+        color: '#333',
+        marginBottom: 4,
     },
     infoDetail: {
         fontSize: 14,
         color: '#666',
-        marginTop: 2,
+        fontWeight: '500',
     },
     amenitiesContainer: {
-        marginTop: 10,
+        marginTop: 16,
+        paddingTop: 16,
+        borderTopWidth: 1,
+        borderTopColor: '#f0f0f0',
     },
     amenitiesTitle: {
         fontSize: 16,
-        fontWeight: '500',
-        color: '#000',
-        marginBottom: 8,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 12,
     },
     amenitiesList: {
         flexDirection: 'row',
@@ -509,38 +492,88 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: '#f8f9fa',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 6,
-        gap: 4,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        gap: 6,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
     },
     amenityText: {
         fontSize: 12,
         color: '#333',
+        fontWeight: '500',
+    },
+    ratingSection: {
+        marginBottom: 24,
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
+    },
+    commentSection: {
+        marginBottom: 24,
+        backgroundColor: '#fff',
+        padding: 20,
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: '#e0e0e0',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 3,
     },
     ratingSubtext: {
-        fontSize: 14,
+        fontSize: 16,
         color: '#666',
-        marginBottom: 15,
+        marginBottom: 20,
+        textAlign: 'center',
     },
     starsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginBottom: 10,
+        marginBottom: 16,
     },
     starButton: {
-        padding: 5,
-        marginHorizontal: 5,
+        padding: 8,
+        marginHorizontal: 4,
     },
     ratingText: {
         textAlign: 'center',
         fontSize: 16,
-        fontWeight: '500',
+        fontWeight: '600',
         color: '#333',
     },
     bottomContainer: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
         padding: 20,
         backgroundColor: '#fff',
+        borderTopWidth: 1,
+        borderTopColor: '#e0e0e0',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: -2,
+        },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
     },
 });
 
