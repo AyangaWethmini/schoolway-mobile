@@ -239,28 +239,37 @@ const PaymentHistory = ({ navigation }) => {
             </View>
           </View>
         ) : (
-          paymentHistory.map(payment => (
-          <View style={styles.section}>
-            <View key={payment.id} style={styles.historyCard}>
-              <View style={styles.historyHeader}>
-                <View style={styles.historyInfo}>
-                  <SWText style={styles.historyChildName}>{payment.childName}</SWText>
-                  <SWText style={styles.historyVanService}>{payment.vanService}</SWText>
-                </View>
-                <View style={styles.historyAmount}>
-                  <SWText uberBold style={styles.historyAmountText}>Rs. {payment.amount}</SWText>
-                  <View style={[styles.statusBadge, { backgroundColor: getStatusColor(payment.status) }]}>
-                    <SWText style={styles.statusText}>{payment.status}</SWText>
+          paymentHistory.map((payment) => (
+              <View key={payment.id} style={styles.section}>
+                <View style={styles.historyCard}>
+                  <View style={styles.historyHeader}>
+                    <View style={styles.historyInfo}>
+                      <SWText style={styles.historyChildName}>{payment.childName}</SWText>
+                      <SWText style={styles.historyVanService}>{payment.vanService}</SWText>
+                    </View>
+                    <View style={styles.historyAmount}>
+                      <SWText uberBold style={styles.historyAmountText}>
+                        Rs. {payment.amount}
+                      </SWText>
+                      <View
+                        style={[
+                          styles.statusBadge,
+                          { backgroundColor: getStatusColor(payment.status) },
+                        ]}
+                      >
+                        <SWText style={styles.statusText}>{payment.status}</SWText>
+                      </View>
+                    </View>
+                  </View>
+                  <View style={styles.historyFooter}>
+                    <SWText style={styles.historyDate}>{formatDate(payment.date)}</SWText>
+                    <SWText style={styles.transactionId}>
+                      ID: {payment.transactionId}
+                    </SWText>
                   </View>
                 </View>
               </View>
-              <View style={styles.historyFooter}>
-                <SWText style={styles.historyDate}>{formatDate(payment.date)}</SWText>
-                <SWText style={styles.transactionId}>ID: {payment.transactionId}</SWText>
-              </View>
-            </View>
-          </View>
-          ))
+            ))
         )}
    
       </ScrollView>

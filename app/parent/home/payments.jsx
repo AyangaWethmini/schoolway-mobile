@@ -198,7 +198,7 @@ const Payments = () => {
                   </View>
                   <View style={{ flex: 1 }}>
                     <SWText uberBold style={{ fontSize: 16, color: '#333' }}>{child.name}</SWText>
-                    <SWText style={{ fontSize: 14, color: '#666', marginTop: 2 }}>{child.grade}</SWText>
+                    <SWText style={{ fontSize: 14, color: '#666', marginTop: 2 }}>Grade {child.grade}</SWText>
                   </View>
                   <View style={{ alignItems: 'flex-end' }}>
                     {child.isPaid ? (
