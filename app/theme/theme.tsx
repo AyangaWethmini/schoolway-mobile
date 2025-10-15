@@ -8,12 +8,15 @@ export interface Theme {
         accent1:string;
         secondaryDark: string;
         accentblue : string;
+        primaryFade: string;
         backgroud : string;
         textblack : string;
         textwhite : string;
         textgreydark : string;
         textgreylight : string;
         error : string;
+        success : string;
+        warning : string;
 
         // status tag colors
         statusorange : string;
@@ -95,12 +98,16 @@ export const lightTheme: Theme = {
         accent1:"#00bcd4",
         secondary: "#00d4aa",
         secondaryDark: "#029779",
+        primaryFade: "linear-gradient(90deg, var(--blue-shade-dark) 0%, var(--blue-shade-light) 60%, var(--green-shade-light) 100%)",
 
         backgroud: "#FAF8F8",
         textblack: "#090A0A",
         textwhite : "#ffffff",
         textgreydark: "#71727A",
         textgreylight: "#8F9098",
+
+        success: "#27ae60",
+        warning: "#f39c12",
         error: "#FF0000",
 
 

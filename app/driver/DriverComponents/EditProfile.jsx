@@ -325,7 +325,7 @@ const EditProfile = () => {
 
   return (
     // <View style={[styles.container, { marginBottom: 50 }]}>
-      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false} >
         
         {/* Profile Image */}
         <View style={{ alignItems: 'center', marginBottom: theme.spacing.lg }}>

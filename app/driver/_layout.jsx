@@ -15,7 +15,7 @@ if (user?.approvalstatus !== 1) {
         <DriverProtected>
             <Tabs
                 screenOptions={{
-                    headerShown: true,
+                    headerShown: false,
                     headerStyle: { backgroundColor: theme.headerBg },
                     headerTintColor: theme.text,
                     headerTitleStyle: { fontWeight: 'bold' },
@@ -59,7 +59,7 @@ return (
     <DriverProtected>
         <Tabs 
             screenOptions={{
-                headerShown: true,
+                headerShown: false,
                 headerStyle: { backgroundColor: theme.headerBg },
                 headerTintColor: theme.text,
                 headerTitleStyle: { fontWeight: 'bold' }, 
