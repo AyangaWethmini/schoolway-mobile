@@ -1,3 +1,4 @@
+// Updated mobile app code with correct data mapping
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
@@ -31,6 +32,10 @@ const AddReview = ({ navigation, onBack }) => {
     const [targetId, setTargetId] = useState(null);
     const [vanId, setVanId] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [existingDriverReview, setExistingDriverReview] = useState(null);
+    const [existingVanServiceReview, setExistingVanServiceReview] = useState(null);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [editingReviewId, setEditingReviewId] = useState(null);
 
     // Data from API
     const [currentDriver, setCurrentDriver] = useState({
@@ -44,6 +49,7 @@ const AddReview = ({ navigation, onBack }) => {
 
     const [currentVanService, setCurrentVanService] = useState({
         id: null,
+        vanServiceId: null,
         name: 'Loading...',
         contact: 'Loading...',
         serviceRegNumber: 'Loading...'
@@ -96,7 +102,7 @@ const AddReview = ({ navigation, onBack }) => {
             }
             
             const childData = await response.json();
-            console.log('Fetched child data:', childData);
+            console.log('Fetched child data:', JSON.stringify(childData, null, 2));
             
             // Set van ID from child data
             if (childData.vanID) {
@@ -107,52 +113,82 @@ const AddReview = ({ navigation, onBack }) => {
             // If child has a van, get driver and van service info
             if (childData.Van) {
                 const van = childData.Van;
-                console.log('Child has van:', van);
+                console.log('Child has van:', JSON.stringify(van, null, 2));
                 
                 // Set driver info if van has assigned driver
-                if (van.assignedDriverId) {
+                if (van.assignedDriverId && van.UserProfile_assignedDriverIdToUserProfile) {
+                    const driver = van.UserProfile_assignedDriverIdToUserProfile;
+                    const driverProfile = driver.driverProfile;
+                    
+                    // Calculate experience
+                    let experience = 'Not specified';
+                    if (driverProfile && driverProfile.startedDriving) {
+                        const startYear = new Date(driverProfile.startedDriving).getFullYear();
+                        const currentYear = new Date().getFullYear();
+                        experience = `${currentYear - startYear} years`;
+                    }
+                    
                     const driverInfo = {
-                        id: van.assignedDriverId,
-                        name: (van.UserProfile_Van_assignedDriverIdToUserProfile?.firstname || '') + ' ' + (van.UserProfile_Van_assignedDriverIdToUserProfile?.lastname || '') || 'Driver',
-                        photo: van.UserProfile_Van_assignedDriverIdToUserProfile?.dp,
+                        id: driver.id,
+                        name: `${driver.firstname || ''} ${driver.lastname || ''}`.trim() || 'Driver',
+                        photo: driver.dp,
                         vanNumber: van.registrationNumber,
-                        phone: van.UserProfile_Van_assignedDriverIdToUserProfile?.mobile || 'Not provided',
-                        experience: '5 years' // You might want to fetch this from driver profile
+                        phone: driver.mobile || 'Not provided',
+                        experience: experience,
+                        averageRating: driverProfile?.averageRating || 0,
+                        totalReviews: driverProfile?.totalReviews || 0
                     };
                     setCurrentDriver(driverInfo);
-                    setTargetId(van.assignedDriverId);
+                    setTargetId(driver.id);
                     console.log('Set driver info:', driverInfo);
+                } else {
+                    console.log('No driver assigned to van');
+                    setCurrentDriver({
+                        id: null,
+                        name: 'No driver assigned',
+                        photo: null,
+                        vanNumber: van.registrationNumber,
+                        phone: 'N/A',
+                        experience: 'N/A'
+                    });
                 }
                 
                 // Set van service info
-                if (van.UserProfile?.vanService) {
+                if (van.UserProfile && van.UserProfile.vanService) {
                     const vanService = van.UserProfile.vanService;
                     const vanServiceInfo = {
-                        id: vanService.id,
+                        id: van.UserProfile.id, // Use van service owner's user ID as targetId
+                        vanServiceId: vanService.id, // Keep van service ID for reference
                         name: vanService.serviceName,
                         contact: vanService.contactNo,
-                        serviceRegNumber: vanService.serviceRegNumber
+                        serviceRegNumber: vanService.serviceRegNumber,
+                        averageRating: vanService.averageRating || 0,
+                        totalReviews: vanService.totalReviews || 0
                     };
                     setCurrentVanService(vanServiceInfo);
                     console.log('Set van service info:', vanServiceInfo);
+                } else {
+                    console.log('No van service found for van owner');
+                    setCurrentVanService({
+                        id: null,
+                        vanServiceId: null,
+                        name: 'No van service registered',
+                        contact: 'N/A',
+                        serviceRegNumber: 'N/A'
+                    });
                 }
+                
+                // Check for existing reviews after setting driver/van service info
+                await checkExistingReviews(childId, van.assignedDriverId, van.UserProfile?.id);
+                
             } else {
                 console.log('Child has no van assigned');
-                // Set default values if no van
-                setCurrentDriver({
-                    id: 'no_driver',
-                    name: 'No Driver Assigned',
-                    photo: null,
-                    vanNumber: 'N/A',
-                    phone: 'N/A',
-                    experience: 'N/A'
-                });
-                setCurrentVanService({
-                    id: 'no_service',
-                    name: 'No Van Service',
-                    contact: 'N/A',
-                    serviceRegNumber: 'N/A'
-                });
+                Alert.alert(
+                    'No Van Assigned', 
+                    'This child is not assigned to any van. Reviews can only be submitted for children with assigned vans.',
+                    [{ text: 'OK', onPress: () => router.back() }]
+                );
+                return;
             }
             
         } catch (error) {
@@ -163,8 +199,105 @@ const AddReview = ({ navigation, onBack }) => {
         }
     };
 
+    const checkExistingReviews = async (childId, driverId, vanServiceOwnerId) => {
+        try {
+            console.log('Checking existing reviews for child:', childId);
+            
+            // Check for driver review
+            if (driverId) {
+                const driverReviewResponse = await fetch(`${API_URL}/reviews?childId=${childId}&reviewType=DRIVER&targetId=${driverId}`);
+                if (driverReviewResponse.ok) {
+                    const driverReviewData = await driverReviewResponse.json();
+                    if (driverReviewData.reviews && driverReviewData.reviews.length > 0) {
+                        console.log('Found existing driver review:', driverReviewData.reviews[0]);
+                        setExistingDriverReview(driverReviewData.reviews[0]);
+                    } else {
+                        setExistingDriverReview(null);
+                    }
+                }
+            }
+            
+            // Check for van service review
+            if (vanServiceOwnerId) {
+                const vanServiceReviewResponse = await fetch(`${API_URL}/reviews?childId=${childId}&reviewType=VAN_SERVICE&targetId=${vanServiceOwnerId}`);
+                if (vanServiceReviewResponse.ok) {
+                    const vanServiceReviewData = await vanServiceReviewResponse.json();
+                    if (vanServiceReviewData.reviews && vanServiceReviewData.reviews.length > 0) {
+                        console.log('Found existing van service review:', vanServiceReviewData.reviews[0]);
+                        setExistingVanServiceReview(vanServiceReviewData.reviews[0]);
+                    } else {
+                        setExistingVanServiceReview(null);
+                    }
+                }
+            }
+            
+            console.log('Finished checking existing reviews');
+            
+        } catch (error) {
+            console.error('Error checking existing reviews:', error);
+            // Don't show error to user, just log it
+        }
+    };
+
     const handleBack = () => {
         router.back();
+    };
+
+    // Helper functions to avoid complex boolean expressions
+    const hasExistingReviewForCurrentType = () => {
+        let result = false;
+        if (reviewType === 'DRIVER') {
+            result = !!existingDriverReview;
+        } else if (reviewType === 'VAN_SERVICE') {
+            result = !!existingVanServiceReview;
+        }
+        console.log('hasExistingReviewForCurrentType:', { reviewType, result, existingDriverReview: !!existingDriverReview, existingVanServiceReview: !!existingVanServiceReview });
+        return result;
+    };
+
+    const getButtonTitle = () => {
+        if (isEditMode) {
+            return "Update Review";
+        }
+        return hasExistingReviewForCurrentType() ? "Review Already Submitted" : "Submit Review";
+    };
+
+    const getButtonOnPress = () => {
+        if (isEditMode) {
+            return handleEditReview;
+        }
+        if (hasExistingReviewForCurrentType()) {
+            return undefined; // Return undefined instead of null for disabled state
+        }
+        return handleSubmitReview;
+    };
+
+    const isButtonDisabled = () => {
+        const hasExistingReview = hasExistingReviewForCurrentType();
+        const hasNoTargetId = !targetId;
+        const hasNoRating = rating === 0;
+        
+        // In edit mode, only check rating
+        if (isEditMode) {
+            return hasNoRating;
+        }
+        
+        const result = hasExistingReview || hasNoTargetId || hasNoRating;
+        console.log('isButtonDisabled:', { hasExistingReview, hasNoTargetId, hasNoRating, result, targetId, rating, isEditMode });
+        return result;
+    };
+
+    const shouldShowReviewForm = () => {
+        return !hasExistingReviewForCurrentType() || isEditMode;
+    };
+
+    const getCurrentExistingReview = () => {
+        if (reviewType === 'DRIVER') {
+            return existingDriverReview;
+        } else if (reviewType === 'VAN_SERVICE') {
+            return existingVanServiceReview;
+        }
+        return null;
     };
 
     const handleStarPress = (starIndex) => {
@@ -228,22 +361,198 @@ const AddReview = ({ navigation, onBack }) => {
                 body: formData,
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
+            const result = await response.json();
+            console.log('Review API response:', result);
+
             if (!response.ok) {
-                throw new Error('Failed to submit review');
+                // Handle specific error cases
+                if (result.error) {
+                    if (result.error.includes('Child not found')) {
+                        Alert.alert('Error', `Child not found. Debug info: ${JSON.stringify(result.debug)}`);
+                    } else if (result.error.includes('Van not found')) {
+                        Alert.alert('Error', `Van not found. Debug info: ${JSON.stringify(result.debug)}`);
+                    } else if (result.error.includes('Driver not found')) {
+                        Alert.alert('Error', `Driver not found. Debug info: ${JSON.stringify(result.debug)}`);
+                    } else if (result.error.includes('Review already exists')) {
+                        Alert.alert('Error', 'You have already submitted a review for this child and target.');
+                    } else if (result.error.includes('Unauthorized')) {
+                        Alert.alert('Error', 'You can only review for your own child.');
+                    } else {
+                        Alert.alert('Error', result.error);
+                    }
+                } else {
+                    Alert.alert('Error', 'Failed to submit review. Please try again.');
+                }
+                return;
             }
 
-            const result = await response.json();
-            console.log('Review submitted successfully:', result);
-            
             const targetName = reviewType === 'DRIVER' ? currentDriver.name : currentVanService.name;
             Alert.alert('Success', `Your review for ${targetName} has been submitted successfully!`, [
-                { text: 'OK', onPress: () => router.back() }
+                { text: 'OK', onPress: () => {
+                    // Refresh existing reviews after successful submission
+                    checkExistingReviews(childId, currentDriver.id, currentVanService.id);
+                    router.back();
+                }}
             ]);
 
         } catch (error) {
             console.error('Error submitting review:', error);
             Alert.alert('Error', 'Failed to submit review. Please try again.');
         }
+    };
+
+    const handleEditReview = async () => {
+        if (rating === 0) {
+            Alert.alert('Rating Required', 'Please select a rating before updating your review.');
+            return;
+        }
+
+        if (!editingReviewId) {
+            Alert.alert('Error', 'No review selected for editing.');
+            return;
+        }
+
+        try {
+            const session = await AsyncStorage.getItem('user_session');
+            if (!session) {
+                Alert.alert('Error', 'Please log in again.');
+                return;
+            }
+
+            const user = JSON.parse(session);
+            const formData = new FormData();
+            
+            formData.append('reviewId', editingReviewId);
+            formData.append('rating', rating.toString());
+            formData.append('comment', comment || '');
+            formData.append('reviewerId', user.user.id);
+
+            console.log('Updating review:', {
+                reviewId: editingReviewId,
+                rating,
+                comment,
+                reviewerId: user.user.id
+            });
+
+            const response = await fetch(`${API_URL}/reviews/${editingReviewId}`, {
+                method: 'PUT',
+                body: formData,
+            });
+
+            console.log('Update response status:', response.status);
+            const result = await response.json();
+            console.log('Update API response:', result);
+
+            if (!response.ok) {
+                Alert.alert('Error', result.error || 'Failed to update review. Please try again.');
+                return;
+            }
+
+            const targetName = reviewType === 'DRIVER' ? currentDriver.name : currentVanService.name;
+            Alert.alert('Success', `Your review for ${targetName} has been updated successfully!`, [
+                { text: 'OK', onPress: () => {
+                    // Refresh existing reviews after successful update
+                    checkExistingReviews(childId, currentDriver.id, currentVanService.id);
+                    setIsEditMode(false);
+                    setEditingReviewId(null);
+                }}
+            ]);
+
+        } catch (error) {
+            console.error('Error updating review:', error);
+            Alert.alert('Error', 'Failed to update review. Please try again.');
+        }
+    };
+
+    const handleDeleteReview = async () => {
+        const currentReview = getCurrentExistingReview();
+        if (!currentReview) {
+            Alert.alert('Error', 'No review found to delete.');
+            return;
+        }
+
+        Alert.alert(
+            'Delete Review',
+            'Are you sure you want to delete this review? This action cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                    text: 'Delete', 
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            const session = await AsyncStorage.getItem('user_session');
+                            if (!session) {
+                                Alert.alert('Error', 'Please log in again.');
+                                return;
+                            }
+
+                            const user = JSON.parse(session);
+                            const formData = new FormData();
+                            formData.append('reviewerId', user.user.id);
+
+                            console.log('Deleting review:', {
+                                reviewId: currentReview.id,
+                                reviewerId: user.user.id
+                            });
+
+                            const response = await fetch(`${API_URL}/reviews/${currentReview.id}`, {
+                                method: 'DELETE',
+                                body: formData,
+                            });
+
+                            console.log('Delete response status:', response.status);
+                            const result = await response.json();
+                            console.log('Delete API response:', result);
+
+                            if (!response.ok) {
+                                Alert.alert('Error', result.error || 'Failed to delete review. Please try again.');
+                                return;
+                            }
+
+                            const targetName = reviewType === 'DRIVER' ? currentDriver.name : currentVanService.name;
+                            Alert.alert('Success', `Your review for ${targetName} has been deleted successfully!`, [
+                                { text: 'OK', onPress: () => {
+                                    // Refresh existing reviews after successful deletion
+                                    checkExistingReviews(childId, currentDriver.id, currentVanService.id);
+                                    setIsEditMode(false);
+                                    setEditingReviewId(null);
+                                    setRating(0);
+                                    setComment('');
+                                }}
+                            ]);
+
+                        } catch (error) {
+                            console.error('Error deleting review:', error);
+                            Alert.alert('Error', 'Failed to delete review. Please try again.');
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+    const handleEditButtonPress = () => {
+        const currentReview = getCurrentExistingReview();
+        if (!currentReview) {
+            Alert.alert('Error', 'No review found to edit.');
+            return;
+        }
+
+        setIsEditMode(true);
+        setEditingReviewId(currentReview.id);
+        setRating(currentReview.rating);
+        setComment(currentReview.comment || '');
+    };
+
+    const handleCancelEdit = () => {
+        setIsEditMode(false);
+        setEditingReviewId(null);
+        setRating(0);
+        setComment('');
     };
 
     const renderStars = () => {
@@ -266,8 +575,8 @@ const AddReview = ({ navigation, onBack }) => {
         return stars;
     };
 
-
     const renderReviewTypeSelector = () => {
+        // Always show the review type selector, but show existing review info below
         return (
             <View style={styles.reviewTypeContainer}>
                 <SWText style={styles.sectionTitle}>What would you like to review?</SWText>
@@ -275,53 +584,114 @@ const AddReview = ({ navigation, onBack }) => {
                     <TouchableOpacity
                         style={[
                             styles.reviewTypeButton,
-                            reviewType === 'DRIVER' && styles.activeReviewTypeButton
+                            reviewType === 'DRIVER' && styles.activeReviewTypeButton,
+                            !currentDriver.id && styles.disabledButton
                         ]}
                         onPress={() => handleReviewTypeChange('DRIVER')}
+                        disabled={!currentDriver.id || currentDriver.id === null}
                     >
                         <View style={styles.reviewTypeIconContainer}>
                             <Ionicons
                                 name="person"
                                 size={24}
-                                color={reviewType === 'driver' ? '#fff' : theme.colors.accentblue}
+                                color={reviewType === 'DRIVER' ? '#fff' : theme.colors.accentblue}
                             />
                         </View>
                         <SWText style={[
                             styles.reviewTypeButtonText,
-                            reviewType === 'DRIVER' && styles.activeReviewTypeButtonText
+                            reviewType === 'DRIVER' && styles.activeReviewTypeButtonText,
+                            !currentDriver.id && styles.disabledButtonText
                         ]}>
                             Driver
                         </SWText>
+                        {!currentDriver.id && (
+                            <SWText style={styles.unavailableText}>No driver assigned</SWText>
+                        )}
+                        {existingDriverReview && (
+                            <SWText style={styles.existingText}>✓ Reviewed</SWText>
+                        )}
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={[
                             styles.reviewTypeButton,
-                            reviewType === 'VAN_SERVICE' && styles.activeReviewTypeButton
+                            reviewType === 'VAN_SERVICE' && styles.activeReviewTypeButton,
+                            !currentVanService.id && styles.disabledButton
                         ]}
                         onPress={() => handleReviewTypeChange('VAN_SERVICE')}
+                        disabled={!currentVanService.id || currentVanService.id === null}
                     >
                         <View style={styles.reviewTypeIconContainer}>
                             <Ionicons
                                 name="car"
                                 size={24}
-                                color={reviewType === 'van' ? '#fff' : theme.colors.accentblue}
+                                color={reviewType === 'VAN_SERVICE' ? '#fff' : theme.colors.accentblue}
                             />
                         </View>
                         <SWText style={[
                             styles.reviewTypeButtonText,
-                            reviewType === 'VAN_SERVICE' && styles.activeReviewTypeButtonText
+                            reviewType === 'VAN_SERVICE' && styles.activeReviewTypeButtonText,
+                            !currentVanService.id && styles.disabledButtonText
                         ]}>
                             Van Service
                         </SWText>
+                        {!currentVanService.id && (
+                            <SWText style={styles.unavailableText}>No van service</SWText>
+                        )}
+                        {existingVanServiceReview && (
+                            <SWText style={styles.existingText}>✓ Reviewed</SWText>
+                        )}
                     </TouchableOpacity>
                 </View>
+                
+                {hasExistingReviewForCurrentType() && !isEditMode && (
+                    <View style={styles.existingReviewContainer}>
+                        <View style={styles.existingReviewCard}>
+                            <Ionicons name="checkmark-circle" size={24} color="#4CAF50" />
+                            <View style={styles.existingReviewContent}>
+                                <SWText style={styles.existingReviewTitle}>Review Already Submitted</SWText>
+                                <SWText style={styles.existingReviewText}>
+                                    You have already submitted a review for this {reviewType === 'DRIVER' ? 'driver' : 'van service'}.
+                                </SWText>
+                                <View style={styles.existingReviewDetails}>
+                                    <SWText style={styles.existingReviewRating}>
+                                        Rating: {getCurrentExistingReview().rating}/5 ⭐
+                                    </SWText>
+                                    {getCurrentExistingReview().comment && (
+                                        <SWText style={styles.existingReviewComment}>
+                                            "{getCurrentExistingReview().comment}"
+                                        </SWText>
+                                    )}
+                                    <SWText style={styles.existingReviewDate}>
+                                        Submitted: {new Date(getCurrentExistingReview().createdAt).toLocaleDateString()}
+                                    </SWText>
+                                </View>
+                                <View style={styles.reviewActions}>
+                                    <TouchableOpacity 
+                                        style={styles.editButton}
+                                        onPress={handleEditButtonPress}
+                                    >
+                                        <Ionicons name="create-outline" size={16} color="#2B3674" />
+                                        <SWText style={styles.editButtonText}>Edit</SWText>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity 
+                                        style={styles.deleteButton}
+                                        onPress={handleDeleteReview}
+                                    >
+                                        <Ionicons name="trash-outline" size={16} color="#dc3545" />
+                                        <SWText style={styles.deleteButtonText}>Delete</SWText>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                )}
             </View>
         );
     };
 
     const renderDriverInfo = () => {
-        if (reviewType !== 'DRIVER') return null;
+        if (reviewType !== 'DRIVER' || !currentDriver.id) return null;
 
         return (
             <View style={styles.infoContainer}>
@@ -351,6 +721,14 @@ const AddReview = ({ navigation, onBack }) => {
                                 <Ionicons name="call" size={16} color={theme.colors.textgreydark} />
                                 <SWText style={styles.infoDetail}>{currentDriver.phone}</SWText>
                             </View>
+                            {currentDriver.averageRating > 0 && (
+                                <View style={styles.detailRow}>
+                                    <Ionicons name="star" size={16} color={theme.colors.textgreydark} />
+                                    <SWText style={styles.infoDetail}>
+                                        Rating: {currentDriver.averageRating.toFixed(1)} ({currentDriver.totalReviews} reviews)
+                                    </SWText>
+                                </View>
+                            )}
                         </View>
                     </View>
                 </View>
@@ -359,11 +737,11 @@ const AddReview = ({ navigation, onBack }) => {
     };
 
     const renderVanInfo = () => {
-        if (reviewType !== 'VAN_SERVICE') return null;
+        if (reviewType !== 'VAN_SERVICE' || !currentVanService.id) return null;
 
         return (
             <View style={styles.infoContainer}>
-                <SWText style={styles.sectionTitle}>Van Information</SWText>
+                <SWText style={styles.sectionTitle}>Van Service Information</SWText>
                 <View style={styles.modernInfoCard}>
                     <View style={styles.vanHeader}>
                         <View style={styles.vanIconContainer}>
@@ -373,12 +751,20 @@ const AddReview = ({ navigation, onBack }) => {
                             <SWText style={styles.infoName}>{currentVanService.name}</SWText>
                             <View style={styles.detailRow}>
                                 <Ionicons name="business" size={16} color={theme.colors.textgreydark} />
-                                <SWText style={styles.infoDetail}>Service: {currentVanService.serviceRegNumber}</SWText>
+                                <SWText style={styles.infoDetail}>Registration: {currentVanService.serviceRegNumber}</SWText>
                             </View>
                             <View style={styles.detailRow}>
                                 <Ionicons name="call" size={16} color={theme.colors.textgreydark} />
                                 <SWText style={styles.infoDetail}>Contact: {currentVanService.contact}</SWText>
                             </View>
+                            {currentVanService.averageRating > 0 && (
+                                <View style={styles.detailRow}>
+                                    <Ionicons name="star" size={16} color={theme.colors.textgreydark} />
+                                    <SWText style={styles.infoDetail}>
+                                        Rating: {currentVanService.averageRating.toFixed(1)} ({currentVanService.totalReviews} reviews)
+                                    </SWText>
+                                </View>
+                            )}
                         </View>
                     </View>
                 </View>
@@ -442,37 +828,53 @@ const AddReview = ({ navigation, onBack }) => {
                         {renderDriverInfo()}
                         {renderVanInfo()}
 
-                        <View style={styles.ratingSection}>
-                            <SWText style={styles.sectionTitle}>Rating</SWText>
-                            <SWText style={styles.ratingSubtext}>{getReviewPrompt()}</SWText>
-                            <View style={styles.starsContainer}>
-                                {renderStars()}
-                            </View>
-                            {rating > 0 && (
-                                <SWText style={styles.ratingText}>
-                                    {rating} out of 5 stars
-                                </SWText>
-                            )}
-                        </View>
+                        {shouldShowReviewForm() && (
+                            <>
+                                {isEditMode && (
+                                    <View style={styles.editModeHeader}>
+                                        <SWText style={styles.editModeTitle}>Edit Review</SWText>
+                                        <TouchableOpacity 
+                                            style={styles.cancelEditButton}
+                                            onPress={handleCancelEdit}
+                                        >
+                                            <Ionicons name="close" size={20} color="#666" />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                <View style={styles.ratingSection}>
+                                    <SWText style={styles.sectionTitle}>Rating</SWText>
+                                    <SWText style={styles.ratingSubtext}>{getReviewPrompt()}</SWText>
+                                    <View style={styles.starsContainer}>
+                                        {renderStars()}
+                                    </View>
+                                    {rating > 0 && (
+                                        <SWText style={styles.ratingText}>
+                                            {rating} out of 5 stars
+                                        </SWText>
+                                    )}
+                                </View>
 
-                        <View style={styles.commentSection}>
-                            <SWText style={styles.sectionTitle}>Comments (Optional)</SWText>
-                            <MultilineTextInput
-                                placeholder={getCommentPlaceholder()}
-                                value={comment}
-                                onChangeText={setComment}
-                                numberOfLines={5}
-                            />
-                        </View>
+                                <View style={styles.commentSection}>
+                                    <SWText style={styles.sectionTitle}>Comments (Optional)</SWText>
+                                    <MultilineTextInput
+                                        placeholder={getCommentPlaceholder()}
+                                        value={comment}
+                                        onChangeText={setComment}
+                                        numberOfLines={5}
+                                    />
+                                </View>
+                            </>
+                        )}
                     </View>
                 </ScrollView>
             </SafeAreaView>
 
             <View style={styles.bottomContainer}>
                 <Button
-                    title="Submit Review"
+                    title={getButtonTitle()}
                     varient="outlined-primaryDark"
-                    onPress={handleSubmitReview}
+                    onPress={getButtonOnPress()}
+                    disabled={isButtonDisabled()}
                 />
             </View>
         </View>
@@ -552,6 +954,11 @@ const styles = StyleSheet.create({
         shadowColor: '#2B3674',
         shadowOpacity: 0.3,
     },
+    disabledButton: {
+        backgroundColor: '#f5f5f5',
+        borderColor: '#e0e0e0',
+        opacity: 0.6,
+    },
     reviewTypeIconContainer: {
         marginBottom: 8,
     },
@@ -562,6 +969,15 @@ const styles = StyleSheet.create({
     },
     activeReviewTypeButtonText: {
         color: '#fff',
+    },
+    disabledButtonText: {
+        color: '#999',
+    },
+    unavailableText: {
+        fontSize: 12,
+        color: '#999',
+        marginTop: 4,
+        textAlign: 'center',
     },
     infoContainer: {
         marginBottom: 24,
@@ -640,39 +1056,6 @@ const styles = StyleSheet.create({
     infoDetail: {
         fontSize: 14,
         color: '#666',
-        fontWeight: '500',
-    },
-    amenitiesContainer: {
-        marginTop: 16,
-        paddingTop: 16,
-        borderTopWidth: 1,
-        borderTopColor: '#f0f0f0',
-    },
-    amenitiesTitle: {
-        fontSize: 16,
-        fontWeight: '600',
-        color: '#333',
-        marginBottom: 12,
-    },
-    amenitiesList: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        gap: 8,
-    },
-    amenityItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#f8f9fa',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
-        gap: 6,
-        borderWidth: 1,
-        borderColor: '#e0e0e0',
-    },
-    amenityText: {
-        fontSize: 12,
-        color: '#333',
         fontWeight: '500',
     },
     ratingSection: {
@@ -756,6 +1139,123 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#666',
         textAlign: 'center',
+    },
+    existingReviewContainer: {
+        marginBottom: 20,
+    },
+    existingReviewCard: {
+        backgroundColor: '#f8f9fa',
+        borderRadius: 12,
+        padding: 16,
+        borderLeftWidth: 4,
+        borderLeftColor: '#4CAF50',
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    existingReviewContent: {
+        flex: 1,
+        marginLeft: 12,
+    },
+    existingReviewTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#2e7d32',
+        marginBottom: 4,
+    },
+    existingReviewText: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 8,
+    },
+    existingReviewDetails: {
+        backgroundColor: '#fff',
+        borderRadius: 8,
+        padding: 12,
+        marginTop: 8,
+    },
+    existingReviewRating: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#333',
+        marginBottom: 4,
+    },
+    existingReviewComment: {
+        fontSize: 13,
+        color: '#555',
+        fontStyle: 'italic',
+        marginBottom: 4,
+    },
+    existingReviewDate: {
+        fontSize: 12,
+        color: '#888',
+    },
+    existingText: {
+        fontSize: 12,
+        color: '#4CAF50',
+        fontWeight: 'bold',
+        marginTop: 4,
+        textAlign: 'center',
+    },
+    reviewActions: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 12,
+        gap: 12,
+    },
+    editButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f8f9fa',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#2B3674',
+        gap: 4,
+    },
+    editButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#2B3674',
+    },
+    deleteButton: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#fff5f5',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#dc3545',
+        gap: 4,
+    },
+    deleteButtonText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: '#dc3545',
+    },
+    editModeHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#e3f2fd',
+        padding: 16,
+        borderRadius: 12,
+        marginBottom: 20,
+        borderLeftWidth: 4,
+        borderLeftColor: '#2196f3',
+    },
+    editModeTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#1976d2',
+    },
+    cancelEditButton: {
+        padding: 4,
     },
 });
 

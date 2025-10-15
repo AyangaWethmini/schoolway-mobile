@@ -4,12 +4,12 @@ import { useRouter } from 'expo-router';
 import { ChevronRight } from 'lucide-react-native';
 import { useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  View,
+    ActivityIndicator,
+    SafeAreaView,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import AddButton from '../../components/AddButton';
 import CurvedHeader from '../../components/CurvedHeader';
@@ -44,7 +44,7 @@ const Dashboard = () => {
 
           const user = JSON.parse(session);
 
-          const response = await fetch(`${API_URL}/child/parent/${user.user.id}`, {
+          const response = await fetch(`${API_URL}/child/parent/${user.user.id}?include=van`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
@@ -56,7 +56,38 @@ const Dashboard = () => {
           }
 
           const data = await response.json();
-          setChildren(data); // Save to state
+          console.log('Fetched children data:', JSON.stringify(data, null, 2));
+          
+          // Check if van data is included
+          if (data && data.length > 0) {
+            console.log('First child data:', JSON.stringify(data[0], null, 2));
+            console.log('First child van data:', data[0].Van);
+          }
+          
+          // If van data is not included, fetch it separately for each child
+          if (data && data.length > 0 && !data[0].Van) {
+            console.log('Van data not included, fetching separately...');
+            const childrenWithVanData = await Promise.all(
+              data.map(async (child) => {
+                try {
+                  const vanResponse = await fetch(`${API_URL}/child/childView/${child.id}`);
+                  if (vanResponse.ok) {
+                    const childData = await vanResponse.json();
+                    return {
+                      ...child,
+                      Van: childData.Van
+                    };
+                  }
+                } catch (error) {
+                  console.error(`Error fetching van data for child ${child.id}:`, error);
+                }
+                return child;
+              })
+            );
+            setChildren(childrenWithVanData);
+          } else {
+            setChildren(data);
+          }
       } catch (error) {
         console.error("Error fetching children:", error);
       } finally {
@@ -143,14 +174,15 @@ const Dashboard = () => {
                     </View>
 
                     {child.status ==='NOT_ASSIGNED' ? child.isAssigned = false : child.isAssigned = true } 
-                     {console.log(child)}
+                     {console.log('Child data:', child)}
+                     {console.log('Child Van data:', child.Van)}
                     <View style={styles.cardContent}>
                       {child.isAssigned ? (
                         <View style={styles.assignmentInfo}>
                           <View style={styles.vanInfoContainer}>
                             <SWText style={styles.vanLabel}>Van</SWText>
                             <SWText style={[styles.vanNumber, { color : theme.colors.accentblue }]}>
-                              {child.Van ? child.Van.makeAndModel : 'Loading...'}
+                              {child.Van ? child.Van.makeAndModel : 'Not Assigned'}
                             </SWText>
                           </View>
                         </View>
