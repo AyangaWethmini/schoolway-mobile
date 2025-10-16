@@ -185,7 +185,8 @@ const AddChild = () => {
     formData.append('name', childName);
     formData.append('age', age);
     formData.append('grade', grade);
-    formData.append('schoolID', selectedSchool.id.toString());
+    formData.append('schoolID', selectedSchool.schoolId.toString());
+    formData.append('gateID', selectedSchool.gateId);
     formData.append('schoolStartTime', schoolStartTime);
     formData.append('schoolEndTime', schoolEndTime);
     formData.append('pickupLat', pickupLocation.latitude.toString());
@@ -284,7 +285,7 @@ const AddChild = () => {
                     }}
                     style={styles.schoolItemContainer}
                   >
-                    <Text style={styles.schoolItem}>{item.schoolName}</Text>
+                    <Text style={styles.schoolItem}>{item.schoolName} {item.gateName ? item.gateName : ''} </Text>
                   </TouchableOpacity>
                 )}
                 style={styles.schoolsList}

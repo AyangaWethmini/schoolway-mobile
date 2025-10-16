@@ -1,6 +1,9 @@
+import { stopLocationTracking } from "@/services/backgroundLocation";
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -10,56 +13,44 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { useAuth } from '../../auth/AuthContext';
 import { useTheme } from '../../theme/ThemeContext';
 
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
+
 const TravelPage = () => {
-  const { user } = useAuth();
+
   const { theme } = useTheme();
+  const [user, setUser] = useState(null);
   const router = useRouter();
 
-  // Sample data - replace with actual data from your API
-  const [studentsToPickup, setStudentsToPickup] = useState([
-    {
-      id: '1',
-      name: 'Sasmitha Silva',
-      pickupLocation: 'Kaluthara Junction',
-      pickupTime: '6:45 AM',
-      parentContact: '+94 77 123 4567',
-      profileImage: 'https://i.pravatar.cc/150?img=1',
-      reminderSent: true
-    },
-    {
-      id: '2',
-      name: 'Duleepa Anjana',
-      pickupLocation: 'Panadura Station',
-      pickupTime: '6:55 AM',
-      parentContact: '+94 71 234 5678',
-      profileImage: 'https://i.pravatar.cc/150?img=2',
-      reminderSent: false
-    },
-    {
-      id: '3',
-      name: 'Sahan Fernando',
-      pickupLocation: 'Moratuwa Bus Stand',
-      pickupTime: '7:05 AM',
-      parentContact: '+94 76 345 6789',
-      profileImage: 'https://i.pravatar.cc/150?img=3',
-      reminderSent: true
-    }
-  ]);
+  const [studentsToPickup, setStudentsToPickup] = useState([]);
+  const [pickedUpStudents, setPickedUpStudents] = useState([]);
 
-  const [pickedUpStudents, setPickedUpStudents] = useState([
-    {
-      id: '4',
-      name: 'Kavindi Jayawardena',
-      pickupLocation: 'Dehiwala Station',
-      pickupTime: '6:35 AM',
-      actualPickupTime: '6:37 AM',
-      profileImage: 'https://i.pravatar.cc/150?img=4',
-      status: 'picked_up'
-    }
-  ]);
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        const session = await AsyncStorage.getItem('user_session'); 
+        if (!session) return;
+
+        const parsedUser = JSON.parse(session);
+        setUser(parsedUser.user);
+
+        const res = await fetch(`${API_URL}/mobile/driver/session/active/${parsedUser.user.id}`, { method: 'GET'});
+        
+        const data = await res.json();
+        if (data.success) {
+          setStudentsToPickup(data.session.students.filter(s => s.pickupStatus === 'PENDING'));
+          setPickedUpStudents(data.session.students.filter(s => s.pickupStatus !== 'PENDING'));
+        }
+      } catch (err) {
+        console.error('Failed to load session:', err);
+      }
+    };
+
+    loadUserData();
+  }, []);
+
+  // Sample data - replace with actual data from your API
 
   const attendanceReasons = [
     { id: 'picked_up', label: 'Student Picked Up', icon: 'checkmark-circle', color: '#28a745' },
@@ -232,6 +223,10 @@ const TravelPage = () => {
     </View>
   );
 
+  const handleEndTrip = async () => {
+    stopLocationTracking();
+  }
+
   const handleCancelRide = () => {
     Alert.alert(
       'Cancel Ride',
@@ -239,7 +234,10 @@ const TravelPage = () => {
       [
         { 
           text: 'Vehicle Breakdown', 
-          onPress: () => router.push('./breakdown')
+          onPress: () => {
+            handleEndTrip();
+            router.push('./breakdown')
+          }
         },
         { 
           text: 'Personal Emergency', 
@@ -270,6 +268,7 @@ const TravelPage = () => {
           onPress: () => {
             // Handle ride cancellation logic here
             console.log(`Ride cancelled due to: ${reason}`);
+            handleEndTrip();
             Alert.alert('Ride Cancelled', 'Parents have been notified.');
           }
         }
