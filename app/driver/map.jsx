@@ -3,15 +3,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { getApps } from "firebase/app";
 import { getDatabase, onValue, ref } from "firebase/database";
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import MapView, { Marker, Polyline } from 'react-native-maps';
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { startLocationTracking, stopLocationTracking } from '../../services/backgroundLocation';
 import CurvedHeader from '../components/CurvedHeader';
 import SWText from '../components/SWText';
 import { useTheme } from '../theme/ThemeContext';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
+const GOOGLE_MAPS_API_KEY = Constants.expoConfig?.extra?.googleMapsApiKey;
 
 const DriverMap = () => {
   const { theme } = useTheme();
@@ -20,8 +21,10 @@ const DriverMap = () => {
     longitude: 79.8500,
   });
   const [students, setStudents] = useState([]);
+  const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [driverId, setDriverId] = useState(null);
   const [sessionId, setSessionId] = useState(null);
+  const routeTimer = useRef(null);
 
   // Load driver & session info
   useEffect(() => {
@@ -51,7 +54,7 @@ const DriverMap = () => {
     loadUserData();
   }, []);
 
-  // Start location tracking
+  // Start location tracking & Firebase listener
   useEffect(() => {
     if (!sessionId) return;
 
@@ -72,15 +75,75 @@ const DriverMap = () => {
 
     return () => {
       stopLocationTracking();
-      unsubscribe(); 
+      unsubscribe();
     };
   }, [sessionId]);
 
+  // Fetch optimized route (debounced)
+  useEffect(() => {
+    if (!driverLocation || students.length === 0) return;
 
-  const routeCoordinates = [
-    driverLocation,
-    ...students.map((s) => s.pickupLocation),
-  ];
+    if (routeTimer.current) clearTimeout(routeTimer.current);
+
+    routeTimer.current = setTimeout(() => {
+      fetchOptimizedRoute(driverLocation, students);
+    }, 2000); // 2s debounce
+  }, [driverLocation, students]);
+
+  // Fetch optimized route from Google Directions API
+  const fetchOptimizedRoute = async (origin, studentList) => {
+    if (studentList.length === 0) return;
+
+    const waypoints = studentList
+      .map(s => `${s.pickupLocation.latitude},${s.pickupLocation.longitude}`)
+      .join('|');
+
+    const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${origin.latitude},${origin.longitude}&waypoints=optimize:true|${waypoints}&key=${GOOGLE_MAPS_API_KEY}`;
+
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (data.status === 'OK') {
+        const points = decodePolyline(data.routes[0].overview_polyline.points);
+        setRouteCoordinates(points);
+      } else {
+        console.error('Directions API error:', data.status);
+      }
+    } catch (err) {
+      console.error('Failed to fetch directions:', err);
+    }
+  };
+
+  // Decode polyline from Google Directions API
+  const decodePolyline = (t) => {
+    let points = [];
+    let index = 0, lat = 0, lng = 0;
+
+    while (index < t.length) {
+      let b, shift = 0, result = 0;
+      do {
+        b = t.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      let dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+
+      shift = 0;
+      result = 0;
+      do {
+        b = t.charCodeAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+      let dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+
+      points.push({ latitude: lat / 1e5, longitude: lng / 1e5 });
+    }
+    return points;
+  };
 
   // Custom markers
   const StudentMarker = ({ student }) => (
@@ -107,6 +170,7 @@ const DriverMap = () => {
     <View style={styles.container}>
       <CurvedHeader title="SchoolWay" theme={theme} />
       <MapView
+        provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
           latitude: driverLocation.latitude,
@@ -122,7 +186,7 @@ const DriverMap = () => {
         )}
 
         <DriverMarker />
-        {students.map((s) => (
+        {students.map(s => (
           <StudentMarker key={s.id} student={s} />
         ))}
       </MapView>
