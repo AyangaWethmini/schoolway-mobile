@@ -41,7 +41,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "http://172.16.102.222:3000/api",
+      "apiUrl": "http://192.168.1.5:3000/api",
       "googleMapsApiKey":"AIzaSyCPlzsdZ881ke3MCOCWnN5aCVpRLsQTktA",
       "firebaseApiKey":"AIzaSyD4xoMbeM08mLP-qJvvFsvDchDWp0s08yw",
       "firebaseAuthDomain":"schoolway-4b95d.firebaseapp.com",
