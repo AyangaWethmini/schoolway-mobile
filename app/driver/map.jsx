@@ -23,35 +23,56 @@ const DriverMap = () => {
   const [students, setStudents] = useState([]);
   const [routeCoordinates, setRouteCoordinates] = useState([]);
   const [driverId, setDriverId] = useState(null);
+  const [sessionType, setSessionType] = useState(null);
   const [sessionId, setSessionId] = useState(null);
   const routeTimer = useRef(null);
 
-  // Load driver & session info
-  useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const session = await AsyncStorage.getItem('user_session'); 
-        const sessionData = await AsyncStorage.getItem('current_session');
-        if (!session || !sessionData) return;
+  const fetchSessionData = async () => {
+    try {
+      const session = await AsyncStorage.getItem('user_session');
+      const sessionData = await AsyncStorage.getItem('current_session');
+      if (!session || !sessionData) return;
 
-        const parsedUser = JSON.parse(session);
-        const parsedSession = JSON.parse(sessionData);
+      const parsedUser = JSON.parse(session);
+      const parsedSession = JSON.parse(sessionData);
 
-        setDriverId(parsedUser.user.id);
-        setSessionId(parsedSession.id);
+      setDriverId(parsedUser.user.id);
+      setSessionId(parsedSession.id);
+      setSessionType(parsedSession.routeType);
 
-        // Fetch assigned students
-        const res = await fetch(`${API_URL}/mobile/driver/session/find/${parsedUser.user.id}`, {
-          method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
-        });
-        const data = await res.json();
-        if (data.success) setStudents(data.session.students);
-      } catch (err) {
-        console.error('Failed to fetch session:', err);
+      const res = await fetch(`${API_URL}/mobile/driver/session/find/${parsedUser.user.id}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        let fetchedStudents = data.session.students;
+
+        if (parsedSession.routeType === 'EVENING_DROPOFF') {
+          fetchedStudents = fetchedStudents.map((s) => ({
+            ...s,
+            pickupLocation: s.dropOffLocation,
+            dropOffLocation: s.pickupLocation,
+          }));
+        }
+
+        setStudents(fetchedStudents);
       }
-    };
-    loadUserData();
+    } catch (err) {
+      console.error('Failed to fetch session:', err);
+    }
+  };
+
+  // Load once on mount
+  useEffect(() => {
+    fetchSessionData();
+  }, []);
+
+  // ✅ Poll every 2 seconds to refetch student/session data
+  useEffect(() => {
+    const interval = setInterval(fetchSessionData, 2000); // every 2s
+    return () => clearInterval(interval);
   }, []);
 
   // Start location tracking & Firebase listener
@@ -87,17 +108,31 @@ const DriverMap = () => {
 
     routeTimer.current = setTimeout(() => {
       fetchOptimizedRoute(driverLocation, students);
-    }, 2000); // 2s debounce
+    }, 2000);
   }, [driverLocation, students]);
 
-  // Fetch optimized route from Google Directions API
+  /**
+   * Fetch optimized route from Google Directions API
+   */
   const fetchOptimizedRoute = async (origin, studentList) => {
-    if (studentList.length === 0) return;
+    const activeStudents = studentList.filter(
+      s => s.pickupStatus === 'PENDING' || s.pickupStatus === 'PICKED_UP'
+    );
 
-    const waypoints = studentList
-      .map(s => `${s.pickupLocation.latitude},${s.pickupLocation.longitude}`)
-      .join('|');
+    if (activeStudents.length === 0) {
+      setRouteCoordinates([]);
+      return;
+    }
 
+    const waypointsArr = activeStudents.map((s) => {
+      if (s.pickupStatus === 'PICKED_UP') {
+        return `${s.dropOffLocation.latitude},${s.dropOffLocation.longitude}`;
+      } else {
+        return `${s.pickupLocation.latitude},${s.pickupLocation.longitude}`;
+      }
+    });
+
+    const waypoints = waypointsArr.join('|');
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.latitude},${origin.longitude}&destination=${origin.latitude},${origin.longitude}&waypoints=optimize:true|${waypoints}&key=${GOOGLE_MAPS_API_KEY}`;
 
     try {
@@ -107,6 +142,15 @@ const DriverMap = () => {
       if (data.status === 'OK') {
         const points = decodePolyline(data.routes[0].overview_polyline.points);
         setRouteCoordinates(points);
+
+        const order = data.routes[0].waypoint_order;
+        const orderedStudents = order.map(i => activeStudents[i]);
+
+        const inactiveStudents = studentList.filter(
+          s => s.pickupStatus === 'DROPPED_OFF' || s.pickupStatus === 'ABSENT'
+        );
+
+        setStudents([...orderedStudents, ...inactiveStudents]);
       } else {
         console.error('Directions API error:', data.status);
       }
@@ -115,7 +159,6 @@ const DriverMap = () => {
     }
   };
 
-  // Decode polyline from Google Directions API
   const decodePolyline = (t) => {
     let points = [];
     let index = 0, lat = 0, lng = 0;
@@ -145,18 +188,42 @@ const DriverMap = () => {
     return points;
   };
 
-  // Custom markers
-  const StudentMarker = ({ student }) => (
-    <Marker
-      coordinate={student.pickupLocation}
-      title={student.name}
-      description={student.pickupTime || ''}
-    >
-      <View style={styles.studentMarker}>
-        <Ionicons name="person" size={16} color="#fff" />
-      </View>
-    </Marker>
-  );
+  const StudentMarker = ({ student }) => {
+    let color;
+    let coordinate;
+
+    switch (student.pickupStatus) {
+      case 'PENDING':
+        color = '#4CAF50';
+        coordinate = student.pickupLocation;
+        break;
+      case 'PICKED_UP':
+        color = '#2196F3';
+        coordinate = student.dropOffLocation;
+        break;
+      case 'DROPPED_OFF':
+        color = '#9E9E9E';
+        coordinate = null;
+        break;
+      case 'ABSENT':
+        color = '#F44336';
+        coordinate = student.pickupLocation;
+        break;
+      default:
+        color = '#4CAF50';
+        coordinate = student.pickupLocation;
+    }
+
+    if (!coordinate) return null;
+
+    return (
+      <Marker coordinate={coordinate} title={student.name}>
+        <View style={[styles.studentMarker, { backgroundColor: color }]}>
+          <Ionicons name="person" size={16} color="#fff" />
+        </View>
+      </Marker>
+    );
+  };
 
   const DriverMarker = () => (
     <Marker coordinate={driverLocation} title="Driver Location">
@@ -164,6 +231,10 @@ const DriverMap = () => {
         <Ionicons name="bus" size={20} color="#fff" />
       </View>
     </Marker>
+  );
+
+  const activeRouteStudents = students.filter(
+    s => s.pickupStatus === 'PENDING' || s.pickupStatus === 'PICKED_UP'
   );
 
   return (
@@ -182,11 +253,15 @@ const DriverMap = () => {
         showsMyLocationButton={true}
       >
         {routeCoordinates.length > 1 && (
-          <Polyline coordinates={routeCoordinates} strokeColor="#fcba03" strokeWidth={4} />
+          <Polyline 
+            coordinates={routeCoordinates} 
+            strokeColor="#fcba03" 
+            strokeWidth={4} 
+          />
         )}
 
         <DriverMarker />
-        {students.map(s => (
+        {students.map((s) => (
           <StudentMarker key={s.id} student={s} />
         ))}
       </MapView>
@@ -194,11 +269,11 @@ const DriverMap = () => {
       {/* Info panel */}
       <View style={styles.infoPanel}>
         <SWText style={styles.infoPanelTitle} sm>
-          Pickup Route
+          Current Route
         </SWText>
-        {students.length > 0 ? (
+        {activeRouteStudents.length > 0 ? (
           <SWText style={styles.infoPanelText} md uberBold>
-            {students.length} students • Next: {students[0].name}
+            {activeRouteStudents.length} students • Next: {activeRouteStudents[0]?.name || '—'}
           </SWText>
         ) : (
           <SWText style={styles.infoPanelText} md uberBold>
@@ -216,7 +291,6 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { ...StyleSheet.absoluteFillObject },
   studentMarker: {
-    backgroundColor: '#4CAF50',
     borderRadius: 40,
     borderWidth: 3,
     borderColor: '#fff',

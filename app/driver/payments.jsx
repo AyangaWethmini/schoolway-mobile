@@ -1,8 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import { StyleSheet, View } from 'react-native';
 import CurvedHeader from '../components/CurvedHeader';
+import Spacer from '../components/Spacer';
 import SWText from '../components/SWText';
 import { useTheme } from '../theme/ThemeContext';
+
 
 export default function Payments() {
   const { theme } = useTheme();
@@ -13,6 +15,7 @@ export default function Payments() {
           title="Payments" 
           theme={theme}
         />
+    <Spacer/>
     <View style={styles.container}>
       <View style={styles.card}>
         <SWText style={styles.cardTitle} md uberBold>Recent Payments</SWText>

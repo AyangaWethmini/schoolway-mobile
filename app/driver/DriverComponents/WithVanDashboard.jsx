@@ -5,6 +5,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import GradientBackground from '../../components/GradientBackground';
+import Spacer from '../../components/Spacer';
 import SWText from '../../components/SWText';
 import { useTheme } from '../../theme/ThemeContext';
 
@@ -17,6 +18,8 @@ const WithVanDashboard = () => {
 
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [dashboardloading, setdashboardLoading] = useState(true);
 
   useEffect(() => {
     const loadUserData = async () => {
@@ -29,10 +32,26 @@ const WithVanDashboard = () => {
 
         const parsedUser = JSON.parse(session);
         setUser(parsedUser.user);
+        const driverId = parsedUser.user.id;
+
+        const res = await fetch(`${API_URL}/driver/dashboard/${driverId}`);
+        const data = await res.json();
+
+        if (data.success) {
+          setDashboardData(data);
+        } else {
+          console.warn("Dashboard load failed:", data.message);
+        }
+
+
         console.log('👤 Logged in user:', parsedUser.user);
       } catch (error) {
         console.error('Failed to load user from AsyncStorage:', error);
       }
+      finally {
+      setdashboardLoading(false);
+      }
+    
     };
 
     loadUserData();
@@ -69,11 +88,13 @@ const WithVanDashboard = () => {
       if (data.success) {
         console.log('✅ Trip started successfully:', data);
         if (!data.sessionExists) {
-          await AsyncStorage.setItem('current_session', JSON.stringify(data.session));
           console.log('🚀 Starting background location tracking for session:', data.session.id);
           await startLocationTracking(data.session.id);
-        }  
+        }
+
+        await AsyncStorage.setItem('current_session', JSON.stringify(data.session));
         router.push('driver/DriverComponents/travelPage');
+
       } else {
         Alert.alert('Info', data.error || 'Could not start session');
       }
@@ -87,63 +108,69 @@ const WithVanDashboard = () => {
 
   return (
     <View style={styles.container}>
-      <SWText style={[styles.welcomeText, { color: theme.primary }]} lg uberBold>
-        Good Morning, {user?.name || 'Driver'}!
+    <Spacer />
+    <SWText style={[styles.welcomeText, { color: theme.primary }]} lg uberBold>
+      Good Morning, {user?.name || 'Driver'}!
+    </SWText>
+
+    {/* --- Plan for Today --- */}
+    <View style={styles.card}>
+      <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+        Plan for today
       </SWText>
 
-      <View style={styles.card}>
-        <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
-          Plan for today
-        </SWText>
-
+      {dashboardloading ? (
+        <ActivityIndicator color={theme.colors.primary} />
+      ) : dashboardData ? (
         <View style={styles.routeInfo}>
           <SWText style={styles.routeSchool} md uberBold>
-            Kalutara - Colombo 13
-          </SWText>
-          <SWText style={styles.routeTime} sm>
-            Start: 6:30 AM
-          </SWText>
-          <SWText style={styles.routeTime} sm>
-            End: 7:25 AM
+            {dashboardData.plan.route}
           </SWText>
           <SWText style={styles.routeStudents} sm>
-            Pick up : 12 students
+           You’ll be picking up {dashboardData.plan.pickupCount} students along the route
           </SWText>
         </View>
+      ) : (
+        <SWText sm>No plan available</SWText>
+      )}
 
-        <GradientBackground
-          style={{
-            marginTop: 15,
-            paddingVertical: 10,
-            borderRadius: 8,
-            alignItems: 'center',
-          }}
+      <GradientBackground
+        style={{
+          marginTop: 15,
+          paddingVertical: 10,
+          borderRadius: 8,
+          alignItems: 'center',
+        }}
+      >
+        <TouchableOpacity
+          disabled={loading || dashboardloading || !dashboardData.hasSessionDue}
+          style={{ width: '100%', alignItems: 'center', opacity: loading ? 0.7 : 1 }}
+          onPress={handleStartTrip}
         >
-          <TouchableOpacity
-            disabled={loading}
-            style={{ width: '100%', alignItems: 'center', opacity: loading ? 0.7 : 1 }}
-            onPress={handleStartTrip}
-          >
-            {loading ? (
-              <ActivityIndicator color="white" />
-            ) : (
-              <SWText style={{ color: 'white' }} md uberBold>
-                Start School Trip
-              </SWText>
-            )}
-          </TouchableOpacity>
-        </GradientBackground>
-      </View>
+          {dashboardloading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <SWText style={{ color: 'white' }} md uberBold>
+              {!dashboardData.hasSessionDue ? "No Trip" : "Start Trip" }
+            </SWText>
+          )}
+        </TouchableOpacity>
+      </GradientBackground>
+    </View>
 
-      {/* --- Vehicle Status Card --- */}
-      <View style={styles.card}>
-        <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
-          Vehicle Status
-        </SWText>
+    {/* --- Vehicle Status --- */}
+    <View style={styles.card}>
+      <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+        Vehicle Status
+      </SWText>
+
+      {dashboardloading ? (
+        <ActivityIndicator color={theme.colors.primary} />
+      ) : dashboardData ? (
         <View style={styles.statusRow}>
           <View style={styles.statusItem}>
             <SWText style={styles.statusValue} sm uberBold>
-              Toyota Hiace
+              {dashboardData.vehicle.model}
             </SWText>
             <SWText style={[styles.statusLabel, { color: theme.colors.textSecondary }]} xs>
               Vehicle
@@ -151,7 +178,7 @@ const WithVanDashboard = () => {
           </View>
           <View style={styles.statusItem}>
             <SWText style={styles.statusValue} sm uberBold>
-              ABC-1234
+              {dashboardData.vehicle.license}
             </SWText>
             <SWText style={[styles.statusLabel, { color: theme.colors.textSecondary }]} xs>
               License
@@ -159,57 +186,43 @@ const WithVanDashboard = () => {
           </View>
           <View style={styles.statusItem}>
             <SWText style={styles.statusValue} sm uberBold>
-              Active
+              {dashboardData.vehicle.status}
             </SWText>
-            <SWText style={[styles.statusLabel, { color: theme.textSecondary }]} xs>
+            <SWText style={[styles.statusLabel, { color: theme.colors.textSecondary }]} xs>
               Status
             </SWText>
           </View>
         </View>
-      </View>
-
-      {/* --- Recent Activity --- */}
-      <View style={styles.card}>
-        <SWText style={[styles.cardTitle, { color: theme.primary }]} md uberBold>
-          Recent Activity
-        </SWText>
-        <View style={styles.activityItem}>
-          <SWText style={[styles.activityDate, { color: theme.colors.textgreydark }]} xs>
-            Today, 7:30 AM
-          </SWText>
-          <SWText style={styles.activityDesc} sm uberBold>
-            School drop-off completed
-          </SWText>
-        </View>
-        <View style={styles.activityItem}>
-          <SWText style={[styles.activityDate, { color: theme.colors.textgreydark }]} xs>
-            Today, 6:45 AM
-          </SWText>
-          <SWText style={styles.activityDesc} sm uberBold>
-            Started morning route
-          </SWText>
-        </View>
-        <View style={styles.activityItem}>
-          <SWText style={[styles.activityDate, { color: theme.colors.textgreydark }]} xs>
-            Yesterday, 5:00 PM
-          </SWText>
-          <SWText style={styles.activityDesc} sm uberBold>
-            Evening drop-off completed
-          </SWText>
-        </View>
-      </View>
-
-                 <TouchableOpacity
-            disabled={loading}
-            style={{ width: '100%', alignItems: 'center', opacity: loading ? 0.7 : 1 }}
-            onPress={handleEndTrip}
-          >
-           
-              <SWText style={{ color: 'black' }} md uberBold>
-                End School Trip
-              </SWText>
-          </TouchableOpacity>
+      ) : (
+        <SWText sm>No vehicle info available</SWText>
+      )}
     </View>
+
+    {/* --- Recent Activity --- */}
+    <View style={styles.card}>
+      <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+        Recent Activity
+      </SWText>
+
+      {dashboardloading ? (
+        <ActivityIndicator color={theme.colors.primary} />
+      ) : dashboardData ? (
+        dashboardData.recentActivity.map((activity, index) => (
+          <View key={index} style={styles.activityItem}>
+            <SWText style={[styles.activityDate, { color: theme.colors.textgreydark }]} xs>
+              {new Date(activity.time).toLocaleString()}
+            </SWText>
+            <SWText style={styles.activityDesc} sm uberBold>
+              {activity.description}
+            </SWText>
+          </View>
+        ))
+      ) : (
+        <SWText sm>No activity recorded</SWText>
+      )}
+    </View>
+  </View>
+
   );
 };
 
