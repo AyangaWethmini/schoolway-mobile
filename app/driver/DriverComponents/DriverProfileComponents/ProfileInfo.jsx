@@ -343,7 +343,7 @@ const DriverProfileOverview = () => {
               {driverData.user.firstname} {driverData.user.lastname}
             </SWText>
             <SWText style={styles.driverId} sm>
-              ID: {driverData.user.driverProfile?.id || 'PENDING'}
+              ID: {driverData.user.DriverProfile?.id || 'PENDING'}
             </SWText>
             <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
               <SWText style={styles.statusText} xs bold>{status.text}</SWText>
@@ -352,10 +352,10 @@ const DriverProfileOverview = () => {
         </View>
 
         <View style={styles.detailsGrid}>
-          <View style={styles.detailItem}>
+          {/* <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>License ID</SWText>
-            <SWText style={styles.detailValue} sm>{driverData.user.driverProfile?.licenseId || 'N/A'}</SWText>
-          </View>
+            <SWText style={styles.detailValue} sm>{driverData.user.DriverProfile?.licenseId || 'N/A'}</SWText>
+          </View> */}
           <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>NIC Number</SWText>
             <SWText style={styles.detailValue} sm>{driverData.user.nic || 'N/A'}</SWText>
@@ -371,15 +371,22 @@ const DriverProfileOverview = () => {
           <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>Van Service</SWText>
             <SWText style={styles.detailValue} sm>
-              {driverData.user.driverProfile?.hasVan ? 'Enrolled' : 'Not Enrolled'}
+              {driverData.user.DriverProfile?.hasVan === 1 ? 'Enrolled' : 'Not Enrolled'}
             </SWText>
           </View>
           <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>Experience</SWText>
             <SWText style={styles.detailValue} sm>
-              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)} Years
+              {getYearsOfExperience(driverData.user.DriverProfile?.startedDriving)} Years
             </SWText>
           </View>
+          
+        <View style={styles.detailItem}>
+          <SWText style={styles.detailLabel} xs>Languages</SWText>
+          <SWText style={styles.detailValue} sm>
+            {driverData.user.DriverProfile?.languages?.join(', ') || 'N/A'}
+          </SWText>
+        </View>
         </View>
 
         <View style={styles.qrSection}>
@@ -406,30 +413,28 @@ const DriverProfileOverview = () => {
         
         <View style={styles.licenseDetails}>
           <View style={styles.detailItem}>
-            <SWText style={styles.detailLabel} xs>License Types</SWText>
-            <SWText style={styles.detailValue} sm>
-              {driverData.user.driverProfile?.licenseType?.join(', ') || 'N/A'}
-            </SWText>
+            <SWText style={styles.detailLabel} xs>License ID</SWText>
+            <SWText style={styles.detailValue} sm>{driverData.user.DriverProfile?.licenseId || 'N/A'}</SWText>
           </View>
           <View style={styles.detailItem}>
-            <SWText style={styles.detailLabel} xs>Expiry Date</SWText>
+            <SWText style={styles.detailLabel} xs>License Types</SWText>
             <SWText style={styles.detailValue} sm>
-              {formatDate(driverData.user.driverProfile?.licenseExpiry)}
+              {driverData.user.DriverProfile?.licenseType?.join(', ') || 'N/A'}
             </SWText>
           </View>
+         
         </View>
-        
-        <View style={styles.detailItem}>
-          <SWText style={styles.detailLabel} xs>Languages</SWText>
-          <SWText style={styles.detailValue} sm>
-            {driverData.user.driverProfile?.languages?.join(', ') || 'N/A'}
-          </SWText>
-        </View>
+         <View style={styles.detailItem}>
+            <SWText style={styles.detailLabel} xs>Expiry Date</SWText>
+            <SWText style={styles.detailValue} sm>
+              {formatDate(driverData.user.DriverProfile?.licenseExpiry)}
+            </SWText>
+          </View>
 
         {/* ID Images Collapsible Section */}
         <IdImagesSection 
-          frontImage={driverData.user.driverProfile?.licenseFront}
-          backImage={driverData.user.driverProfile?.licenseBack}
+          frontImage={driverData.user.DriverProfile?.licenseFront}
+          backImage={driverData.user.DriverProfile?.licenseBack}
         />
       </View>
 
@@ -439,19 +444,19 @@ const DriverProfileOverview = () => {
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <SWText style={styles.statValue}>
-              {driverData.user.driverProfile?.rating?.toFixed(1) || '0.0'}
+              {driverData.user.DriverProfile?.averageRating?.toFixed(1) || '0.0'}
             </SWText>
             <SWText style={styles.statLabel} xs>Rating</SWText>
           </View>
           <View style={styles.statItem}>
             <SWText style={styles.statValue} xl uberBold>
-              {driverData.user.driverProfile?.ratingCount || '0'}
+              {driverData.user.DriverProfile?.totalReviews || '0'}
             </SWText>
             <SWText style={styles.statLabel} xs>Reviews</SWText>
           </View>
           <View style={styles.statItem}>
             <SWText style={styles.statValue}>
-              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)}
+              {getYearsOfExperience(driverData.user.DriverProfile?.startedDriving)}
             </SWText>
             <SWText style={styles.statLabel} xs>Years Exp.</SWText>
           </View>

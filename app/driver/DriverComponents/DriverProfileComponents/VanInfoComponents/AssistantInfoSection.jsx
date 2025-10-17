@@ -1,11 +1,10 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../../auth/AuthContext';
 import SWText from '../../../../components/SWText';
 import { useTheme } from '../../../../theme/ThemeContext';
 import { vehicleService } from '../services/vehicleService';
-
 const AssistantInfoSection = () => {
   const { theme } = useTheme();
   const { user } = useAuth();
@@ -24,6 +23,7 @@ const AssistantInfoSection = () => {
         const data = await vehicleService.getAssistantInfo(user.id);
         setAssistantData(data);
         setDataLoaded(true);
+        console.log('Assistant data loaded:', data);
       } catch (error) {
         console.error('Error loading assistant info:', error);
       } finally {
@@ -108,24 +108,39 @@ const AssistantInfoSection = () => {
           {loading ? (
             <SWText style={styles.detailValue} sm>Loading assistant information...</SWText>
           ) : assistantData ? (
-            <View style={styles.assistantDetails}>
-              <View style={styles.detailItem}>
-                <SWText style={styles.detailLabel} xs>Full Name</SWText>
-                <SWText style={styles.detailValue} sm>{assistantData.fullName}</SWText>
+            <>
+              {/* Profile row: avatar + basic info */}
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                {assistantData.photoUrl || assistantData.profilePic ? (
+                  <Image
+                    source={{ uri: assistantData.photoUrl || assistantData.profilePic }}
+                    style={{ width: 64, height: 64, borderRadius: 32, marginRight: 12 }}
+                  />
+                ) : (
+                  <View style={{ width: 64, height: 64, borderRadius: 32, marginRight: 12, backgroundColor: '#bdc3c7', alignItems: 'center', justifyContent: 'center' }}>
+                    <FontAwesome name="user" size={32} color="#fff" />
+                  </View>
+                )}
+                <View style={{ flex: 1 }}>
+                  <SWText style={styles.detailLabel} xs>Full Name</SWText>
+                  <SWText style={styles.detailValue} sm>{assistantData.fullName}</SWText>
+                  {assistantData.title ? (
+                    <SWText style={{ color: '#7f8c8d', marginTop: 4 }} sm>{assistantData.title}</SWText>
+                  ) : null}
+                </View>
               </View>
-              <View style={styles.detailItem}>
-                <SWText style={styles.detailLabel} xs>Contact Number</SWText>
-                <SWText style={styles.detailValue} sm>{assistantData.phone}</SWText>
+
+              <View style={styles.assistantDetails}>
+                <View style={styles.detailItem}>
+                  <SWText style={styles.detailLabel} xs>Contact Number</SWText>
+                  <SWText style={styles.detailValue} sm>{assistantData.phone || '—'}</SWText>
+                </View>
+                {/* <View style={styles.detailItem}>
+                  <SWText style={styles.detailLabel} xs>Name</SWText>
+                  <SWText style={styles.detailValue} sm>{assistantData.fullName || '—'}</SWText>
+                </View> */}
               </View>
-              <View style={styles.detailItem}>
-                <SWText style={styles.detailLabel} xs>Experience</SWText>
-                <SWText style={styles.detailValue} sm>{assistantData.experience}</SWText>
-              </View>
-              <View style={styles.detailItem}>
-                <SWText style={styles.detailLabel} xs>Emergency Contact</SWText>
-                <SWText style={styles.detailValue} sm>{assistantData.emergencyContact}</SWText>
-              </View>
-            </View>
+            </>
           ) : (
             <SWText style={styles.detailValue} sm>No assistant assigned to this vehicle.</SWText>
           )}
