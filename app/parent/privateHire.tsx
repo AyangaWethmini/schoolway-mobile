@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 
 import {
@@ -13,7 +13,8 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  View
+  View,
+  Image
 } from 'react-native';
 import { Button } from "../components/button";
 import SWText from '../components/SWText';
@@ -48,15 +49,17 @@ const PrivateHire = () => {
   type LatLng = { latitude: number; longitude: number };
   type Van = {
     id: number;
-    name: string;
-    capacity: number;
-    type: string;
-    pricePerDay: number;
-    driver: string;
-    contact: string;
-    features: string[];
-    rating: number;
-    image: string;
+    registrationNumber: string;
+    licensePlateNumber: string;
+    makeAndModel: string;
+    seatingCapacity: number;
+    acCondition: boolean;
+    photoUrl: string;
+    ownerId: string;
+    privateRating: number;
+    routeStart: string;
+    pickupDistance: number;
+    tripDistance: number;
   };
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [destinationCoords, setDestinationCoords] = useState<LatLng | null>(null);
@@ -102,89 +105,42 @@ const PrivateHire = () => {
     additionalNotes: ''
   });
 
-  // Mock data for available vans
-  const [availableVans] = useState([
-    {
-      id: 1,
-      name: 'Premium Van A',
-      capacity: 12,
-      type: 'Luxury',
-      pricePerDay: 15000,
-      driver: 'Kamal Perera',
-      contact: '+94 77 123 4567',
-      features: ['AC', 'WiFi', 'Comfortable Seats', 'Entertainment System'],
-      rating: 4.8,
-      image: '🚐'
-    },
-    {
-      id: 2,
-      name: 'Family Van B',
-      capacity: 8,
-      type: 'Standard',
-      pricePerDay: 10000,
-      driver: 'Sunil Silva',
-      contact: '+94 71 987 6543',
-      features: ['AC', 'Child Seats Available', 'Spacious'],
-      rating: 4.5,
-      image: '🚙'
-    },
-    {
-      id: 3,
-      name: 'Budget Van C',
-      capacity: 15,
-      type: 'Economy',
-      pricePerDay: 8000,
-      driver: 'Nimal Fernando',
-      contact: '+94 76 555 0123',
-      features: ['AC', 'Basic Comfort'],
-      rating: 4.2,
-      image: '🚌'
-    }
-  ]);
+  // State for vans fetched from backend
+  const [availableVans, setAvailableVans] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [isRequesting, setIsRequesting] = useState(false);
 
-  // Mock data for hire history
-  const [hireHistory] = useState([
-    {
-      id: 1,
-      destination: 'Kandy',
-      departureDate: '2024-12-15',
-      returnDate: '2024-12-17',
-      status: 'Completed',
-      vanName: 'Premium Van A',
-      totalCost: 45000,
-      passengers: 6
-    },
-    {
-      id: 2,
-      destination: 'Galle',
-      departureDate: '2024-11-20',
-      returnDate: '2024-11-22',
-      status: 'Completed',
-      vanName: 'Family Van B',
-      totalCost: 30000,
-      passengers: 4
-    },
-    {
-      id: 3,
-      destination: 'Nuwara Eliya',
-      departureDate: '2025-01-10',
-      returnDate: '2025-01-12',
-      status: 'Upcoming',
-      vanName: 'Premium Van A',
-      totalCost: 45000,
-      passengers: 8
-    },
-    {
-      id: 4,
-      destination: 'Sigiriya',
-      departureDate: '2024-10-05',
-      returnDate: '2024-10-07',
-      status: 'Cancelled',
-      vanName: 'Budget Van C',
-      totalCost: 24000,
-      passengers: 5
+  // State for hire history
+  const [hireHistory, setHireHistory] = useState<any[]>([]);
+
+  // Fetch user's bookings
+  const fetchMyHires = async () => {
+    try {
+      const session = await AsyncStorage.getItem('user_session');
+      let userId = null;
+      if (session) {
+        const user = JSON.parse(session);
+        userId = user?.user?.id;
+        console.log(userId)
+      }
+      if (!userId) return;
+  const response = await fetch(`${API_URL}/private-hire/my-hires?userId=${userId}`);
+  if (!response.ok) throw new Error('Failed to fetch bookings');
+  const data = await response.json();
+  console.log('Bookings received:', data.hires);
+  setHireHistory(data.hires || []);
+    } catch (e) {
+      setHireHistory([]);
     }
-  ]);
+  };
+
+  // Fetch on mount of history tab
+  useEffect(() => {
+    if (activeTab === 'history') {
+      fetchMyHires();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   const styles = StyleSheet.create({
     container: {
@@ -646,37 +602,88 @@ const PrivateHire = () => {
     setFormData({...formData, returnDate: formatDate(currentDate)});
   };
 
+  // Step 1: Search vans
   const handleSearch = async () => {
-  if (
-    !formData.destination ||
-    !formData.pickupLocation ||
-    !formData.departureDate ||
-    !formData.passengers
-  ) {
-    Alert.alert('Missing Information', 'Please fill in all required fields');
-    return;
-  }
-
-  let userId = null;
-  try {
-    const session = await AsyncStorage.getItem('user_session');
-    if (session) {
-      const user = JSON.parse(session);
-      userId = user?.user?.id;
-      console.log('User ID:', userId);
+    if (
+      !formData.destination ||
+      !formData.pickupLocation ||
+      !formData.departureDate ||
+      !formData.passengers
+    ) {
+      Alert.alert('Missing Information', 'Please fill in all required fields');
+      return;
     }
-  } catch (error) {
-    console.error('Error retrieving user ID:', error);
-    Alert.alert('Error', 'Could not retrieve user session.');
-    return;
-  }
 
-  if (!userId) {
-    Alert.alert('Error', 'User ID not found. Please log in again.');
-    return;
-  }
+    setIsSearching(true);
+    // Prepare payload for van search (no userId, no vanId, no fare, no status)
+    const payload = {
+      pickupLat: pickupCoords?.latitude ?? null,
+      pickupLng: pickupCoords?.longitude ?? null,
+      destinationLat: destinationCoords?.latitude ?? null,
+      destinationLng: destinationCoords?.longitude ?? null,
+      departureDate: departureDate ? departureDate.toISOString() : null,
+      returnDate: returnDate ? returnDate.toISOString() : null,
+      noOfPassengers: Number(formData.passengers),
+    };
 
-  // Prepare payload
+    try {
+      const response = await fetch(`${API_URL}/private-hire/search`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', errorText);
+        throw new Error('Failed to search vans.');
+      }
+
+      const data = await response.json();
+      setAvailableVans(data.vans || []);
+      setShowVanSelection(true);
+    } catch (error) {
+      console.error('Van search failed:', error.message);
+      Alert.alert('Error', 'Could not search for vans. Please try again.');
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  // Step 2: Create hire after van selection
+  const handleVanRequest = (van) => {
+    setSelectedVan(van);
+    setShowConfirmModal(true);
+  };
+
+  const confirmRequest = async () => {
+    setIsRequesting(true);
+    let userId = null;
+    try {
+      const session = await AsyncStorage.getItem('user_session');
+      if (session) {
+        const user = JSON.parse(session);
+        userId = user?.user?.id;
+      }
+    } catch (error) {
+      console.error('Error retrieving user ID:', error);
+      Alert.alert('Error', 'Could not retrieve user session.');
+      setIsRequesting(false);
+      return;
+    }
+    if (!userId) {
+      Alert.alert('Error', 'User ID not found. Please log in again.');
+      setIsRequesting(false);
+      return;
+    }
+    // Calculate fare
+    let fare = null;
+    if (selectedVan && selectedVan.privateRating && selectedVan.tripDistance) {
+      fare = Math.round(selectedVan.privateRating * selectedVan.tripDistance * 2);
+    }
+    // Prepare payload for hire creation
     const payload = {
       userId,
       pickupLat: pickupCoords?.latitude ?? null,
@@ -686,64 +693,53 @@ const PrivateHire = () => {
       departureDate: departureDate ? departureDate.toISOString() : null,
       returnDate: returnDate ? returnDate.toISOString() : null,
       noOfPassengers: Number(formData.passengers),
-      fare: 0, // Set later when van is selected
       notes: formData.additionalNotes || '',
       status: 'PENDING',
-      vanId: selectedVan?.id ?? null
+      vanId: selectedVan?.id ?? null,
+      fare,
     };
-
-  console.log('API_URL:', API_URL);
-  console.log('Payload:', payload);
-
-  try {
-    const response = await fetch(`${API_URL}/private-hire`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error:', errorText);
-      throw new Error('Failed to submit private hire request.');
+    console.log('Submitting hire payload:', payload);
+    try {
+      const response = await fetch(`${API_URL}/private-hire`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', errorText);
+        throw new Error('Failed to submit private hire request.');
+      }
+      const data = await response.json();
+      Alert.alert(
+        'Request Sent!',
+        `Your request for ${selectedVan.makeAndModel || 'Van'} has been sent to the driver. They will contact you soon.`,
+        [{ text: 'OK', onPress: () => {
+          setShowConfirmModal(false);
+          setShowVanSelection(false);
+          setFormData({
+            destination: '',
+            pickupLocation: '',
+            departureDate: '',
+            returnDate: '',
+            passengers: '',
+            additionalNotes: ''
+          });
+          setSelectedVan(null);
+          setAvailableVans([]);
+        }}]
+      );
+    } catch (error) {
+      console.error('Submission failed:', error.message);
+      Alert.alert('Error', 'Could not submit your request. Please try again.');
+    } finally {
+      setIsRequesting(false);
     }
-
-    const data = await response.json();
-    console.log('Private hire request submitted:', data);
-
-    Alert.alert('Request Submitted', 'Your private hire request has been saved.');
-    setShowVanSelection(true);
-  } catch (error) {
-    console.error('Submission failed:', error.message);
-    Alert.alert('Error', 'Could not submit your request. Please try again.');
-  }
-};
-
-  const handleVanRequest = (van) => {
-    setSelectedVan(van);
-    setShowConfirmModal(true);
   };
 
-  const confirmRequest = () => {
-    Alert.alert(
-      'Request Sent!',
-      `Your request for ${selectedVan.name} has been sent to the driver. They will contact you soon.`,
-      [{ text: 'OK', onPress: () => {
-        setShowConfirmModal(false);
-        setShowVanSelection(false);
-        setFormData({
-          destination: '',
-          pickupLocation: '',
-          departureDate: '',
-          returnDate: '',
-          passengers: '',
-          additionalNotes: ''
-        });
-      }}]
-    );
-  };
+  // ...existing code...
 
   const getStatusColor = (status) => {
     switch (status.toLowerCase()) {
@@ -974,10 +970,10 @@ const PrivateHire = () => {
           </View>
 
           <Button
-            title="Search Available Vans"
-            
+            title={isSearching ? "Searching..." : "Search Available Vans"}
             onPress={handleSearch}
             passstyles={styles.searchButton}
+            disabled={isSearching}
           />
 
           {/* Date Pickers */}
@@ -1011,54 +1007,101 @@ const PrivateHire = () => {
             <SWText style={styles.resultsSubtitle}>
               {formData.destination} • {formData.departureDate} • {formData.passengers} passengers
             </SWText>
+            
           </View>
-
-          {availableVans.map((van) => (
-            <View key={van.id} style={styles.vanCard}>
-              <View style={styles.vanCardHeader}>
-                <View style={styles.vanImageContainer}>
-                  <SWText style={styles.vanImage}>{van.image}</SWText>
-                </View>
-                <View style={styles.vanInfo}>
-                  <SWText uberBold style={styles.vanName}>{van.name}</SWText>
-                  <SWText style={styles.vanType}>{van.type} • Up to {van.capacity} passengers</SWText>
-                  <SWText style={styles.vanDriver}>Driver: {van.driver}</SWText>
-                </View>
-                <View style={styles.vanPricing}>
-                  <SWText style={styles.vanPrice}>Rs. {van.pricePerDay.toLocaleString()}</SWText>
-                  <SWText style={styles.vanPriceUnit}>per day</SWText>
-                  <View style={styles.ratingContainer}>
-                    <SWText style={styles.rating}>⭐ {van.rating}</SWText>
-                  </View>
-                </View>
-              </View>
-
-              <View style={styles.vanFeatures}>
-                {van.features.map((feature, index) => (
-                  <View key={index} style={styles.featureTag}>
-                    <SWText style={styles.featureText}>{feature}</SWText>
-                  </View>
-                ))}
-              </View>
-
-              <View style={styles.vanActions}>
-                <TouchableOpacity style={styles.contactButton}>
-                  <SWText style={styles.contactButtonText}>📞 Contact</SWText>
-                </TouchableOpacity>
-                <Button
-                  title="Request This Van"
-                  varient="primary"
-                  onPress={() => handleVanRequest(van)}
-                  passstyles={styles.requestButton}
-                />
-              </View>
+            <View style={{ backgroundColor: '#fffbe6', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+            <SWText style={{ color: '#856404', fontSize: 15, textAlign: 'center' }}>
+              Please note: The estimated fare may vary depending on your length of stay. For final pricing and further arrangements, kindly contact the van owner directly.
+            </SWText>
             </View>
-          ))}
+
+          {availableVans.length === 0 ? (
+            <SWText style={{ textAlign: 'center', marginTop: 32 }}>No vans found for your trip details.</SWText>
+          ) : (
+      availableVans.map((van: Van) => (
+              <View key={van.id} style={[styles.vanCard, { borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 6, marginBottom: 24, backgroundColor: '#fff' }]}> 
+                <View style={{ flexDirection: 'row', alignItems: 'center', padding: 12 }}>
+                  <View style={[styles.vanImageContainer, { borderRadius: 12, overflow: 'hidden', marginRight: 16, backgroundColor: '#f0f4fa', width: 72, height: 72, justifyContent: 'center', alignItems: 'center' }]}> 
+                    {van.photoUrl ? (
+                      <Image source={{ uri: van.photoUrl }} style={{ width: 72, height: 72, borderRadius: 12 }} />
+                    ) : (
+                      <SWText style={{ fontSize: 40 }}>🚐</SWText>
+                    )}
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <SWText uberBold style={{ fontSize: 20, color: '#1a1a1a', marginBottom: 4 }}>{van.makeAndModel || 'Van'}</SWText>
+                    <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
+                      <Ionicons name={van.acCondition ? 'snow' : 'sunny'} size={16} color={van.acCondition ? '#2196F3' : '#FFA726'} />
+                      {' '}{van.seatingCapacity} seats • {van.acCondition ? 'AC' : 'No AC'}
+                    </SWText>
+                    <SWText style={{ fontSize: 13, color: '#666', marginBottom: 2 }}>
+                      <Ionicons name="pricetag" size={14} color="#888" /> Reg: {van.registrationNumber} | Plate: {van.licensePlateNumber}
+                    </SWText>
+                    <SWText style={{ fontSize: 13, color: '#666' }}>
+                      <Ionicons name="location" size={14} color="#888" /> Pickup: {van.pickupDistance ? van.pickupDistance.toFixed(1) : '-'} km | Trip: {van.tripDistance ? van.tripDistance.toFixed(1) : '-'} km
+                    </SWText>
+                  </View>
+                </View>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 12 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {/* <Ionicons name="star" size={18} color="#FFD700" /> */}
+                    {/* <SWText style={{ fontSize: 15, color: '#333', marginLeft: 4 }}>{van.privateRating}</SWText> */}
+                  </View>
+                  <View style={{ backgroundColor: '#e8f4f8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
+                    <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold' }}>
+                      Estimated Fare: Rs. {van.privateRating && van.tripDistance ? Math.round(van.privateRating * van.tripDistance * 2).toLocaleString() : '-'}
+                    </SWText>
+                  </View>
+                </View>
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: 16 }}>
+                  <TouchableOpacity style={[styles.contactButton, { marginRight: 8 }]}> 
+                    <SWText style={styles.contactButtonText}>📞 Contact</SWText>
+                  </TouchableOpacity>
+                  <Button
+                    title="Request This Van"
+                    varient="primary"
+                    onPress={() => handleVanRequest(van)}
+                    passstyles={styles.requestButton}
+                  />
+                </View>
+              </View>
+            ))
+          )}
         </View>
       )}
     </ScrollView>
   );
   
+
+  // Helper to get place name from coordinates (async)
+  const getPlaceNameSync = async (lat: number, lng: number) => {
+    try {
+      const results = await Location.reverseGeocodeAsync({ latitude: lat, longitude: lng });
+      if (results && results.length > 0) {
+        const place = results[0];
+        return `${place.name || place.street || ''}, ${place.city || place.region || ''}`;
+      }
+    } catch {}
+    return `${lat.toFixed(3)}, ${lng.toFixed(3)}`;
+  };
+
+  // State for resolved place names for bookings
+  const [bookingPlaces, setBookingPlaces] = useState<{ [id: string]: { pickup: string; destination: string } }>({});
+
+  // Resolve place names for bookings
+  useEffect(() => {
+    const resolvePlaces = async () => {
+      if (hireHistory.length === 0) return;
+      const places: { [id: string]: { pickup: string; destination: string } } = {};
+      for (const hire of hireHistory) {
+        const pickup = await getPlaceNameSync(hire.pickupLat, hire.pickupLng);
+        const destination = await getPlaceNameSync(hire.destinationLat, hire.destinationLng);
+        places[hire.id] = { pickup, destination };
+      }
+      setBookingPlaces(places);
+    };
+    resolvePlaces();
+  }, [hireHistory]);
 
   const renderHistoryTab = () => (
     <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
@@ -1066,45 +1109,56 @@ const PrivateHire = () => {
         <SWText h1 style={styles.historyTitle}>Your Private Hire History</SWText>
         <SWText uberMedium style={styles.historySubtitle}>Track all your vacation van bookings</SWText>
 
-        {hireHistory.map((hire) => (
-          <View key={hire.id} style={styles.historyCard}>
-            <View style={styles.historyCardHeader}>
-              <View style={styles.historyMainInfo}>
-                <SWText style={styles.historyDestination}>{hire.destination}</SWText>
-                <SWText style={styles.historyDates}>
-                  {hire.departureDate} - {hire.returnDate}
+        {hireHistory.length === 0 ? (
+          <SWText style={{ textAlign: 'center', marginTop: 32 }}>No bookings found.</SWText>
+        ) : (
+          hireHistory.map((hire: any) => (
+            <View key={hire.id} style={[styles.historyCard, { borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4, marginBottom: 24, backgroundColor: '#fff', padding: 18 }]}> 
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
+                <Ionicons name="car" size={28} color="#008080" style={{ marginRight: 12 }} />
+                <SWText style={{ fontSize: 18, fontWeight: 'bold', color: '#1a1a1a' }}>
+                  {hire.vanId ? `Van #${hire.vanId}` : 'No van assigned'}
                 </SWText>
-                <SWText style={styles.historyDetails}>
-                  {hire.vanName} • {hire.passengers} passengers
-                </SWText>
-              </View>
-              <View style={styles.historyStatus}>
-                <View style={[
-                  styles.statusBadge,
-                  { backgroundColor: getStatusBackgroundColor(hire.status) }
-                ]}>
-                  <SWText style={[
-                    styles.statusText,
-                    { color: getStatusColor(hire.status) }
-                  ]}>
+                <View style={{ flex: 1 }} />
+                <View style={[styles.statusBadge, { backgroundColor: getStatusBackgroundColor(hire.status), marginLeft: 8 }]}> 
+                  <SWText style={[styles.statusText, { color: getStatusColor(hire.status), fontWeight: 'bold' }]}>
                     {hire.status}
                   </SWText>
                 </View>
-                <SWText style={styles.historyCost}>Rs. {hire.totalCost.toLocaleString()}</SWText>
               </View>
+              <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
+                <Ionicons name="location" size={16} color="#008080" /> Pickup: {bookingPlaces[hire.id]?.pickup || `${hire.pickupLat?.toFixed(3)}, ${hire.pickupLng?.toFixed(3)}`}
+              </SWText>
+              <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
+                <Ionicons name="flag" size={16} color="#008080" /> Destination: {bookingPlaces[hire.id]?.destination || `${hire.destinationLat?.toFixed(3)}, ${hire.destinationLng?.toFixed(3)}`}
+              </SWText>
+              <SWText style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>
+                <Ionicons name="calendar" size={15} color="#888" /> {hire.departureDate ? new Date(hire.departureDate).toLocaleDateString() : '-'}
+                {hire.returnDate ? ` - ${new Date(hire.returnDate).toLocaleDateString()}` : ''}
+              </SWText>
+              <SWText style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>
+                <Ionicons name="people" size={15} color="#888" /> {hire.noOfPassengers} passengers
+              </SWText>
+              <SWText style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>
+                <Ionicons name="document-text" size={15} color="#888" /> Notes: {hire.notes || '-'}
+              </SWText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                <Ionicons name="cash" size={18} color="#008080" style={{ marginRight: 4 }} />
+                <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold' }}>
+                  {hire.fare !== null && hire.fare !== undefined ? `Rs. ${Math.round(hire.fare).toLocaleString()}` : 'Fare: -'}
+                </SWText>
+              </View>
+              {/* Optionally show cancel button for pending bookings */}
+              {hire.status && hire.status.toLowerCase() === 'pending' && (
+                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
+                  <TouchableOpacity style={[styles.cancelButton, { minWidth: 100 }]}> 
+                    <SWText style={styles.cancelButtonText}>Cancel</SWText>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
-
-            {hire.status === 'Upcoming' && (
-              <View style={styles.historyActions}>
-                <TouchableOpacity style={styles.cancelButton}>
-                  <SWText style={styles.cancelButtonText}>Cancel</SWText>
-                </TouchableOpacity>
-              </View>
-            )}
-
-            
-          </View>
-        ))}
+          ))
+        )}
       </View>
     </ScrollView>
   );
@@ -1152,26 +1206,28 @@ const PrivateHire = () => {
             {selectedVan && (
               <>
                 <SWText style={styles.modalText}>
-                  You're about to request <SWText style={styles.modalBold}>{selectedVan.name}</SWText> for your trip to <SWText style={styles.modalBold}>{formData.destination}</SWText>.
+                  You're about to request <SWText style={styles.modalBold}>{selectedVan.name || selectedVan.VanName || 'Van'}</SWText> for your trip to <SWText style={styles.modalBold}>{formData.destination}</SWText>.
                 </SWText>
                 <SWText style={styles.modalDetails}>
                   • Departure: {formData.departureDate}
                   {formData.returnDate && `\n• Return: ${formData.returnDate}`}
                   {`\n• Passengers: ${formData.passengers}`}
-                  {`\n• Driver: ${selectedVan.driver}`}
+                  {`\n• Driver: ${selectedVan.driver || selectedVan.DriverName || '-'}`}
                 </SWText>
                 <View style={styles.modalActions}>
                   <TouchableOpacity
                     style={styles.modalCancelButton}
                     onPress={() => setShowConfirmModal(false)}
+                    disabled={isRequesting}
                   >
                     <SWText style={styles.modalCancelText}>Cancel</SWText>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.modalConfirmButton}
                     onPress={confirmRequest}
+                    disabled={isRequesting}
                   >
-                    <SWText style={styles.modalConfirmText}>Send Request</SWText>
+                    <SWText style={styles.modalConfirmText}>{isRequesting ? 'Sending...' : 'Send Request'}</SWText>
                   </TouchableOpacity>
                 </View>
               </>
