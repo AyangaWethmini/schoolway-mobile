@@ -43,6 +43,8 @@ export default function Payments() {
     branchName: '',
     branchCode: ''
   });
+  const [salaryData, setSalaryData] = useState([]);
+  const [isLoadingSalary, setIsLoadingSalary] = useState(true);
 
   // Move styles inside component to access theme
   const styles = StyleSheet.create({
@@ -101,13 +103,12 @@ export default function Payments() {
       borderBottomColor: '#f0f0f0',
     },
     paymentLabel: {
-      // fontSize: 14,
       color: '#666',
+      marginBottom: 2,
     },
     paymentAmount: {
-      // fontSize: 14,
-      // fontWeight: 'bold',
       color: '#2B3674',
+      marginBottom: 2,
     },
     modalContainer: {
       flex: 1,
@@ -193,6 +194,12 @@ export default function Payments() {
       width: '100%',
       color: '#2B3674',
     },
+    statusDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      marginRight: 4
+    }
   });
 
   // Add useEffect to fetch bank account details
@@ -225,6 +232,29 @@ export default function Payments() {
     };
 
     fetchBankDetails();
+  }, [user.id]);
+
+  // Add this useEffect after the existing bank details useEffect
+  useEffect(() => {
+    const fetchSalaryData = async () => {
+      try {
+        const response = await fetch(`${API_URL}/mobile/driver/payments/salaries/${user.id}`);
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch salary data');
+        }
+        
+        const data = await response.json();
+        setSalaryData(data.monthlySummary);
+      } catch (error) {
+        console.error('Error fetching salary data:', error);
+        Alert.alert('Error', 'Failed to load salary information');
+      } finally {
+        setIsLoadingSalary(false);
+      }
+    };
+
+    fetchSalaryData();
   }, [user.id]);
 
   // Update handleUpdateBankInfo to use the unified endpoint
@@ -293,6 +323,13 @@ export default function Payments() {
       });
     }
   }, [bankInfo]);
+
+  // Add this helper function at the top of your component
+  const formatMonth = (monthStr) => {
+    const [year, month] = monthStr.split('-');
+    const date = new Date(year, parseInt(month) - 1);
+    return date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
+  };
 
   if (isLoading) {
     return (
@@ -417,18 +454,51 @@ export default function Payments() {
       <View style={styles.container}>
         <View style={styles.card}>
           <SWText style={styles.cardTitle} md uberBold>Recent Payments</SWText>
-          <View style={styles.paymentRow}>
-            <SWText style={styles.paymentLabel} sm uberBold>June 2024</SWText>
-            <SWText style={styles.paymentAmount} sm uberBold>Rs. 45,000</SWText>
-          </View>
-          <View style={styles.paymentRow}>
-            <SWText style={styles.paymentLabel} sm uberBold>May 2024</SWText>
-            <SWText style={styles.paymentAmount} sm uberBold>Rs. 45,000</SWText>
-          </View>
-          <View style={styles.paymentRow}>
-            <SWText style={styles.paymentLabel} sm uberBold>April 2024</SWText>
-            <SWText style={styles.paymentAmount} sm uberBold>Rs. 45,000</SWText>
-          </View>
+          {isLoadingSalary ? (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <SWText sm>Loading salary data...</SWText>
+            </View>
+          ) : salaryData.length === 0 ? (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <SWText sm>No payment records found</SWText>
+            </View>
+          ) : (
+            salaryData.map((payment) => (
+              <View key={payment.month} style={styles.paymentRow}>
+                <View>
+                  <SWText style={styles.paymentLabel} sm uberBold>
+                    {formatMonth(payment.month)}
+                  </SWText>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <View style={[
+                      styles.statusDot,
+                      { backgroundColor: payment.pending > 0 ? '#f39c12' : '#27ae60' }
+                    ]} />
+                    <SWText style={{ 
+                      color: payment.pending > 0 ? '#f39c12' : '#27ae60',
+                      fontSize: 12,
+                      marginLeft: 4
+                    }}>
+                      {payment.pending > 0 ? 'Pending' : 'Completed'}
+                    </SWText>
+                  </View>
+                </View>
+                <View style={{ alignItems: 'flex-end' }}>
+                  <SWText style={styles.paymentAmount} sm uberBold>
+                    Rs. {payment.completed.toLocaleString()}
+                  </SWText>
+                  {/* {payment.pending > 0 && (
+                    <SWText style={{ color: '#f39c12', fontSize: 12 }}>
+                      Pending: Rs. {payment.pending.toLocaleString()}
+                    </SWText>
+                  )}
+                  <SWText style={{ color: '#666', fontSize: 12 }}>
+                    Total: Rs. {payment.total.toLocaleString()}
+                  </SWText> */}
+                </View>
+              </View>
+            ))
+          )}
         </View>
 
         <SWText style={styles.title} lg uberBold>Your Payment Information</SWText>
