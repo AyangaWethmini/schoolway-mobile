@@ -4,11 +4,13 @@ import { useState } from 'react';
 import { SafeAreaView, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../auth/AuthContext';
 import CurvedHeader from '../components/CurvedHeader';
+import Spacer from '../components/Spacer';
 import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
 import VehicleInfo from './DriverComponents/DriverProfileComponents/DriverVanInfo';
 import DriverProfileOverview from './DriverComponents/DriverProfileComponents/ProfileInfo';
 import LicenseAndVehicleCheckups from './DriverComponents/DriverProfileComponents/VehicleCheckUps';
+
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
@@ -106,7 +108,7 @@ export default function Profile() {
           title="Information" 
           theme={theme}
         />
-
+      <Spacer/>
       <View style={styles.tabs}>
         {['Personal Info', 'Van Info', 'Checkups'].map(tab => (
           <TouchableOpacity
