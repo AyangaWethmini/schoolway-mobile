@@ -281,6 +281,19 @@ export default function Payments() {
     </View>
   );
 
+  // Add this useEffect to initialize formData when bankInfo changes
+  useEffect(() => {
+    if (bankInfo) {
+      setFormData({
+        accountNo: bankInfo.accountNo || '',
+        accountName: bankInfo.accountName || '',
+        bankName: bankInfo.bankName || '',
+        branchName: bankInfo.branchName || '',
+        branchCode: bankInfo.branchCode || ''
+      });
+    }
+  }, [bankInfo]);
+
   if (isLoading) {
     return (
       <>
@@ -453,6 +466,101 @@ export default function Payments() {
             <SWText style={styles.infoValue} md>Rs. 45,000</SWText>
           </View>
         </View>
+
+        <Modal
+          visible={showUpdateModal}
+          animationType="slide"
+          transparent={true}
+        >
+          <View style={styles.modalContainer}>
+            <View style={styles.modalContent}>
+              <SWText style={styles.modalTitle} lg uberBold>
+                Update Bank Details
+              </SWText>
+              
+              <TextInput 
+                style={styles.input}
+                placeholder="Account Name (as per bank account) *"
+                value={formData.accountName}
+                onChangeText={(text) => setFormData(prev => ({...prev, accountName: text}))}
+              />
+              
+              <TextInput 
+                style={styles.input}
+                placeholder="Account Number *"
+                value={formData.accountNo}
+                keyboardType="numeric"
+                onChangeText={(text) => setFormData(prev => ({...prev, accountNo: text}))}
+              />
+              
+              <View style={styles.inputContainer}>
+                <Picker
+                  selectedValue={formData.bankName}
+                  onValueChange={(value) => {
+                    setFormData(prev => ({
+                      ...prev, 
+                      bankName: value,
+                      branchName: '' // Reset branch when bank changes
+                    }));
+                  }}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Bank" value="" />
+                  {SRI_LANKA_BANKS.map((bank) => (
+                    <Picker.Item key={bank} label={bank} value={bank} />
+                  ))}
+                </Picker>
+              </View>
+              
+              <View style={styles.inputContainer}>
+                <Picker
+                  selectedValue={formData.branchName}
+                  enabled={!!formData.bankName}
+                  onValueChange={(value) => setFormData(prev => ({...prev, branchName: value}))}
+                  style={styles.picker}
+                >
+                  <Picker.Item label="Select Branch" value="" />
+                  {formData.bankName && BANK_BRANCHES[formData.bankName]?.map((branch) => (
+                    <Picker.Item key={branch} label={branch} value={branch} />
+                  ))}
+                </Picker>
+              </View>
+              
+              <TextInput 
+                style={styles.input}
+                placeholder="Branch Code (optional)"
+                value={formData.branchCode}
+                onChangeText={(text) => setFormData(prev => ({...prev, branchCode: text}))}
+              />
+
+              <View style={styles.buttonRow}>
+                <TouchableOpacity 
+                  style={[styles.button, styles.cancelButton, { flex: 1 }]} 
+                  onPress={() => {
+                    setShowUpdateModal(false);
+                    // Reset form data to current bank info
+                    setFormData({
+                      accountNo: bankInfo.accountNo || '',
+                      accountName: bankInfo.accountName || '',
+                      bankName: bankInfo.bankName || '',
+                      branchName: bankInfo.branchName || '',
+                      branchCode: bankInfo.branchCode || ''
+                    });
+                  }}
+                >
+                  <SWText style={styles.buttonText} md>Cancel</SWText>
+                </TouchableOpacity>
+                
+                <TouchableOpacity 
+                  style={[styles.button, styles.saveButton, { flex: 1 }]} 
+                  onPress={handleUpdateBankInfo}
+                >
+                  <SWText style={styles.buttonText} md>Save Changes</SWText>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </>
   );
