@@ -76,6 +76,7 @@ const TravelPage = () => {
           studentId,
           type,
           status,
+          sessionType: parsedSession.routeType
         }),
       });
 
@@ -135,6 +136,22 @@ const TravelPage = () => {
     );
   };
 
+  const handleScanQR = (studentId, studentName) => {
+    Alert.alert(
+      'Scan QR Code',
+      `Opening QR scanner for ${studentName}`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Open Scanner', 
+          onPress: () => {
+            router.push('driver/DriverComponents/QRScannerScreen');
+          }
+        }
+      ]
+    );
+  };
+
   const StudentCard = ({ student, isPickedUp = false }) => (
     <View style={[styles.studentCard, isPickedUp && styles.pickedUpCard]}>
       <View style={styles.topRow}>
@@ -181,13 +198,22 @@ const TravelPage = () => {
       </View>
       
       {!isPickedUp && (
-        <TouchableOpacity
-          style={[styles.actionButton, styles.attendanceButton]}
-          onPress={() => handleMarkAttendance(student.id, student.name, "PICKUP")}
-        >
-          <Ionicons name="checkmark-circle-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Mark Picked Up</Text>
-        </TouchableOpacity>
+        <View style={styles.actionButtons}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.attendanceButton]}
+            onPress={() => handleMarkAttendance(student.id, student.name, "PICKUP")}
+          >
+            <Ionicons name="checkmark-circle-outline" size={20} color="white" />
+            <Text style={styles.buttonText}>Mark Picked Up</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+              style={[styles.actionButton, styles.scanButton]}
+              onPress={() => handleScanQR(student.id, student.name)}
+            >
+              <Ionicons name="qr-code-outline" size={20} color="white" />
+              <Text style={styles.buttonText}>Scan QR</Text>
+          </TouchableOpacity>
+        </View>
       )}
 
       {isPickedUp && student.pickupStatus === 'PICKED_UP' && (
@@ -264,7 +290,6 @@ const TravelPage = () => {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Trip Summary */}
         <View style={[styles.tripSummary, { backgroundColor: theme.colors.background }]}>
-          <Text style={styles.summaryTitle}>Trip Summary</Text>
           <View style={styles.summaryStats}>
             <View style={styles.statItem}>
               <Text style={styles.statNumber}>{pickedUpStudents.length}</Text>
@@ -344,6 +369,29 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
+   tripSummary: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    marginTop: 5,
+    marginBottom: 15,
+  },
+  summaryStats: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  statItem: {
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#2B3674',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 14,
+    color: '#666',
+  },
   headerContent: { alignItems: 'center' },
   title: { fontSize: 24, fontWeight: 'bold', color: '#2B3674' },
   subtitle: { fontSize: 16, color: '#666' },
@@ -375,14 +423,31 @@ const styles = StyleSheet.create({
   infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
   infoText: { fontSize: 14, color: '#666', marginLeft: 4 },
   reminderButton: { padding: 8, borderRadius: 8, backgroundColor: '#f0f0f0' },
-  actionButton: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  attendanceButton: { backgroundColor: '#28a745' },
-  buttonText: { color: 'white', fontWeight: 'bold', marginLeft: 6 },
+  actionButtons: {
+      flexDirection: 'row',
+      gap: 10,
+    },
+    actionButton: {
+      flex: 1,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 10,
+      paddingHorizontal: 12,
+      borderRadius: 8,
+    },
+    attendanceButton: {
+      backgroundColor: '#28a745',
+    },
+    scanButton: {
+      backgroundColor: '#2B3674',
+    },
+    buttonText: {
+      color: 'white',
+      fontSize: 14,
+      fontWeight: '600',
+      marginLeft: 6,
+    },
   cancelButton: {
     backgroundColor: '#dc3545',
     paddingVertical: 15,

@@ -34,30 +34,32 @@ const DriverMap = () => {
       if (!session || !sessionData) return;
 
       const parsedUser = JSON.parse(session);
-      const parsedSession = JSON.parse(sessionData);
 
       setDriverId(parsedUser.user.id);
-      setSessionId(parsedSession.id);
-      setSessionType(parsedSession.routeType);
+      if(sessionData){
+        const parsedSession = JSON.parse(sessionData);
+        setSessionId(parsedSession.id);
+        setSessionType(parsedSession.routeType);
 
-      const res = await fetch(`${API_URL}/mobile/driver/session/find/${parsedUser.user.id}`, {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-      });
+        const res = await fetch(`${API_URL}/mobile/driver/session/find/${parsedUser.user.id}`, {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' },
+        });
 
-      const data = await res.json();
-      if (data.success) {
-        let fetchedStudents = data.session.students;
+        const data = await res.json();
+        if (data.success) {
+          let fetchedStudents = data.session.students;
 
-        if (parsedSession.routeType === 'EVENING_DROPOFF') {
-          fetchedStudents = fetchedStudents.map((s) => ({
-            ...s,
-            pickupLocation: s.dropOffLocation,
-            dropOffLocation: s.pickupLocation,
-          }));
+          if (parsedSession.routeType === 'EVENING_DROPOFF') {
+            fetchedStudents = fetchedStudents.map((s) => ({
+              ...s,
+              pickupLocation: s.dropOffLocation,
+              dropOffLocation: s.pickupLocation,
+            }));
+          }
+
+          setStudents(fetchedStudents);
         }
-
-        setStudents(fetchedStudents);
       }
     } catch (err) {
       console.error('Failed to fetch session:', err);
@@ -239,7 +241,7 @@ const DriverMap = () => {
 
   return (
     <View style={styles.container}>
-      <CurvedHeader title="SchoolWay" theme={theme} />
+      <CurvedHeader title="Map" theme={theme} />
       <MapView
         provider={PROVIDER_GOOGLE}
         style={styles.map}

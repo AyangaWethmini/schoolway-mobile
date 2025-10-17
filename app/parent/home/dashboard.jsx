@@ -143,7 +143,6 @@ const Dashboard = () => {
                     </View>
 
                     {child.status ==='NOT_ASSIGNED' ? child.isAssigned = false : child.isAssigned = true } 
-                     {console.log(child)}
                     <View style={styles.cardContent}>
                       {child.isAssigned ? (
                         <View style={styles.assignmentInfo}>
