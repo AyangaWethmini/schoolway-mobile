@@ -47,7 +47,7 @@
     },
     "extra": {
       "apiUrl": "http://192.168.1.5:3000/api",
-      "googleMapsApiKey": "AIzaSyCPlzsdZ881ke3MCOCWnN5aCVpRLsQTktA",
+      "googleMapsApiKey": "AIzaSyB08tCIquefY0ChF-Lq0GCT7OD4aeVvbU8",
       "firebaseApiKey": "AIzaSyD4xoMbeM08mLP-qJvvFsvDchDWp0s08yw",
       "firebaseAuthDomain": "schoolway-4b95d.firebaseapp.com",
       "firebaseDatabaseURL": "https://schoolway-4b95d-default-rtdb.asia-southeast1.firebasedatabase.app",

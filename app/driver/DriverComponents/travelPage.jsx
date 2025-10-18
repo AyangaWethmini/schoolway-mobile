@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
+import Spacer from "../../components/Spacer";
 import { useTheme } from '../../theme/ThemeContext';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
@@ -277,6 +278,10 @@ const TravelPage = () => {
     );
   };
 
+  const handleShowDriverQR = () => {
+    router.push('/driver/DriverComponents/driverQRPage'); 
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -289,18 +294,52 @@ const TravelPage = () => {
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Trip Summary */}
-        <View style={[styles.tripSummary, { backgroundColor: theme.colors.background }]}>
-          <View style={styles.summaryStats}>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{pickedUpStudents.length}</Text>
-              <Text style={styles.statLabel}>Picked Up</Text>
+    <View style={[styles.tripSummary, { backgroundColor: theme.colors.background }]}>
+      <View style={styles.tripSummarycontainer}>
+        {/* Stats Row */}
+        <View style={styles.summaryStats}>
+          <View style={styles.statItem}>
+            <View style={styles.statCircle}>
+              <Ionicons name="checkmark-circle" size={28} color="#4CAF50" />
             </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{studentsToPickup.length}</Text>
-              <Text style={styles.statLabel}>Remaining</Text>
-            </View>
+            <Text style={styles.statNumber}>{pickedUpStudents.length}</Text>
+            <Text style={styles.statLabel}>Picked Up</Text>
           </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.statItem}>
+            <View style={styles.statCircle}>
+              <Ionicons name="home" size={28} color="#2196F3" />
+            </View>
+            <Text style={styles.statNumber}>{processedStudents.length}</Text>
+            <Text style={styles.statLabel}>Dropped Off</Text>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.statItem}>
+            <View style={styles.statCircle}>
+              <Ionicons name="hourglass" size={28} color="#FF9800" />
+            </View>
+            <Text style={styles.statNumber}>{studentsToPickup.length}</Text>
+            <Text style={styles.statLabel}>Remaining</Text>
+          </View>
+
+          {/* QR Button */}
+          <TouchableOpacity 
+            style={styles.qrButton}
+            onPress={handleShowDriverQR}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="qr-code" size={20} color="white" />
+            <Text style={styles.qrButtonText}>QR Code</Text>
+          </TouchableOpacity>
         </View>
+      </View>
+    </View>
+
+        <Spacer/>
 
         {/* Students to Pick Up */}
         <View style={styles.section}>
@@ -369,28 +408,71 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
   },
-   tripSummary: {
+  tripSummary: {
     backgroundColor: 'white',
     borderRadius: 12,
     marginTop: 5,
     marginBottom: 15,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  tripSummarycontainer: {
+    gap: 14,
   },
   summaryStats: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    alignItems: 'center',
   },
   statItem: {
     alignItems: 'center',
+    flex: 1,
+  },
+  statCircle: {
+    marginBottom: 8,
+    padding: 6,
   },
   statNumber: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#2B3674',
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 14,
-    color: '#666',
+    fontSize: 12,
+    color: '#999',
+    fontWeight: '500',
+  },
+  divider: {
+    width: 1,
+    height: 50,
+    backgroundColor: '#E0E0E0',
+    marginHorizontal: 4,
+  },
+  qrButton: {
+    backgroundColor: '#2B3674',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    gap: 6,
+    flex: 1,
+    shadowColor: '#2B3674',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  qrButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 13,
   },
   headerContent: { alignItems: 'center' },
   title: { fontSize: 24, fontWeight: 'bold', color: '#2B3674' },
@@ -398,7 +480,7 @@ const styles = StyleSheet.create({
   startTime: { fontSize: 14, color: '#666' },
   content: { flex: 1, padding: 20 },
   section: { marginBottom: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  sectionTitle: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 },
   studentCard: {
     backgroundColor: 'white',
     borderRadius: 12,
