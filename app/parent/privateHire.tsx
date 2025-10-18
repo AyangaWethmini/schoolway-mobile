@@ -1212,7 +1212,12 @@ const PrivateHire = () => {
         {hireHistory.length === 0 ? (
           <SWText style={{ textAlign: 'center', marginTop: 32 }}>No bookings found.</SWText>
         ) : (
-          hireHistory.map((hire: any) => (
+          [...hireHistory].sort((a, b) => {
+            const aHasFinal = a.finalFare !== null && a.finalFare !== undefined;
+            const bHasFinal = b.finalFare !== null && b.finalFare !== undefined;
+            if (aHasFinal === bHasFinal) return 0;
+            return aHasFinal ? -1 : 1;
+          }).map((hire: any) => (
             <View key={hire.id} style={[styles.historyCard, { borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4, marginBottom: 24, backgroundColor: '#fff', padding: 18 }]}> 
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                 <Ionicons name="car" size={28} color="#008080" style={{ marginRight: 12 }} />
@@ -1242,11 +1247,27 @@ const PrivateHire = () => {
               <SWText style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>
                 <Ionicons name="document-text" size={15} color="#888" /> Notes: {hire.notes || '-'}
               </SWText>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-                <Ionicons name="cash" size={18} color="#008080" style={{ marginRight: 4 }} />
-                <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold' }}>
-                  {hire.fare !== null && hire.fare !== undefined ? `Rs. ${Math.round(hire.fare).toLocaleString()}` : 'Fare: -'}
-                </SWText>
+              <View style={{ flexDirection: 'col', alignItems: 'left', marginTop: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="cash" size={18} color="#008080" style={{ marginRight: 4 }} />
+                  <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold', marginRight: 8 }}>
+                    {hire.fare !== null && hire.fare !== undefined ? `Rs. ${Math.round(hire.fare).toLocaleString()}` : 'Fare: -'}
+                  </SWText>
+                </View>
+                {hire.finalFare !== null && hire.finalFare !== undefined && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8f8f8', borderRadius: 8, padding: 8, marginLeft: 0, marginBottom: 4 }}>
+                    <SWText style={{ fontSize: 16, color: '#d32f2f', fontWeight: 'bold', marginRight: 12 }}>
+                      Final Fare: Rs. {Math.round(hire.finalFare).toLocaleString()}
+                    </SWText>
+                    <Button
+                      title="Agree with Fare"
+                      varient="primary"
+                      passstyles={{ paddingHorizontal: 16, paddingVertical: 6, backgroundColor: '#008080', borderRadius: 6 }}
+                      onPress={() => {/* TODO: Implement agree with fare action */}}
+                    />
+                  </View>
+                )}
+                
               </View>
               {/* Optionally show cancel button for pending bookings */}
               {hire.status && hire.status.toLowerCase() === 'pending' && (
