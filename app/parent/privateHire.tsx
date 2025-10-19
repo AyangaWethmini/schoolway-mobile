@@ -702,7 +702,7 @@ const PrivateHire = () => {
       notes: formData.additionalNotes || '',
       status: 'PENDING',
       vanId: selectedVan?.id ?? null,
-      fare,
+      fare ,
     };
     console.log('Submitting hire payload:', payload);
     try {
@@ -719,6 +719,7 @@ const PrivateHire = () => {
         throw new Error('Failed to submit private hire request.');
       }
       const data = await response.json();
+      console.log(data);
       Alert.alert(
         'Request Sent!',
         `Your request for ${selectedVan.makeAndModel || 'Van'} has been sent to the driver. They will contact you soon.`,
@@ -1213,10 +1214,15 @@ const PrivateHire = () => {
           <SWText style={{ textAlign: 'center', marginTop: 32 }}>No bookings found.</SWText>
         ) : (
           [...hireHistory].sort((a, b) => {
-            const aHasFinal = a.finalFare !== null && a.finalFare !== undefined;
-            const bHasFinal = b.finalFare !== null && b.finalFare !== undefined;
-            if (aHasFinal === bHasFinal) return 0;
-            return aHasFinal ? -1 : 1;
+            // Sort: accepted first, then others, cancelled last
+            const aCancelled = a.status && a.status.toLowerCase() === 'cancelled';
+            const bCancelled = b.status && b.status.toLowerCase() === 'cancelled';
+            if (aCancelled && !bCancelled) return 1;
+            if (!aCancelled && bCancelled) return -1;
+            const aHasFinalAccepted = a.finalFare !== null && a.finalFare !== undefined && a.status && a.status.toLowerCase() === 'accepted';
+            const bHasFinalAccepted = b.finalFare !== null && b.finalFare !== undefined && b.status && b.status.toLowerCase() === 'accepted';
+            if (aHasFinalAccepted === bHasFinalAccepted) return 0;
+            return aHasFinalAccepted ? -1 : 1;
           }).map((hire: any) => (
             <View key={hire.id} style={[styles.historyCard, { borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4, marginBottom: 24, backgroundColor: '#fff', padding: 18 }]}> 
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
@@ -1236,6 +1242,9 @@ const PrivateHire = () => {
               </SWText>
               <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
                 <Ionicons name="flag" size={16} color="#008080" /> Destination: {bookingPlaces[hire.id]?.destination || `${hire.destinationLat?.toFixed(3)}, ${hire.destinationLng?.toFixed(3)}`}
+              </SWText>
+              <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
+                <Ionicons name="map" size={16} color="#008080" /> Distance: {hire.tripDistance ? `${hire.tripDistance.toFixed(1)} km` : '-'}
               </SWText>
               <SWText style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>
                 <Ionicons name="calendar" size={15} color="#888" /> {hire.departureDate ? new Date(hire.departureDate).toLocaleDateString() : '-'}
@@ -1259,20 +1268,50 @@ const PrivateHire = () => {
                     <SWText style={{ fontSize: 16, color: '#d32f2f', fontWeight: 'bold', marginRight: 12 }}>
                       Final Fare: Rs. {Math.round(hire.finalFare).toLocaleString()}
                     </SWText>
-                    <Button
-                      title="Agree with Fare"
-                      varient="primary"
-                      passstyles={{ paddingHorizontal: 16, paddingVertical: 6, backgroundColor: '#008080', borderRadius: 6 }}
-                      onPress={() => {/* TODO: Implement agree with fare action */}}
-                    />
+                    {(hire.finalFare !== null && hire.finalFare !== undefined && hire.status && hire.status.toLowerCase() === 'accepted') && (
+                      <Button
+                        title="Proceed to Pay"
+                        varient="primary"
+                        passstyles={{ paddingHorizontal: 16, paddingVertical: 6, backgroundColor: '#008080', borderRadius: 6 }}
+                        onPress={() => {
+                          router.push({
+                            pathname: '/parent/privateHirePaymentDetails',
+                            params: {
+                              finalFare: hire.finalFare,
+                              destination: bookingPlaces[hire.id]?.destination || `${hire.destinationLat?.toFixed(3)}, ${hire.destinationLng?.toFixed(3)}`,
+                              pickupLocation: bookingPlaces[hire.id]?.pickup || `${hire.pickupLat?.toFixed(3)}, ${hire.pickupLng?.toFixed(3)}`,
+                              departureDate: hire.departureDate ? new Date(hire.departureDate).toLocaleDateString() : '-',
+                              returnDate: hire.returnDate ? new Date(hire.returnDate).toLocaleDateString() : '-',
+                              passengers: hire.noOfPassengers,
+                              notes: hire.notes || '-',
+                              vanId: hire.vanId || '',
+                              status: hire.status || '',
+                            }
+                          });
+                        }}
+                      />
+                    )}
                   </View>
                 )}
                 
               </View>
               {/* Optionally show cancel button for pending bookings */}
-              {hire.status && hire.status.toLowerCase() === 'pending' && (
+              {hire.status && hire.status.toLowerCase() !== 'cancelled' && (
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
-                  <TouchableOpacity style={[styles.cancelButton, { minWidth: 100 }]}> 
+                  <TouchableOpacity style={[styles.cancelButton, { minWidth: 100 }]}
+                   onPress={async () => {
+                    try {
+                      const response = await fetch(`${API_URL}/private-hire/my-hires/cancel`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: hire.id })
+                      });
+                      if (!response.ok) throw new Error('Failed to cancel booking');
+                      fetchMyHires();
+                    } catch (err) {
+                      Alert.alert('Error', 'Could not cancel booking.');
+                    }
+                  }}>
                     <SWText style={styles.cancelButtonText}>Cancel</SWText>
                   </TouchableOpacity>
                 </View>
