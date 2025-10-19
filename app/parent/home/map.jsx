@@ -68,7 +68,7 @@ const ParentMap = () => {
 
   // Poll every 3 seconds
   useEffect(() => {
-    mapTimer.current = setInterval(fetchChildrenSessions, 3000);
+    mapTimer.current = setInterval(fetchChildrenSessions, 10000);
     return () => {
       if (mapTimer.current) clearInterval(mapTimer.current);
     };
