@@ -41,15 +41,16 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "http://172.16.102.222:3000/api",
-      "googleMapsApiKey":"AIzaSyCPlzsdZ881ke3MCOCWnN5aCVpRLsQTktA",
       "firebaseApiKey":"AIzaSyD4xoMbeM08mLP-qJvvFsvDchDWp0s08yw",
       "firebaseAuthDomain":"schoolway-4b95d.firebaseapp.com",
       "firebaseDatabaseURL":"https://schoolway-4b95d-default-rtdb.asia-southeast1.firebasedatabase.app",
       "firebaseProjectId":"schoolway-4b95d",
       "firebaseStorageBucket":"schoolway-4b95d.firebasestorage.app",
       "firebaseMessagingSenderId":"682206074839",
-      "firebaseAppId":"1:682206074839:web:ada0e62a5bf6a22b069d92"
+      "firebaseAppId":"1:682206074839:web:ada0e62a5bf6a22b069d92",
+      "apiUrl": "http://192.168.8.112:3000/api",
+      "googleMapsApiKey":"AIzaSyCPlzsdZ881ke3MCOCWnN5aCVpRLsQTktA"
+
     }
   }
 }
