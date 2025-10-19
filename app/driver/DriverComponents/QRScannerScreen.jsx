@@ -5,6 +5,9 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useTheme } from '../../theme/ThemeContext';
+
+
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
@@ -14,6 +17,7 @@ export default function QRScannerScreen() {
   const [loading, setLoading] = useState(false);
   const [torchOn, setTorchOn] = useState(false);
   const [lastScanned, setLastScanned] = useState(null);
+  const { theme } = useTheme();
   const router = useRouter();
   const pulseAnim = new Animated.Value(1);
 
@@ -128,7 +132,7 @@ export default function QRScannerScreen() {
       lineHeight: 20,
     },
     primaryButton: {
-      backgroundColor: '#2B3674',
+      backgroundColor: theme.colors.secondary,
       paddingHorizontal: 30,
       paddingVertical: 14,
       borderRadius: 10,
@@ -150,7 +154,7 @@ export default function QRScannerScreen() {
       paddingHorizontal: 15,
       paddingTop: 15,
       paddingBottom: 10,
-      backgroundColor: 'rgba(43, 54, 116, 0.95)',
+      backgroundColor: theme.colors.primary,
     },
     headerTitle: {
       fontSize: 18,

@@ -20,7 +20,7 @@ import {
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 import MapView, { Marker } from 'react-native-maps';
 import { Button } from "../../components/button";
-import TextInputComponent from '../../components/inputs';
+import { NumberInput, TextInputComponent, } from '../../components/inputs';
 import SWText from '../../components/SWText';
 import { useTheme } from "../../theme/ThemeContext";
 
@@ -36,7 +36,6 @@ const ChildView = ({ navigation, route }) => {
   const [showAttendanceModal, setShowAttendanceModal] = useState(false);
   const [showSchoolModal, setShowSchoolModal] = useState(false);
   const [showLocationModal, setShowLocationModal] = useState(false);
-  const [attendanceStatus, setAttendanceStatus] = useState('');
   const [studentData, setStudentData] = useState({});
   const [editData, setEditData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -69,7 +68,7 @@ const ChildView = ({ navigation, route }) => {
       const studentInfo = {
         name: data.name,
         age: data.age.toString(),
-        grade: `Grade ${data.grade}`,
+        grade: data.grade,
         school: data.School.schoolName,
         schoolId: data.schoolID,
         gateId: data.gateID,
@@ -82,7 +81,7 @@ const ChildView = ({ navigation, route }) => {
         hasVan: data.Van ? true : false,
         vanModel: data.Van?.makeAndModel || 'Not Assigned',
         vanRoute: data.Van?.route || 'Not Assigned',
-        monthlyFee: data.Van?.monthlyFee ? `Rs. ${data.Van.monthlyFee}` : 'Not Assigned',
+        monthlyFee: data.feeAmount ? `Rs. ${data.feeAmount}` : 'Not Assigned',
         profilePicture: data.profilePicture,
         pickupLat: data.pickupLat,
         pickupLng: data.pickupLng,
@@ -214,6 +213,7 @@ const ChildView = ({ navigation, route }) => {
   };
 
   const pickImage = async () => {
+    console.log("hello");
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== 'granted') {
       Alert.alert('Permission required', 'Please grant media access to upload a photo.');
@@ -233,6 +233,16 @@ const ChildView = ({ navigation, route }) => {
   const handleSave = async () => {
     try {
       setLoading(true);
+
+      
+      const gradeCandidate = (editData.grade ?? '').toString();
+      const gradeValue = parseInt(gradeCandidate.replace(/[^\d]/g, ''), 10);
+      if (isNaN(gradeValue) || gradeValue < 1 || gradeValue > 13) {
+        Alert.alert('Validation Error', 'Please enter a valid grade between 1 and 13.');
+        setLoading(false);
+        return;
+      }
+
 
       const formData = new FormData();
       formData.append('name', editData.name);
@@ -394,16 +404,16 @@ const ChildView = ({ navigation, route }) => {
               <Ionicons name="person-circle" size={80} color={'grey'} />
             )}
             {isEditMode && (
-              <TouchableOpacity style={styles.cameraIcon} onPress={pickImage}>
-                <Ionicons name="camera" size={20} color="white" />
+              <TouchableOpacity style={[styles.cameraIcon, { zIndex: 10, elevation: 10 }]} activeOpacity={0.7} onPress={pickImage}>
+                <Ionicons name="camera" size={30} color="white" />
               </TouchableOpacity>
             )}
           </View>
           <SWText h1 style={styles.studentName}>{editData.name}</SWText>
-          <SWText style={styles.studentGrade}>{editData.grade} • {editData.school}</SWText>
+          <SWText style={styles.studentGrade}>Grade {editData.grade} • {editData.school}</SWText>
         </View>
 
-       {!isEditMode && (
+       {!isEditMode && studentData.hasVan && (
           <View style={styles.quickActions}>
             {childAttendance?.routeType ? (
               // If attendance is already marked
@@ -477,12 +487,12 @@ const ChildView = ({ navigation, route }) => {
         <View style={[styles.infoCard, styles.scrollableCard]}>
           <SWText style={styles.sectionTitle}>Personal Information</SWText>
           <InfoRow label="Full Name" value={studentData.name} field="name" />
-          <InfoRow label="Age" value={studentData.age} field="age" />
           {isEditMode ? (
             <View style={styles.infoRow}>
               <SWText style={styles.infoLabel}>Grade:</SWText>
-              <TextInputComponent
+              <NumberInput
                 style={styles.editInput}
+                placeholder="Enter Child's Grade"
                 value={editData.grade}
                 onChangeText={(text) => setEditData(prev => ({ ...prev, grade: text }))}
               />
@@ -490,7 +500,7 @@ const ChildView = ({ navigation, route }) => {
           ) : (
             <InfoRow label="Grade" value={studentData.grade} field="grade" />
           )}
-          {isEditMode ? (
+          {isEditMode && !studentData.hasVan ? (
             <View style={styles.infoRow}>
               <SWText style={styles.infoLabel}>School:</SWText>
               <TouchableOpacity
@@ -520,7 +530,7 @@ const ChildView = ({ navigation, route }) => {
             <InfoRow label="Drop-off Address" value={studentData.dropoffAddress} field="dropoffAddress" />
           )}
 
-          {isEditMode && (
+          {isEditMode && !studentData.hasVan && (
             <>
               <SWText style={{ fontSize: 14, fontWeight: '600', marginTop: 15, marginBottom: 10, color: '#333' }}>
                 Select Pickup Location
@@ -555,15 +565,9 @@ const ChildView = ({ navigation, route }) => {
           {studentData.hasVan && (
             <>
               <InfoRow label="Van Number" value={studentData.vanModel} field="vanModel" />
-              <InfoRow label="Van Route" value={studentData.vanRoute} field="vanRoute" />
               <InfoRow label="Monthly Fee" value={studentData.monthlyFee} field="monthlyFee" />
               {!isEditMode && (
                 <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                  <Button
-                    title="Resign from Van"
-                    varient="secondary"
-                    onPress={() => router.push('/parent/vansearch')}
-                  />
                   <Button
                     title="Add a Review"
                     varient="outlined-primary"
@@ -578,7 +582,7 @@ const ChildView = ({ navigation, route }) => {
             <Button
               title="Assign to Van"
               varient="secondary"
-              onPress={() => router.push('/parent/vansearch')}
+              onPress={() => router.push(`/parent/vansearch/${id}`)}
             />
           )}
         </View>

@@ -13,7 +13,6 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import Spacer from "../../components/Spacer";
 import { useTheme } from '../../theme/ThemeContext';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
@@ -105,7 +104,6 @@ const TravelPage = () => {
         ...(type === "PICKUP"
           ? [
               { text: 'Picked Up', onPress: () => markStudentAttendance(studentId, 'PICKED_UP', 'PICKUP') },
-              { text: 'Not Present', onPress: () => markStudentAttendance(studentId, 'NOT_PRESENT', 'PICKUP') },
             ]
           : [
               { text: 'Dropped Off', onPress: () => markStudentAttendance(studentId, 'DROPPED_OFF', 'DROPOFF') },
@@ -154,7 +152,7 @@ const TravelPage = () => {
   };
 
   const StudentCard = ({ student, isPickedUp = false }) => (
-    <View style={[styles.studentCard, isPickedUp && styles.pickedUpCard]}>
+    <View style={[styles.studentCard, { backgroundColor: theme.colors.textwhite }]}>
       <View style={styles.topRow}>
         <Image 
           source={{ uri: student.profileImage || 'https://i.pravatar.cc/150?img=5' }}
@@ -162,16 +160,16 @@ const TravelPage = () => {
         />
         <View style={styles.studentMainInfo}>
           <View style={styles.nameLocationRow}>
-            <Text style={styles.studentName}>{student.name}</Text>
+            <Text style={[styles.studentName, { color: theme.colors.accentblue }]}>{student.name}</Text>
             {!isPickedUp && student.reminderSent && (
-              <View style={styles.reminderIcon}>
-                <Ionicons name="notifications" size={16} color="#28a745" />
+              <View style={[styles.reminderIcon, { backgroundColor: theme.colors.success }]}>
+                <Ionicons name="notifications" size={14} color="white" />
               </View>
             )}
           </View>
           <View style={styles.locationRow}>
-            <Ionicons name="location-outline" size={14} color="#666" />
-            <Text style={styles.pickupLocation}>{student.pickupLocation}</Text>
+            <Ionicons name="location-outline" size={13} color={theme.colors.textgreylight} />
+            <Text style={[styles.pickupLocation, { color: theme.colors.textgreylight }]}>{student.pickupLocation}</Text>
           </View>
         </View>
       </View>
@@ -179,21 +177,17 @@ const TravelPage = () => {
       <View style={styles.bottomRow}>
         <View style={styles.timeContact}>
           <View style={styles.infoRow}>
-            <Ionicons name="time-outline" size={14} color="#666" />
-            <Text style={styles.infoText}>Scheduled: {student.pickupTime}</Text>
-          </View>
-          <View style={styles.infoRow}>
-            <Ionicons name="call-outline" size={14} color="#666" />
-            <Text style={styles.infoText}>{student.parentContact}</Text>
+            <Ionicons name="call-outline" size={13} color={theme.colors.textgreylight} />
+            <Text style={[styles.infoText, { color: theme.colors.textgreydark }]}>{student.parentContact}</Text>
           </View>
         </View>
 
         {!isPickedUp && !student.reminderSent && (
           <TouchableOpacity 
-            style={styles.reminderButton}
+            style={[styles.reminderButton, { backgroundColor: theme.colors.primary + '15' }]}
             onPress={() => sendReminder(student.id, student.name)}
           >
-            <MaterialIcons name="notification-add" size={18} color="#2B3674" />
+            <MaterialIcons name="notification-add" size={16} color={theme.colors.primary} />
           </TouchableOpacity>
         )}
       </View>
@@ -201,29 +195,29 @@ const TravelPage = () => {
       {!isPickedUp && (
         <View style={styles.actionButtons}>
           <TouchableOpacity
-            style={[styles.actionButton, styles.attendanceButton]}
+            style={[styles.actionButton, { backgroundColor: theme.colors.success }]}
             onPress={() => handleMarkAttendance(student.id, student.name, "PICKUP")}
           >
-            <Ionicons name="checkmark-circle-outline" size={20} color="white" />
-            <Text style={styles.buttonText}>Mark Picked Up</Text>
+            <Ionicons name="checkmark-circle-outline" size={16} color="white" />
+            <Text style={styles.buttonText}>Pick Up</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-              style={[styles.actionButton, styles.scanButton]}
-              onPress={() => handleScanQR(student.id, student.name)}
-            >
-              <Ionicons name="qr-code-outline" size={20} color="white" />
-              <Text style={styles.buttonText}>Scan QR</Text>
+            style={[styles.actionButton, { backgroundColor: theme.colors.accentblue }]}
+            onPress={() => handleScanQR(student.id, student.name)}
+          >
+            <Ionicons name="qr-code-outline" size={16} color="white" />
+            <Text style={styles.buttonText}>Scan QR</Text>
           </TouchableOpacity>
         </View>
       )}
 
       {isPickedUp && student.pickupStatus === 'PICKED_UP' && (
         <TouchableOpacity
-          style={[styles.actionButton, { backgroundColor: '#007bff' }]}
+          style={[styles.actionButton, { backgroundColor: theme.colors.secondary, width: '100%', marginTop: 10 }]}
           onPress={() => handleMarkAttendance(student.id, student.name, "DROPOFF")}
         >
-          <Ionicons name="location-outline" size={20} color="white" />
-          <Text style={styles.buttonText}>Mark Dropped Off</Text>
+          <Ionicons name="location-outline" size={16} color="white" />
+          <Text style={styles.buttonText}>Drop Off</Text>
         </TouchableOpacity>
       )}
     </View>
@@ -251,10 +245,10 @@ const TravelPage = () => {
       }
 
       stopLocationTracking();
-      await AsyncStorage.removeItem('current_session');
       Alert.alert('✅ Session Completed', 'Trip has been completed successfully');
-      if(status != 'EMERGENCY'){
-        router.push('driver/DriverComponents/WithVanDashboard'); 
+      if(status === 'COMPLETED'){ 
+        await AsyncStorage.removeItem('current_session');
+        router.push('driver/dashboard'); 
       }
     } catch (err) {
       console.error(err);
@@ -265,15 +259,14 @@ const TravelPage = () => {
   const handleCancelRide = () => {
     Alert.alert(
       'Cancel Ride',
-      'Why do you want to Cancel this ride?',
+      'Why do you want to cancel this ride?',
       [
         { text: 'Vehicle Breakdown', onPress: () => {
             handleEndTrip('EMERGENCY');
             router.push('./breakdown'); 
         }},
-        { text: 'Personal Emergency', onPress: () => handleEndTrip('CANCELLED') },
-        { text: 'Other Reason', onPress: () => handleEndTrip('CANCELLED') },
-        { text: 'Back', style: 'cancel' }
+        { text: 'Other', onPress: () => handleEndTrip('CANCELLED') },
+        { text: 'Back',onPress: () => {}, }
       ]
     );
   };
@@ -283,149 +276,200 @@ const TravelPage = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
+    <View style={[styles.container, { backgroundColor: theme.colors.backgroud }]}>
+      {/* Modern Header */}
+      <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
+        <TouchableOpacity 
+          style={styles.backButton}
+          onPress={() => router.back()}
+        >
+          <Ionicons name="chevron-back" size={28} color={theme.colors.textwhite} />
+        </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Trip in Progress</Text>
-          <Text style={styles.subtitle}>Kaluthara - Colombo 13</Text>
-          <Text style={styles.startTime}>Started: {new Date().toLocaleTimeString()}</Text>
+          <Text style={[styles.title, { color: theme.colors.textwhite }]}>Active Trip</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.textwhite }]}>Kaluthara → Colombo</Text>
         </View>
+        <View style={{ width: 28 }} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Trip Summary */}
-    <View style={[styles.tripSummary, { backgroundColor: theme.colors.background }]}>
-      <View style={styles.tripSummarycontainer}>
-        {/* Stats Row */}
-        <View style={styles.summaryStats}>
-          <View style={styles.statItem}>
-            <View style={styles.statCircle}>
-              <Ionicons name="checkmark-circle" size={28} color="#4CAF50" />
+        {/* Trip Summary Card */}
+        <View style={[styles.tripSummary, { backgroundColor: theme.colors.textwhite }]}>
+          <View style={styles.summaryStats}>
+            <View style={styles.statItem}>
+              <View style={[styles.statCircle, { backgroundColor: theme.colors.warning + '15' }]}>
+                <Ionicons name="hourglass" size={24} color={theme.colors.warning} />
+              </View>
+              <Text style={[styles.statNumber, { color: theme.colors.accentblue }]}>{studentsToPickup.length}</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.textgreylight }]}>Pending</Text>
             </View>
-            <Text style={styles.statNumber}>{pickedUpStudents.length}</Text>
-            <Text style={styles.statLabel}>Picked Up</Text>
+
+            <View style={styles.divider} />
+
+            <View style={styles.statItem}>
+              <View style={[styles.statCircle, { backgroundColor: theme.colors.success + '15' }]}>
+                <Ionicons name="checkmark-circle" size={24} color={theme.colors.success} />
+              </View>
+              <Text style={[styles.statNumber, { color: theme.colors.accentblue }]}>{pickedUpStudents.length}</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.textgreylight }]}>Picked Up</Text>
+            </View>
+
+            <View style={styles.divider} />
+
+            <View style={styles.statItem}>
+              <View style={[styles.statCircle, { backgroundColor: theme.colors.secondary + '15' }]}>
+                <Ionicons name="home" size={24} color={theme.colors.secondary} />
+              </View>
+              <Text style={[styles.statNumber, { color: theme.colors.accentblue }]}>{processedStudents.length}</Text>
+              <Text style={[styles.statLabel, { color: theme.colors.textgreylight }]}>Dropped Off</Text>
+            </View>
           </View>
 
-          <View style={styles.divider} />
-
-          <View style={styles.statItem}>
-            <View style={styles.statCircle}>
-              <Ionicons name="home" size={28} color="#2196F3" />
-            </View>
-            <Text style={styles.statNumber}>{processedStudents.length}</Text>
-            <Text style={styles.statLabel}>Dropped Off</Text>
-          </View>
-
-          <View style={styles.divider} />
-
-          <View style={styles.statItem}>
-            <View style={styles.statCircle}>
-              <Ionicons name="hourglass" size={28} color="#FF9800" />
-            </View>
-            <Text style={styles.statNumber}>{studentsToPickup.length}</Text>
-            <Text style={styles.statLabel}>Remaining</Text>
-          </View>
-
-          {/* QR Button */}
           <TouchableOpacity 
-            style={styles.qrButton}
+            style={[styles.qrButton, { backgroundColor: theme.colors.accentblue }]}
             onPress={handleShowDriverQR}
             activeOpacity={0.8}
           >
-            <Ionicons name="qr-code" size={20} color="white" />
-            <Text style={styles.qrButtonText}>QR Code</Text>
+            <Ionicons name="qr-code" size={18} color="white" />
+            <Text style={styles.qrButtonText}>Show Driver QR</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </View>
-
-        <Spacer/>
 
         {/* Students to Pick Up */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Students to Pick Up ({studentsToPickup.length})
-          </Text>
-          {studentsToPickup.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: '#666' }}>No students to pick up.</Text>
-          ) : (
-            studentsToPickup.map(student => (
+        {studentsToPickup.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.accentblue }]}>
+                Waiting to Pick Up
+              </Text>
+              <View style={[styles.badge, { backgroundColor: theme.colors.warning + '20' }]}>
+                <Text style={[styles.badgeText, { color: theme.colors.warning }]}>{studentsToPickup.length}</Text>
+              </View>
+            </View>
+            {studentsToPickup.map(student => (
               <StudentCard key={student.id} student={student} />
-            ))
-          )}
-        </View>
+            ))}
+          </View>
+        )}
 
         {/* Students to Drop Off */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Students to Drop Off ({pickedUpStudents.length})
-          </Text>
-          {pickedUpStudents.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: '#666' }}>No students to drop off.</Text>
-          ) : (
-            pickedUpStudents.map(student => (
+        {pickedUpStudents.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.accentblue }]}>
+                Ready to Drop Off
+              </Text>
+              <View style={[styles.badge, { backgroundColor: theme.colors.secondary + '20' }]}>
+                <Text style={[styles.badgeText, { color: theme.colors.secondary }]}>{pickedUpStudents.length}</Text>
+              </View>
+            </View>
+            {pickedUpStudents.map(student => (
               <StudentCard key={student.id} student={student} isPickedUp={true} />
-            ))
-          )}
-        </View>
-
-                {/* Students to Drop Off */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>
-            Processed Students ({processedStudents.length})
-          </Text>
-          {processedStudents.length === 0 ? (
-            <Text style={{ textAlign: 'center', color: '#666' }}>No students to drop off.</Text>
-          ) : (
-            processedStudents.map(student => (
-              <StudentCard key={student.id} student={student} isPickedUp={true} />
-            ))
-          )}
-        </View>
-
-        {/* Cancel or Complete */}
-        {pickedUpStudents.length || studentsToPickup.length ? (
-          <TouchableOpacity style={styles.cancelButton} onPress={handleCancelRide}>
-            <Ionicons name="close-circle-outline" size={20} color="white" />
-            <Text style={styles.cancelButtonText}>Cancel Ride</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity style={styles.cancelButton} onPress={() => handleEndTrip('COMPLETED')}>
-            <Ionicons name="checkmark-circle-outline" size={20} color="white" />
-            <Text style={styles.cancelButtonText}>Complete Ride</Text>
-          </TouchableOpacity>
+            ))}
+          </View>
         )}
+
+        {/* Processed Students */}
+        {processedStudents.length > 0 && (
+          <View style={styles.section}>
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: theme.colors.accentblue }]}>
+                Completed
+              </Text>
+              <View style={[styles.badge, { backgroundColor: theme.colors.success + '20' }]}>
+                <Text style={[styles.badgeText, { color: theme.colors.success }]}>{processedStudents.length}</Text>
+              </View>
+            </View>
+            {processedStudents.map(student => (
+              <StudentCard key={student.id} student={student} isPickedUp={true} />
+            ))}
+          </View>
+        )}
+
+        {/* Empty State */}
+        {studentsToPickup.length === 0 && pickedUpStudents.length === 0 && processedStudents.length === 0 && (
+          <View style={styles.emptyState}>
+            <Ionicons name="checkmark-circle-outline" size={48} color={theme.colors.success} />
+            <Text style={[styles.emptyStateText, { color: theme.colors.textgreydark }]}>No students assigned</Text>
+          </View>
+        )}
+
+        {/* Action Buttons */}
+        <View style={styles.actionFooter}>
+          {pickedUpStudents.length > 0 || studentsToPickup.length > 0 ? (
+            <>
+              <TouchableOpacity 
+                style={[styles.cancelButton, { backgroundColor: theme.colors.error }]}
+                onPress={handleCancelRide}
+              >
+                <Ionicons name="close-circle" size={18} color="white" />
+                <Text style={styles.actionButtonText}>Cancel</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <TouchableOpacity 
+              style={[styles.completeButton, { backgroundColor: theme.colors.success, width: '100%' }]}
+              onPress={() => handleEndTrip('COMPLETED')}
+            >
+              <Ionicons name="checkmark-circle" size={18} color="white" />
+              <Text style={styles.actionButtonText}>End Trip</Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FAF8F8' },
+  container: { 
+    flex: 1,
+  },
   header: {
-    backgroundColor: 'white',
-    padding: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
+    paddingTop: 12,
+  },
+  backButton: {
+    padding: 4,
+  },
+  headerContent: { 
+    alignItems: 'center',
+    flex: 1,
+  },
+  title: { 
+    fontSize: 18, 
+    fontWeight: '700',
+    letterSpacing: -0.5,
+  },
+  subtitle: { 
+    fontSize: 13, 
+    marginTop: 2,
+    fontWeight: '500',
+  },
+  content: { 
+    flex: 1, 
+    padding: 16,
   },
   tripSummary: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    marginTop: 5,
-    marginBottom: 15,
+    borderRadius: 16,
+    marginBottom: 24,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  tripSummarycontainer: {
     gap: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 2,
   },
   summaryStats: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
   statItem: {
@@ -434,112 +478,199 @@ const styles = StyleSheet.create({
   },
   statCircle: {
     marginBottom: 8,
-    padding: 6,
+    padding: 8,
+    borderRadius: 12,
   },
   statNumber: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#2B3674',
+    fontWeight: '700',
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 12,
-    color: '#999',
+    fontSize: 11,
     fontWeight: '500',
   },
   divider: {
     width: 1,
-    height: 50,
-    backgroundColor: '#E0E0E0',
-    marginHorizontal: 4,
+    height: 40,
+    backgroundColor: '#e8e8e8',
+    marginHorizontal: 2,
   },
   qrButton: {
-    backgroundColor: '#2B3674',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 30,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    gap: 6,
-    flex: 1,
-    shadowColor: '#2B3674',
+    paddingVertical: 12,
+    borderRadius: 12,
+    gap: 8,
+    marginTop: 4,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
+    shadowOpacity: 0.08,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   qrButtonText: {
     color: 'white',
     fontWeight: '600',
+    fontSize: 14,
+  },
+  section: { 
+    marginBottom: 20,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  sectionTitle: { 
+    fontSize: 15, 
+    fontWeight: '700',
+  },
+  badge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  studentCard: {
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  topRow: { 
+    flexDirection: 'row', 
+    marginBottom: 12 
+  },
+  profileImage: { 
+    width: 48, 
+    height: 48, 
+    borderRadius: 24, 
+    marginRight: 12 
+  },
+  studentMainInfo: { 
+    flex: 1 
+  },
+  nameLocationRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  studentName: { 
+    fontSize: 16, 
+    fontWeight: '700',
+  },
+  reminderIcon: {
+    padding: 4,
+    borderRadius: 6,
+  },
+  locationRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  pickupLocation: { 
+    marginLeft: 4, 
     fontSize: 13,
   },
-  headerContent: { alignItems: 'center' },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#2B3674' },
-  subtitle: { fontSize: 16, color: '#666' },
-  startTime: { fontSize: 14, color: '#666' },
-  content: { flex: 1, padding: 20 },
-  section: { marginBottom: 20 },
-  sectionTitle: { fontSize: 15, fontWeight: 'bold', marginBottom: 10 },
-  studentCard: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  bottomRow: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
-  pickedUpCard: { borderColor: '#28a745', borderWidth: 1 },
-  topRow: { flexDirection: 'row', marginBottom: 12 },
-  profileImage: { width: 50, height: 50, borderRadius: 25, marginRight: 12 },
-  studentMainInfo: { flex: 1 },
-  nameLocationRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  studentName: { fontSize: 18, fontWeight: 'bold', color: '#2B3674' },
-  locationRow: { flexDirection: 'row', alignItems: 'center' },
-  pickupLocation: { marginLeft: 4, fontSize: 14, color: '#666' },
-  bottomRow: { flexDirection: 'row', justifyContent: 'space-between' },
-  timeContact: { flex: 1 },
-  infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
-  infoText: { fontSize: 14, color: '#666', marginLeft: 4 },
-  reminderButton: { padding: 8, borderRadius: 8, backgroundColor: '#f0f0f0' },
-  actionButtons: {
-      flexDirection: 'row',
-      gap: 10,
-    },
-    actionButton: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 10,
-      paddingHorizontal: 12,
-      borderRadius: 8,
-    },
-    attendanceButton: {
-      backgroundColor: '#28a745',
-    },
-    scanButton: {
-      backgroundColor: '#2B3674',
-    },
-    buttonText: {
-      color: 'white',
-      fontSize: 14,
-      fontWeight: '600',
-      marginLeft: 6,
-    },
-  cancelButton: {
-    backgroundColor: '#dc3545',
-    paddingVertical: 15,
+  timeContact: { 
+    flex: 1,
+  },
+  infoRow: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 4 
+  },
+  infoText: { 
+    fontSize: 12,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  reminderButton: { 
+    padding: 8, 
     borderRadius: 10,
+  },
+  actionButtons: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+  },
+  actionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 9,
+    paddingHorizontal: 10,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: '600',
+    marginLeft: 6,
+  },
+  actionFooter: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 5,
+    marginBottom: 40,
+  },
+  completeButton: {
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
   },
-  cancelButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold', marginLeft: 8 },
+  cancelButton: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionButtonText: {
+    color: 'white',
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  emptyStateText: {
+    fontSize: 16,
+    fontWeight: '500',
+    marginTop: 12,
+  },
 });
 
 export default TravelPage;

@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, SafeAreaView, StyleSheet, TouchableOpacity, View, } from 'react-native';
 import GradientBackground from '../../components/GradientBackground';
 import Spacer from '../../components/Spacer';
 import SWText from '../../components/SWText';
@@ -21,8 +21,7 @@ const WithVanDashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [dashboardloading, setdashboardLoading] = useState(true);
 
-  useEffect(() => {
-    const loadUserData = async () => {
+  const loadUserData = async () => {
       try {
         const session = await AsyncStorage.getItem('user_session'); // get stored user
         if (!session) {
@@ -52,9 +51,16 @@ const WithVanDashboard = () => {
       setdashboardLoading(false);
       }
     
-    };
+  };
+
+  useEffect(() => {
 
     loadUserData();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(loadUserData, 10000); // every 2s
+    return () => clearInterval(interval);
   }, []);
 
   const handleEndTrip = async () => {
@@ -106,21 +112,30 @@ const WithVanDashboard = () => {
     }
   };
 
+  if (loading || dashboardloading) {
+      return (
+        <SafeAreaView style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <SWText style={{ marginTop: 10, color: '#666' }}>Loading...</SWText>
+        </SafeAreaView>
+      );
+  }
+
   return (
     <View style={styles.container}>
     <Spacer />
-    <SWText style={[styles.welcomeText, { color: theme.primary }]} lg uberBold>
+    <SWText style={[styles.welcomeText, { color: theme.colors.accentblue }]} lg uberBold>
       Good Morning, {user?.name || 'Driver'}!
     </SWText>
 
     {/* --- Plan for Today --- */}
     <View style={styles.card}>
-      <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+      <SWText style={[styles.cardTitle, { color: theme.colors.accentblue }]} md uberBold>
         Plan for today
       </SWText>
 
       {dashboardloading ? (
-        <ActivityIndicator color={theme.colors.primary} />
+        <ActivityIndicator color={theme.colors.accentblue} />
       ) : dashboardData ? (
         <View style={styles.routeInfo}>
           <SWText style={styles.routeSchool} md uberBold>
@@ -160,7 +175,7 @@ const WithVanDashboard = () => {
 
     {/* --- Vehicle Status --- */}
     <View style={styles.card}>
-      <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+      <SWText style={[styles.cardTitle, { color: theme.colors.accentblue }]} md uberBold>
         Vehicle Status
       </SWText>
 
@@ -200,7 +215,7 @@ const WithVanDashboard = () => {
 
     {/* --- Recent Activity --- */}
     <View style={styles.card}>
-      <SWText style={[styles.cardTitle, { color: theme.colors.primary }]} md uberBold>
+      <SWText style={[styles.cardTitle, { color: theme.colors.accentblue}]} md uberBold>
         Recent Activity
       </SWText>
 
