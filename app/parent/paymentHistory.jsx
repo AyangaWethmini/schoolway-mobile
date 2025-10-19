@@ -47,13 +47,13 @@ const PaymentHistory = ({ navigation }) => {
       // Format data to match your UI
       const formatted = data.map((p) => ({
         id: p.id,
-        childName: p.child?.name || 'Unknown',
+        childName: p.Child?.name || 'Unknown',
         amount: p.amount,
         date: p.paidAt || p.createdAt,
         status: p.status === 'PAID' ? 'successful' : 
                 p.status === 'FAILED' ? 'failed' : 
                 'pending',
-        vanService: p.van?.makeAndModel || 'N/A',
+        vanService: p.Van?.makeAndModel || 'N/A',
         transactionId: `TX${String(p.id).padStart(6, '0')}`,
       }));
 

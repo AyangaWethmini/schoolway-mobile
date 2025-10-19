@@ -4,17 +4,21 @@ import Constants from 'expo-constants';
 import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import Toast from 'react-native-toast-message';
 import CurvedHeader from '../../components/CurvedHeader';
 import { useTheme } from '../../theme/ThemeContext';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
-
+const ETA_THRESHOLD_MINUTES = 25; // Notify when ETA < 5 mins
 
 const ParentMap = () => {
   const { theme } = useTheme();
   const [children, setChildren] = useState([]);
   const [sessions, setSessions] = useState([]);
   const mapTimer = useRef(null);
+
+  // Keep track of notified children to avoid spamming
+  const notifiedChildren = useRef({});
 
   const fetchChildrenSessions = async () => {
     try {
@@ -27,6 +31,30 @@ const ParentMap = () => {
       if (data.success) {
         setChildren(data.children || []);
         setSessions(data.sessions || []);
+
+        // Toast notifications for near ETA
+        data.sessions.forEach((session) => {
+          if (!session.etaMap) return;
+
+          for (const [childId, eta] of Object.entries(session.etaMap)) {
+            if (eta <= ETA_THRESHOLD_MINUTES && !notifiedChildren.current[childId]) {
+              const child = data.children.find(c => c.id.toString() === childId);
+              if (!child) continue;
+
+              // Show toast
+              Toast.show({
+                type: 'info',
+                text1: `🚌 Van for ${child.name} is almost there!`,
+                text2: `ETA: ${eta} minutes`,
+                position: 'top',
+                visibilityTime: 5000,
+              });
+
+              // Mark as notified
+              notifiedChildren.current[childId] = true;
+            }
+          }
+        });
       }
     } catch (err) {
       console.error('Failed to fetch children sessions:', err);
@@ -38,7 +66,7 @@ const ParentMap = () => {
     fetchChildrenSessions();
   }, []);
 
-  // Poll every 2-3 seconds for updates
+  // Poll every 3 seconds
   useEffect(() => {
     mapTimer.current = setInterval(fetchChildrenSessions, 3000);
     return () => {
@@ -47,28 +75,16 @@ const ParentMap = () => {
   }, []);
 
   const getChildLocation = (child, session) => {
-    
     if (!session) {
-
-      if(child.status === 'AT_SCHOOL'){
-        return {
-          latitude: parseFloat(child.Gate.latitude),
-          longitude: parseFloat(child.Gate.longitude),
-        };
+      if (child.status === 'AT_SCHOOL') {
+        return { latitude: parseFloat(child.Gate?.latitude), longitude: parseFloat(child.Gate?.longitude) };
+      } else {
+        return { latitude: parseFloat(child.pickupLat), longitude: parseFloat(child.pickupLng) };
       }
-      else{
-          return {
-            latitude: parseFloat(child.pickupLat),
-            longitude: parseFloat(child.pickupLng),
-        };
-      }
-    
-    };
+    }
+    const studentFirebase = session.firebaseData?.students?.[child.id.toString()];
+    if (!studentFirebase) return { latitude: parseFloat(child.pickupLat), longitude: parseFloat(child.pickupLng) };
 
-    const studentFirebase = session.firebaseData.students[child.id.toString()];
-    if (!studentFirebase) return { latitude: child.pickupLat, longitude: child.pickupLng };
-
-    // If child is in van, show van location
     if (studentFirebase.status === 'picked_up' && session.firebaseData.currentLocation) {
       return {
         latitude: session.firebaseData.currentLocation.latitude,
@@ -76,18 +92,10 @@ const ParentMap = () => {
       };
     }
 
-    // Otherwise show home location
-    if(child.status === 'AT_HOME') {
-      return {
-        latitude: studentFirebase.homeLocation.latitude,
-        longitude: studentFirebase.homeLocation.longitude,
-      };
-    }
-    else if(child.status === 'AT_SCHOOL'){
-      return {
-        latitude: studentFirebase.schoolLocation.latitude,
-        longitude: studentFirebase.schoolLocation.longitude,
-      };
+    if (child.status === 'AT_HOME') {
+      return { latitude: studentFirebase.homeLocation.latitude, longitude: studentFirebase.homeLocation.longitude };
+    } else if (child.status === 'AT_SCHOOL') {
+      return { latitude: studentFirebase.schoolLocation.latitude, longitude: studentFirebase.schoolLocation.longitude };
     }
   };
 
@@ -106,9 +114,10 @@ const ParentMap = () => {
         showsMyLocationButton={true}
       >
         {children.map((child) => {
-          // Find the session this child belongs to
-          const session = sessions.find(s => s.SessionStudent.some(ss => ss.childId === child.id));
 
+          const session = sessions.find(s => 
+            s.sessionStudents?.some(ss => ss.childId === child.id)
+          );          
           const loc = getChildLocation(child, session);
 
           return (
@@ -120,6 +129,10 @@ const ParentMap = () => {
           );
         })}
       </MapView>
+      {/* Add Toast container */}
+      <View style={{ zIndex: 9999 }}>
+        <Toast />
+      </View>
     </View>
   );
 };

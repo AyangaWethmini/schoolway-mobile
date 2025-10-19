@@ -176,9 +176,24 @@ const AddChild = () => {
       return;
     }
 
-    if(!age || !grade){
+    if ( !pickupLocation ){
+      Alert.alert('Validation Error', 'Please select a pickup location.');
+      return;
+    }
+
+    if ( !selectedSchool ){
+      Alert.alert('Validation Error', 'Please select a school');
+      return;
+    }
+
+    if( grade > 13 || grade < 1){
+      Alert.alert('Validation Error', 'Please fill a valid grade.');
+      return;
+    }
+
+
+    if(!age ){
       setAge(1)
-      setGrade(2)
     }
 
     const formData = new FormData();
@@ -245,7 +260,6 @@ const AddChild = () => {
         <View style={styles.formContainer}>
           {/* Name, Age, Grade */}
           <TextInputComponent placeholder="Enter Child's name" value={childName} onChangeText={setChildName} />
-          <NumberInput placeholder="Enter Child's age" value={age}  onChangeText={setAge} />
           <NumberInput placeholder="Enter Child's Grade" value={grade} onChangeText={setGrade} />
 
           {/* Searchable School Dropdown */}

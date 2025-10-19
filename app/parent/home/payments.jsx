@@ -53,10 +53,10 @@ const Payments = () => {
 
       const formatted = data.map((p) => ({
         id: p.id,
-        name: p.child?.name || "Unknown",
-        grade: p.child?.grade || "N/A",
-        vanService: p.van?.makeAndModel || "N/A",
-        route: p.van?.registrationNumber || "N/A",
+        name: p.Child?.name || "Unknown",
+        grade: p.Child?.grade || "N/A",
+        vanService: p.Van?.makeAndModel || "N/A",
+        route: p.Van?.registrationNumber || "N/A",
         monthlyFee: p.amount,
         isPaid: p.status === "PAID" || p.status === "successful",
         dueDate: p.dueDate || new Date().toISOString().split("T")[0],

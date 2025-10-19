@@ -530,42 +530,9 @@ const Profile = () => {
             <View style={styles.infoData}>
               <SWText style={styles.label}>Email</SWText>
               <View style={styles.inlineRow}>
-                {editingField === 'email' ? (
-                  <TextInput
-                    style={styles.input}
-                    value={editValue}
-                    onChangeText={setEditValue}
-                    keyboardType="email-address"
-                    autoFocus
-                    onBlur={handleUpdate}
-                  />
-                ) : (
                   <>
                     <SWText style={styles.value}>{profile?.email}</SWText>
-                    <Ionicons name="warning" size={16} color="orange" />
                   </>
-                )}
-              </View>
-            </View>
-            <View>
-              <View style={styles.rowIcon}>
-                <TouchableOpacity
-                  onPress={() => {
-                    setEditingField('email');
-                    setEditValue(profile?.email ?? '');
-                  }}
-                >
-                  <Ionicons name="arrow-forward-outline" size={20} color="#000" />
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-          <View style={styles.infoRow}>
-            <View style={styles.infoData}>
-              <SWText style={styles.label}>Language</SWText>
-              <View style={styles.inlineRow}>
-                <SWText style={styles.value}>English</SWText>
-                <Ionicons name="open-outline" size={16} color="#000" />
               </View>
             </View>
           </View>

@@ -73,7 +73,7 @@ const DriverMap = () => {
 
   // ✅ Poll every 2 seconds to refetch student/session data
   useEffect(() => {
-    const interval = setInterval(fetchSessionData, 2000); // every 2s
+    const interval = setInterval(fetchSessionData, 10000); // every 2s
     return () => clearInterval(interval);
   }, []);
 
