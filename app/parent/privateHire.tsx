@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import MapView, { Marker } from 'react-native-maps';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useRouter } from 'expo-router';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
 
 import {
@@ -14,8 +14,9 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Image
+  Image,
 } from 'react-native';
+import { Linking } from 'react-native';
 import { Button } from "../components/button";
 import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
@@ -25,6 +26,8 @@ import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const PrivateHire = () => {
+  // Store warning from search endpoint
+  const [searchWarning, setSearchWarning] = useState('');
   
   // Helper to get place name from coordinates
   const getPlaceName = async (coords: LatLng, cb: (name: string) => void) => {
@@ -56,10 +59,12 @@ const PrivateHire = () => {
     acCondition: boolean;
     photoUrl: string;
     ownerId: string;
-    privateRating: number;
-    routeStart: string;
-    pickupDistance: number;
-    tripDistance: number;
+  privateRating: number;
+  averageRating: number;
+  contactNo: string;
+  routeStart: string;
+  pickupDistance: number;
+  tripDistance: number;
   };
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [destinationCoords, setDestinationCoords] = useState<LatLng | null>(null);
@@ -369,8 +374,8 @@ const PrivateHire = () => {
     contactButton: {
       backgroundColor: '#f8f9fa',
       paddingHorizontal: 16,
-      paddingVertical: 8,
-      borderRadius: 8,
+      paddingVertical : 16,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: '#ddd',
     },
@@ -641,9 +646,10 @@ const PrivateHire = () => {
         throw new Error('Failed to search vans.');
       }
 
-      const data = await response.json();
-      setAvailableVans(data.vans || []);
-      setShowVanSelection(true);
+  const data = await response.json();
+  setAvailableVans(data.vans || []);
+  setSearchWarning(data.warning || '');
+  setShowVanSelection(true);
     } catch (error) {
       console.error('Van search failed:', error.message);
       Alert.alert('Error', 'Could not search for vans. Please try again.');
@@ -696,7 +702,7 @@ const PrivateHire = () => {
       notes: formData.additionalNotes || '',
       status: 'PENDING',
       vanId: selectedVan?.id ?? null,
-      fare,
+      fare ,
     };
     console.log('Submitting hire payload:', payload);
     try {
@@ -713,6 +719,7 @@ const PrivateHire = () => {
         throw new Error('Failed to submit private hire request.');
       }
       const data = await response.json();
+      console.log(data);
       Alert.alert(
         'Request Sent!',
         `Your request for ${selectedVan.makeAndModel || 'Van'} has been sent to the driver. They will contact you soon.`,
@@ -803,13 +810,51 @@ const PrivateHire = () => {
           {/* Map Modal for Pickup Location */}
           <Modal visible={showPickupMap} animationType="slide">
             <View style={{flex: 1}}>
-              <View style={{padding: 12, backgroundColor: '#fff', zIndex: 2}}>
-                <TextInput
-                  style={{borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, marginBottom: 8}}
-                  placeholder="Search pickup location..."
-                  value={pickupSearch}
-                  onChangeText={setPickupSearch}
-                  onSubmitEditing={async () => {
+              {/* Header with Close button */}
+              <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 18, paddingBottom: 10, backgroundColor: '#f8f9fa', zIndex: 2, borderBottomWidth: 1, borderBottomColor: '#e0e0e0'}}>
+                <TouchableOpacity onPress={() => setShowPickupMap(false)} style={{padding: 8}}>
+                  <Ionicons name="close" size={24} color="#333" />
+                </TouchableOpacity>
+                <SWText style={{fontSize: 16, fontWeight: 'bold', color: '#333'}}>Select Pickup Location</SWText>
+                <View style={{width: 32}} />
+              </View>
+              {/* Search bar row */}
+              <View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 0, paddingBottom: 10, backgroundColor: '#f8f9fa', zIndex: 2}}>
+                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#d1e7dd', paddingHorizontal: 12, paddingVertical: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.07, shadowRadius: 2, elevation: 2}}>
+                  <Ionicons name="search" size={18} color="#008080" style={{marginRight: 8}} />
+                  <TextInput
+                    style={{flex: 1, fontSize: 16, color: '#222', paddingVertical: 6}}
+                    placeholder="Search pickup location..."
+                    placeholderTextColor="#888"
+                    value={pickupSearch}
+                    onChangeText={setPickupSearch}
+                    onSubmitEditing={async () => {
+                      if (pickupSearch.trim()) {
+                        try {
+                          const results = await Location.geocodeAsync(pickupSearch);
+                          if (results && results.length > 0) {
+                            const loc = results[0];
+                            setPickupMapRegion({
+                              latitude: loc.latitude,
+                              longitude: loc.longitude,
+                              latitudeDelta: 0.05,
+                              longitudeDelta: 0.05,
+                            });
+                            setPickupCoords({ latitude: loc.latitude, longitude: loc.longitude });
+                          } else {
+                            Alert.alert('Location not found');
+                          }
+                        } catch {
+                          Alert.alert('Error searching location');
+                        }
+                      }
+                    }}
+                    returnKeyType="search"
+                  />
+                </View>
+                <TouchableOpacity
+                  style={{marginLeft: 10, backgroundColor: '#008080', borderRadius: 10, padding: 12, shadowColor: '#008080', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.18, shadowRadius: 4, elevation: 3}}
+                  onPress={async () => {
                     if (pickupSearch.trim()) {
                       try {
                         const results = await Location.geocodeAsync(pickupSearch);
@@ -830,8 +875,9 @@ const PrivateHire = () => {
                       }
                     }
                   }}
-                  returnKeyType="search"
-                />
+                >
+                  <Ionicons name="search" size={22} color="#fff" />
+                </TouchableOpacity>
               </View>
               <MapView
                 style={{flex: 1}}
@@ -856,20 +902,58 @@ const PrivateHire = () => {
                   await getPlaceName(pickupCoords, (name) => setFormData({...formData, pickupLocation: name}));
                 }
                 setPickupSearch('');
-              }} />
+              }} passstyles={{ marginVertical: 16, marginHorizontal: 16 }} />
             </View>
           </Modal>
 
           {/* Map Modal for Destination Location */}
           <Modal visible={showDestinationMap} animationType="slide">
             <View style={{flex: 1}}>
-              <View style={{padding: 12, backgroundColor: '#fff', zIndex: 2}}>
-                <TextInput
-                  style={{borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8, marginBottom: 8}}
-                  placeholder="Search destination location..."
-                  value={destinationSearch}
-                  onChangeText={setDestinationSearch}
-                  onSubmitEditing={async () => {
+              {/* Header with Close button */}
+              <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingTop: 18, paddingBottom: 10, backgroundColor: '#f8f9fa', zIndex: 2, borderBottomWidth: 1, borderBottomColor: '#e0e0e0'}}>
+                <TouchableOpacity onPress={() => setShowDestinationMap(false)} style={{padding: 8}}>
+                  <Ionicons name="close" size={24} color="#333" />
+                </TouchableOpacity>
+                <SWText style={{fontSize: 16, fontWeight: 'bold', color: '#333'}}>Select Destination Location</SWText>
+                <View style={{width: 32}} />
+              </View>
+              {/* Search bar row */}
+              <View style={{flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingTop: 0, paddingBottom: 10, backgroundColor: '#f8f9fa', zIndex: 2}}>
+                <View style={{flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', borderRadius: 12, borderWidth: 1, borderColor: '#d1e7dd', paddingHorizontal: 12, paddingVertical: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.07, shadowRadius: 2, elevation: 2}}>
+                  <Ionicons name="search" size={18} color="#008080" style={{marginRight: 8}} />
+                  <TextInput
+                    style={{flex: 1, fontSize: 16, color: '#222', paddingVertical: 6}}
+                    placeholder="Search destination location..."
+                    placeholderTextColor="#888"
+                    value={destinationSearch}
+                    onChangeText={setDestinationSearch}
+                    onSubmitEditing={async () => {
+                      if (destinationSearch.trim()) {
+                        try {
+                          const results = await Location.geocodeAsync(destinationSearch);
+                          if (results && results.length > 0) {
+                            const loc = results[0];
+                            setDestinationMapRegion({
+                              latitude: loc.latitude,
+                              longitude: loc.longitude,
+                              latitudeDelta: 0.05,
+                              longitudeDelta: 0.05,
+                            });
+                            setDestinationCoords({ latitude: loc.latitude, longitude: loc.longitude });
+                          } else {
+                            Alert.alert('Location not found');
+                          }
+                        } catch {
+                          Alert.alert('Error searching location');
+                        }
+                      }
+                    }}
+                    returnKeyType="search"
+                  />
+                </View>
+                <TouchableOpacity
+                  style={{marginLeft: 10, backgroundColor: '#008080', borderRadius: 10, padding: 12, shadowColor: '#008080', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.18, shadowRadius: 4, elevation: 3}}
+                  onPress={async () => {
                     if (destinationSearch.trim()) {
                       try {
                         const results = await Location.geocodeAsync(destinationSearch);
@@ -890,8 +974,9 @@ const PrivateHire = () => {
                       }
                     }
                   }}
-                  returnKeyType="search"
-                />
+                >
+                  <Ionicons name="search" size={22} color="#fff" />
+                </TouchableOpacity>
               </View>
               <MapView
                 style={{flex: 1}}
@@ -916,7 +1001,7 @@ const PrivateHire = () => {
                   await getPlaceName(destinationCoords, (name) => setFormData({...formData, destination: name}));
                 }
                 setDestinationSearch('');
-              }} />
+              }} passstyles={{ marginVertical: 16, marginHorizontal: 16 }} />
             </View>
           </Modal>
           <View style={styles.dateRow}>
@@ -1019,54 +1104,70 @@ const PrivateHire = () => {
             <SWText style={{ textAlign: 'center', marginTop: 32 }}>No vans found for your trip details.</SWText>
           ) : (
       availableVans.map((van: Van) => (
-              <View key={van.id} style={[styles.vanCard, { borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 6, marginBottom: 24, backgroundColor: '#fff' }]}> 
-                <View style={{ flexDirection: 'row', alignItems: 'center', padding: 12 }}>
-                  <View style={[styles.vanImageContainer, { borderRadius: 12, overflow: 'hidden', marginRight: 16, backgroundColor: '#f0f4fa', width: 72, height: 72, justifyContent: 'center', alignItems: 'center' }]}> 
-                    {van.photoUrl ? (
-                      <Image source={{ uri: van.photoUrl }} style={{ width: 72, height: 72, borderRadius: 12 }} />
-                    ) : (
-                      <SWText style={{ fontSize: 40 }}>🚐</SWText>
-                    )}
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <SWText uberBold style={{ fontSize: 20, color: '#1a1a1a', marginBottom: 4 }}>{van.makeAndModel || 'Van'}</SWText>
-                    <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
-                      <Ionicons name={van.acCondition ? 'snow' : 'sunny'} size={16} color={van.acCondition ? '#2196F3' : '#FFA726'} />
-                      {' '}{van.seatingCapacity} seats • {van.acCondition ? 'AC' : 'No AC'}
-                    </SWText>
-                    <SWText style={{ fontSize: 13, color: '#666', marginBottom: 2 }}>
-                      <Ionicons name="pricetag" size={14} color="#888" /> Reg: {van.registrationNumber} | Plate: {van.licensePlateNumber}
-                    </SWText>
-                    <SWText style={{ fontSize: 13, color: '#666' }}>
-                      <Ionicons name="location" size={14} color="#888" /> Pickup: {van.pickupDistance ? van.pickupDistance.toFixed(1) : '-'} km | Trip: {van.tripDistance ? van.tripDistance.toFixed(1) : '-'} km
-                    </SWText>
-                  </View>
-                </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 12 }}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    {/* <Ionicons name="star" size={18} color="#FFD700" /> */}
-                    {/* <SWText style={{ fontSize: 15, color: '#333', marginLeft: 4 }}>{van.privateRating}</SWText> */}
-                  </View>
-                  <View style={{ backgroundColor: '#e8f4f8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
-                    <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold' }}>
-                      Estimated Fare: Rs. {van.privateRating && van.tripDistance ? Math.round(van.privateRating * van.tripDistance * 2).toLocaleString() : '-'}
-                    </SWText>
-                  </View>
-                </View>
-                <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: 16 }}>
-                  <TouchableOpacity style={[styles.contactButton, { marginRight: 8 }]}> 
-                    <SWText style={styles.contactButtonText}>📞 Contact</SWText>
-                  </TouchableOpacity>
-                  <Button
-                    title="Request This Van"
-                    varient="primary"
-                    onPress={() => handleVanRequest(van)}
-                    passstyles={styles.requestButton}
-                  />
-                </View>
+        <React.Fragment key={van.id}>
+          <View style={[styles.vanCard, { borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.15, shadowRadius: 8, elevation: 6, marginBottom: 24, backgroundColor: '#fff' }]}> 
+            <View style={{ flexDirection: 'row', alignItems: 'center', padding: 12 }}>
+              <View style={[styles.vanImageContainer, { borderRadius: 12, overflow: 'hidden', marginRight: 16, backgroundColor: '#f0f4fa', width: 72, height: 72, justifyContent: 'center', alignItems: 'center' }]}> 
+                {van.photoUrl ? (
+                  <Image source={{ uri: van.photoUrl }} style={{ width: 72, height: 72, borderRadius: 12 }} />
+                ) : (
+                  <SWText style={{ fontSize: 40 }}>🚐</SWText>
+                )}
               </View>
-            ))
+              <View style={{ flex: 1 }}>
+                <SWText uberBold style={{ fontSize: 20, color: '#1a1a1a', marginBottom: 4 }}>{van.makeAndModel || 'Van'}</SWText>
+                <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
+                  <Ionicons name={van.acCondition ? 'snow' : 'sunny'} size={16} color={van.acCondition ? '#2196F3' : '#FFA726'} />
+                  {' '}{van.seatingCapacity} seats • {van.acCondition ? 'AC' : 'No AC'}
+                </SWText>
+                <SWText style={{ fontSize: 15, color: '#FFD700', marginBottom: 2 }}>
+                  <Ionicons name="star" size={16} color="#FFD700" /> {van.averageRating ? van.averageRating.toFixed(1) : '-'} / 5
+                </SWText>
+                
+                <SWText style={{ fontSize: 13, color: '#666', marginBottom: 2 }}>
+                  <Ionicons name="pricetag" size={14} color="#888" /> Reg: {van.registrationNumber} | Plate: {van.licensePlateNumber}
+                </SWText>
+                <SWText style={{ fontSize: 13, color: '#666' }}>
+                  <Ionicons name="location" size={14} color="#888" /> Pickup: {van.pickupDistance ? van.pickupDistance.toFixed(1) : '-'} km | Trip: {van.tripDistance ? van.tripDistance.toFixed(1) : '-'} km
+                </SWText>
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 12 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                {/* <Ionicons name="star" size={18} color="#FFD700" /> */}
+                {/* <SWText style={{ fontSize: 15, color: '#333', marginLeft: 4 }}>{van.privateRating}</SWText> */}
+              </View>
+              <View style={{ backgroundColor: '#e8f4f8', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
+                <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold' }}>
+                  Estimated Fare: Rs. {van.privateRating && van.tripDistance ? Math.round(van.privateRating * van.tripDistance * 2).toLocaleString() : '-'}
+                </SWText>
+              </View>
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingHorizontal: 16, paddingBottom: 16 }}>
+              <TouchableOpacity style={[styles.contactButton, { marginRight: 8 }]}> 
+                <SWText style={styles.contactButtonText} onPress={() => Linking.openURL(`tel:${van.contactNo}`)}>Contact</SWText>
+              </TouchableOpacity>
+              <Button
+                title="Request This Van"
+                varient="primary"
+                onPress={() => handleVanRequest(van)}
+                passstyles={styles.requestButton}
+              />
+              
+            </View>
+            {/* Capacity warning below card */}
+          {searchWarning.includes(van.registrationNumber) && (
+            <View style={{paddingHorizontal: 16, paddingBottom: 8, marginTop: -16}}>
+              <SWText style={{ color: '#ea5a5aff', fontSize: 14, fontWeight: 'bold', textAlign: 'left' , marginTop : 10}}>
+                * Capacity not Enough
+              </SWText>
+            </View>
           )}
+          </View>
+          
+        </React.Fragment>
+      ))
+    )}
         </View>
       )}
     </ScrollView>
@@ -1112,7 +1213,17 @@ const PrivateHire = () => {
         {hireHistory.length === 0 ? (
           <SWText style={{ textAlign: 'center', marginTop: 32 }}>No bookings found.</SWText>
         ) : (
-          hireHistory.map((hire: any) => (
+          [...hireHistory].sort((a, b) => {
+            // Sort: accepted first, then others, cancelled last
+            const aCancelled = a.status && a.status.toLowerCase() === 'cancelled';
+            const bCancelled = b.status && b.status.toLowerCase() === 'cancelled';
+            if (aCancelled && !bCancelled) return 1;
+            if (!aCancelled && bCancelled) return -1;
+            const aHasFinalAccepted = a.finalFare !== null && a.finalFare !== undefined && a.status && a.status.toLowerCase() === 'accepted';
+            const bHasFinalAccepted = b.finalFare !== null && b.finalFare !== undefined && b.status && b.status.toLowerCase() === 'accepted';
+            if (aHasFinalAccepted === bHasFinalAccepted) return 0;
+            return aHasFinalAccepted ? -1 : 1;
+          }).map((hire: any) => (
             <View key={hire.id} style={[styles.historyCard, { borderRadius: 16, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.12, shadowRadius: 8, elevation: 4, marginBottom: 24, backgroundColor: '#fff', padding: 18 }]}> 
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                 <Ionicons name="car" size={28} color="#008080" style={{ marginRight: 12 }} />
@@ -1132,6 +1243,9 @@ const PrivateHire = () => {
               <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
                 <Ionicons name="flag" size={16} color="#008080" /> Destination: {bookingPlaces[hire.id]?.destination || `${hire.destinationLat?.toFixed(3)}, ${hire.destinationLng?.toFixed(3)}`}
               </SWText>
+              <SWText style={{ fontSize: 15, color: '#008080', marginBottom: 2 }}>
+                <Ionicons name="map" size={16} color="#008080" /> Distance: {hire.tripDistance ? `${hire.tripDistance.toFixed(1)} km` : '-'}
+              </SWText>
               <SWText style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>
                 <Ionicons name="calendar" size={15} color="#888" /> {hire.departureDate ? new Date(hire.departureDate).toLocaleDateString() : '-'}
                 {hire.returnDate ? ` - ${new Date(hire.returnDate).toLocaleDateString()}` : ''}
@@ -1142,16 +1256,62 @@ const PrivateHire = () => {
               <SWText style={{ fontSize: 14, color: '#666', marginBottom: 2 }}>
                 <Ionicons name="document-text" size={15} color="#888" /> Notes: {hire.notes || '-'}
               </SWText>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
-                <Ionicons name="cash" size={18} color="#008080" style={{ marginRight: 4 }} />
-                <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold' }}>
-                  {hire.fare !== null && hire.fare !== undefined ? `Rs. ${Math.round(hire.fare).toLocaleString()}` : 'Fare: -'}
-                </SWText>
+              <View style={{ flexDirection: 'col', alignItems: 'left', marginTop: 8 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="cash" size={18} color="#008080" style={{ marginRight: 4 }} />
+                  <SWText style={{ fontSize: 16, color: '#008080', fontWeight: 'bold', marginRight: 8 }}>
+                    {hire.fare !== null && hire.fare !== undefined ? `Rs. ${Math.round(hire.fare).toLocaleString()}` : 'Fare: -'}
+                  </SWText>
+                </View>
+                {hire.finalFare !== null && hire.finalFare !== undefined && (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8f8f8', borderRadius: 8, padding: 8, marginLeft: 0, marginBottom: 4 }}>
+                    <SWText style={{ fontSize: 16, color: '#d32f2f', fontWeight: 'bold', marginRight: 12 }}>
+                      Final Fare: Rs. {Math.round(hire.finalFare).toLocaleString()}
+                    </SWText>
+                    {(hire.finalFare !== null && hire.finalFare !== undefined && hire.status && hire.status.toLowerCase() === 'accepted') && (
+                      <Button
+                        title="Proceed to Pay"
+                        varient="primary"
+                        passstyles={{ paddingHorizontal: 16, paddingVertical: 6, backgroundColor: '#008080', borderRadius: 6 }}
+                        onPress={() => {
+                          router.push({
+                            pathname: '/parent/privateHirePaymentDetails',
+                            params: {
+                              finalFare: hire.finalFare,
+                              destination: bookingPlaces[hire.id]?.destination || `${hire.destinationLat?.toFixed(3)}, ${hire.destinationLng?.toFixed(3)}`,
+                              pickupLocation: bookingPlaces[hire.id]?.pickup || `${hire.pickupLat?.toFixed(3)}, ${hire.pickupLng?.toFixed(3)}`,
+                              departureDate: hire.departureDate ? new Date(hire.departureDate).toLocaleDateString() : '-',
+                              returnDate: hire.returnDate ? new Date(hire.returnDate).toLocaleDateString() : '-',
+                              passengers: hire.noOfPassengers,
+                              notes: hire.notes || '-',
+                              vanId: hire.vanId || '',
+                              status: hire.status || '',
+                            }
+                          });
+                        }}
+                      />
+                    )}
+                  </View>
+                )}
+                
               </View>
               {/* Optionally show cancel button for pending bookings */}
-              {hire.status && hire.status.toLowerCase() === 'pending' && (
+              {hire.status && hire.status.toLowerCase() !== 'cancelled' && (
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
-                  <TouchableOpacity style={[styles.cancelButton, { minWidth: 100 }]}> 
+                  <TouchableOpacity style={[styles.cancelButton, { minWidth: 100 }]}
+                   onPress={async () => {
+                    try {
+                      const response = await fetch(`${API_URL}/private-hire/my-hires/cancel`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: hire.id })
+                      });
+                      if (!response.ok) throw new Error('Failed to cancel booking');
+                      fetchMyHires();
+                    } catch (err) {
+                      Alert.alert('Error', 'Could not cancel booking.');
+                    }
+                  }}>
                     <SWText style={styles.cancelButtonText}>Cancel</SWText>
                   </TouchableOpacity>
                 </View>
