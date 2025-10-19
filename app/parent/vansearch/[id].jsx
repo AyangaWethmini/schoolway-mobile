@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import Constants from 'expo-constants';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Link, useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
   ActivityIndicator, // Add this import
@@ -213,44 +213,64 @@ const SchoolVanScreen = ({ navigation }) => {
                       </View>
                     </View>
 
-                    {/* Key Features - Compact Grid */}
+                    {/* Key Features - 2x2 Grid */}
                     <View style={styles.featuresGrid}>
-                      <View style={styles.featureItem}>
-                        <Ionicons name="people" size={18} color="#4CAF50" />
-                        <SWText style={styles.featureText}>{van.seatingCapacity} seats</SWText>
+                      <View style={styles.featuresRow}>
+                        {/* Seats */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons name="people" size={18} color={theme.colors.primary} />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>Capacity</SWText>
+                            <SWText style={styles.featureValue}>{van.seatingCapacity} seats</SWText>
+                          </View>
+                        </View>
+
+                        {/* AC */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons 
+                              name={van.acCondition ? "snow" : "close-circle"} 
+                              size={18} 
+                              color={theme.colors.primary}
+                            />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>AC Status</SWText>
+                            <SWText style={styles.featureValue}>
+                              {van.acCondition ? "Available" : "Not Available"}
+                            </SWText>
+                          </View>
+                        </View>
                       </View>
-                      
-                      <View style={styles.featureItem}>
-                        <Ionicons 
-                          name={van.acCondition ? "snow" : "close-circle"} 
-                          size={18} 
-                          color={van.acCondition ? "#2196F3" : "#999"} 
-                        />
-                        <SWText style={styles.featureText}>
-                          {van.acCondition ? "AC" : "Non-AC"}
-                        </SWText>
-                      </View>
-                      
-                      <View style={styles.featureItem}>
-                        <Ionicons 
-                          name="car-sport" 
-                          size={18} 
-                          color={van.hasDriver ? "#4CAF50" : "#999"} 
-                        />
-                        <SWText style={styles.featureText}>
-                          {van.hasDriver ? `Driver: ${van.UserProfile_Van_assignedDriverIdToUserProfile?.firstname}` : "No Driver"}
-                        </SWText>
-                      </View>
-                      
-                      <View style={styles.featureItem}>
-                        <Ionicons 
-                          name="person-add" 
-                          size={18} 
-                          color={van.hasAssistant ? "#4CAF50" : "#999"} 
-                        />
-                        <SWText style={styles.featureText}>
-                          {van.hasAssistant ? "Assistant" : "No Asst."}
-                        </SWText>
+
+                      <View style={styles.featuresRow}>
+                        {/* Driver */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons name="car-sport" size={18} color={theme.colors.primary} />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>Driver</SWText>
+                            <SWText style={styles.featureValue}>
+                              {van.hasDriver ? "Available" : "Not Available"}
+                            </SWText>
+                          </View>
+                        </View>
+
+                        {/* Assistant */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons name="person-add" size={18} color={theme.colors.primary} />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>Assistant</SWText>
+                            <SWText style={styles.featureValue}>
+                              {van.hasAssistant ? "Available" : "Not Available"}
+                            </SWText>
+                          </View>
+                        </View>
                       </View>
                     </View>
 
@@ -290,23 +310,48 @@ const SchoolVanScreen = ({ navigation }) => {
                       </View>
                     </View>
 
-                    {/* Action Button */}
-                    {van.requestStatus === 'PENDING' ? (
-                      <View>
-                        <Button
-                          title="Request Pending"
-                          varient="outlined-secondary"
-                          disabled={true}
-                        />
-                        <SWText style={styles.pendingText}>Your request is being reviewed</SWText>
+                    {/* Action Buttons */}
+                    <View style={styles.buttonContainer}>
+                      {/* Request Button Row */}
+                      <View style={styles.buttonRow}>
+                        {van.requestStatus === 'PENDING' ? (
+                          <>
+                            <Button
+                              title="Request Pending"
+                              varient="outlined-secondary"
+                              disabled={true}
+                            />
+                            <SWText style={styles.pendingText}>Your request is being reviewed</SWText>
+                          </>
+                        ) : (
+                          <Button
+                            title="Request This Van"
+                            varient="secondary"
+                            onPress={() => handleRequest(van.id, van.estimatedFare)}
+                          />
+                        )}
                       </View>
-                    ) : (
-                      <Button
-                        title="Request This Van"
-                        varient="secondary"
-                        onPress={() => handleRequest(van.id, van.estimatedFare)}
-                      />
-                    )}
+
+                      {/* More Info Button Row */}
+                      <Link
+                        href={`/parent/van-details/${van.id}`}
+                        asChild
+                      >
+                        <TouchableOpacity style={styles.moreInfoButton}>
+                          <Ionicons 
+                            name="information-circle-outline" 
+                            size={18} 
+                            color={theme.colors.primary} 
+                          />
+                          <SWText style={[
+                            styles.moreInfoText, 
+                            { color: theme.colors.primary }
+                          ]}>
+                            More Info
+                          </SWText>
+                        </TouchableOpacity>
+                      </Link>
+                    </View>
                   </View>
                 ))
               ) : (
@@ -411,25 +456,42 @@ const styles = StyleSheet.create({
     marginLeft: 4,
   },
   featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    marginBottom: 12,
-    paddingVertical: 8,
+    marginVertical: 16,
+    paddingVertical: 12,
     borderTopWidth: 1,
     borderBottomWidth: 1,
     borderColor: '#f0f0f0',
   },
+  featuresRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    width: '50%',
-    marginBottom: 6,
+    width: '48%', // Leave some space between items
   },
-  featureText: {
-    fontSize: 13,
+  featureIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  featureTextContainer: {
+    flex: 1,
+  },
+  featureLabel: {
+    fontSize: 12,
+    color: '#666',
+    marginBottom: 2,
+  },
+  featureValue: {
+    fontSize: 14,
+    fontWeight: '600',
     color: '#333',
-    marginLeft: 6,
-    fontWeight: '500',
   },
   routePriceRow: {
     flexDirection: 'row',
@@ -493,6 +555,28 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontWeight: '500',
   },
+  buttonContainer: {
+    marginTop: 16,
+  },
+  buttonRow: {
+    marginBottom: 12,
+  },
+  moreInfoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    backgroundColor: '#f5f5f5',
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  moreInfoText: {
+    fontSize: 14,
+    marginLeft: 8,
+    fontWeight: '500',
+  },
   pendingText: {
     fontSize: 12,
     color: '#666',
@@ -523,8 +607,7 @@ const styles = StyleSheet.create({
     color: '#888',
     textAlign: 'center',
     lineHeight: 20,
-  }
-
+  },
 });
 
 export default SchoolVanScreen;
