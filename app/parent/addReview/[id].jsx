@@ -105,7 +105,7 @@ const AddReview = () => {
             console.log('Fetched child data:', JSON.stringify(childData, null, 2));
             
             const childData = childDataRes.child;
-            
+
             // Set van ID from child data
             if (childData.vanID) {
                 setVanId(childData.vanID);
@@ -120,8 +120,8 @@ const AddReview = () => {
                 console.log('Child has van:', JSON.stringify(van, null, 2));
                 
                 // Set driver info if van has assigned driver
-                if (van.assignedDriverId && van.UserProfile_assignedDriverIdToUserProfile) {
-                    const driver = van.UserProfile_assignedDriverIdToUserProfile;
+                if (van.assignedDriverId && van.UserProfile_Van_assignedDriverIdToUserProfile) {
+                    const driver = van.UserProfile_Van_assignedDriverIdToUserProfile;
                     const driverProfile = driver.driverProfile;
                     
                     // Calculate experience
@@ -158,8 +158,8 @@ const AddReview = () => {
                 }
                 
                 // Set van service info
-                if (van.UserProfile && van.UserProfile.vanService) {
-                    const vanService = van.UserProfile.vanService;
+                if (van.UserProfile && van.UserProfile.VanService) {
+                    const vanService = van.UserProfile.VanService;
                     const vanServiceInfo = {
                         id: van.UserProfile.id, // Use van service owner's user ID as targetId
                         vanServiceId: vanService.id, // Keep van service ID for reference
@@ -205,7 +205,7 @@ const AddReview = () => {
 
     const checkExistingReviews = async (childId, driverId, vanServiceOwnerId) => {
         try {
-            console.log('Checking existing reviews for child:', childId);
+            console.log('Checking existing reviews for child:', childId , driverId , vanServiceOwnerId);
             
             // Check for driver review
             if (driverId) {

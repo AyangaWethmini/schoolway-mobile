@@ -1,12 +1,16 @@
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker } from 'react-native-maps';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
 import * as Location from 'expo-location';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import MapView, { Marker } from 'react-native-maps';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import {
   Alert,
+  Image,
+  Linking,
   Modal,
   Platform,
   ScrollView,
@@ -14,14 +18,10 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-  Image,
 } from 'react-native';
-import { Linking } from 'react-native';
 import { Button } from "../components/button";
 import SWText from '../components/SWText';
 import { useTheme } from "../theme/ThemeContext";
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Constants from 'expo-constants';
 
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
