@@ -571,7 +571,7 @@ const ChildView = ({ navigation, route }) => {
                   <Button
                     title="Add a Review"
                     varient="outlined-primary"
-                    onPress={() => router.push('/parent/addReview')}
+                    onPress={() => router.push(`/parent/addReview/${id}`)}
                   />
                 </View>
               )}
