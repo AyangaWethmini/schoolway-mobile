@@ -27,6 +27,8 @@ const CurvedHeader = ({ title, theme }) => {
 
         const user = JSON.parse(session);
 
+        console.log("User",user)
+
         const response = await fetch(`${API_URL}/notifications/unread-count?userId=${user.user.id}`);
         if (!response.ok) throw new Error('Failed to fetch notifications');
 
@@ -117,7 +119,7 @@ const headerStyles = StyleSheet.create({
   },
   wave: {
     position: 'absolute',
-    top: 68.6,
+    top: 67.6,
     left: 0,
   },
   notificationButton: {

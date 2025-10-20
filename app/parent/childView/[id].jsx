@@ -403,13 +403,13 @@ const ChildView = ({ navigation, route }) => {
             ) : (
               <Ionicons name="person-circle" size={80} color={'grey'} />
             )}
-            {isEditMode && (
-              <TouchableOpacity style={[styles.cameraIcon, { zIndex: 10, elevation: 10 }]} activeOpacity={0.7} onPress={pickImage}>
+          </View>
+          <SWText h1 style={styles.studentName}>{editData.name}</SWText>
+          {isEditMode && (
+              <TouchableOpacity style={[styles.cameraIcon]} onPress={pickImage}>
                 <Ionicons name="camera" size={30} color="white" />
               </TouchableOpacity>
             )}
-          </View>
-          <SWText h1 style={styles.studentName}>{editData.name}</SWText>
           <SWText style={styles.studentGrade}>Grade {editData.grade} • {editData.school}</SWText>
         </View>
 

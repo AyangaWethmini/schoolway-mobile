@@ -1,7 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
-import * as FileSystem from 'expo-file-system';
 import * as ImagePicker from 'expo-image-picker';
 import { useEffect, useState } from 'react';
 import {
@@ -120,50 +119,57 @@ const Profile = () => {
     }
   };
 
-  const handlePickImage = async () => {
-    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+const [selectedFile, setSelectedFile] = useState(null);
 
-    if (permissionResult.granted === false) {
-      Alert.alert("Permission Required", "Please allow access to your gallery.");
-      return;
-    }
+const handlePickImage = async () => {
+  console.log("Picking image...");
+  const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  if (status !== 'granted') {
+    Alert.alert('Permission required', 'Please grant media access to upload a photo.');
+    return;
+  }
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.7,
+  const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    quality: 1,
+  });
+
+  if (!result.canceled && result.assets?.[0]) {
+    setSelectedFile(result.assets[0]);
+    // Automatically upload after selection
+    uploadProfilePicture(result.assets[0]);
+  }
+};
+
+const uploadProfilePicture = async (imageFile) => {
+  try {
+    const formData = new FormData();
+    
+    formData.append('profileImage', {
+      uri: imageFile.uri,
+      type: imageFile.mimeType || 'image/jpeg',
+      name: imageFile.fileName || 'profile.jpg',
     });
 
-    if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      await uploadProfilePicture(uri);
-    }
-  };
+    const response = await fetch(`${API_URL}/parent/profile-pic/${profile.id}`, {
+      method: 'PUT',
+      body: formData,
+    });
 
-  const uploadProfilePicture = async (imageUri) => {
-    try {
-      const base64 = await FileSystem.readAsStringAsync(imageUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
+    const result = await response.json();
 
-      const response = await fetch(`${API_URL}/parent/profile-pic/${profile.id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ profileImage: `data:image/jpeg;base64,${base64}` }),
-      });
+    if (!response.ok) throw new Error(result.error || 'Upload failed');
 
-      const result = await response.json();
-
-      if (!response.ok) throw new Error(result.message || 'Upload failed');
-
-      setProfile((prev) => ({ ...prev, dp: result.user.dp }));
-      Alert.alert('Success', 'Profile picture updated successfully!');
-    } catch (err) {
-      console.error(err);
-      Alert.alert('Error', err.message);
-    }
-  };
+    // Update local profile state with new image URL
+    setProfile((prev) => ({ ...prev, dp: result.user.dp }));
+    Alert.alert('Success', 'Profile picture updated successfully!');
+  } catch (err) {
+    console.error('Profile picture upload error:', err);
+    Alert.alert('Error', err.message || 'Failed to update profile picture');
+  } finally {
+    setSelectedFile(null);
+  }
+};
 
 
 

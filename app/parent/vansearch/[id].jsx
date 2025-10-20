@@ -68,10 +68,12 @@ const SchoolVanScreen = ({ navigation }) => {
 
   if (loading) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-        <SWText h2 style={{textAlign: 'center', marginTop: 20}}>Loading vans...</SWText>
-      </SafeAreaView>
+      <View style={styles.loadingBackgroundContainer}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={'blue'} />
+          <SWText style={styles.loadingText}>Loading...</SWText>
+        </View>
+      </View>
     );
   }
 
@@ -147,235 +149,7 @@ const SchoolVanScreen = ({ navigation }) => {
     );
   };
 
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-
-        <View style={[styles.header, { backgroundColor : theme.colors.primary } ]}>
-          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
-          <SWText uberBold style={styles.headerTitle}>School Van Booking</SWText>
-        </View>
-
-        {/* If van request exists */}
-        {vanRequest && vanRequest.van ? (
-          <View style={styles.vanCard}>
-            <SWText h2>Current Request</SWText>
-            <SWText style={styles.vanName}>
-              {vanRequest.van.makeAndModel} ({vanRequest.van.licensePlateNumber})
-            </SWText>
-            <SWText>Status: {vanRequest.status}</SWText>
-            
-            <Spacer/>
-
-            <Button
-              title="Delete Request"
-              varient="outlined-secondary"
-              onPress={handleDelete}
-            />
-          </View>
-        ) : (
-          <>
-            <View style={styles.pickedSection}>
-              <View style={styles.titleContainer}>
-                <SWText h2>Available School Vans</SWText>
-              </View>
-              <Spacer/>
-              {schoolVans.length > 0 ? (
-                schoolVans.map((van) => (
-                  <View key={van.id} style={styles.vanCard}>
-                    {/* Header Section with Image and Basic Info */}
-                    <View style={styles.cardHeader}>
-                      {van.photoUrl && (
-                        <Image
-                          source={{ uri: van.photoUrl }}
-                          style={styles.vanImage}
-                          resizeMode="cover"
-                        />
-                      )}
-                      
-                      <View style={styles.headerInfo}>
-                        <SWText style={styles.vanName}>
-                          {van.makeAndModel}
-                        </SWText>
-                        <SWText style={styles.licensePlate}>
-                          {van.registrationNumber}
-                        </SWText>
-                        
-                        {/* Owner Info */}
-                        <View style={styles.ownerRow}>
-                          <Ionicons name="person-circle-outline" size={16} color="#666" />
-                          <SWText style={styles.ownerText}>
-                            {`${van.UserProfile_Van_ownerIdToUserProfile?.firstname || ''} ${van.UserProfile_Van_ownerIdToUserProfile?.lastname || ''}`}
-                          </SWText>
-                        </View>
-                      </View>
-                    </View>
-
-                    {/* Key Features - 2x2 Grid */}
-                    <View style={styles.featuresGrid}>
-                      <View style={styles.featuresRow}>
-                        {/* Seats */}
-                        <View style={styles.featureItem}>
-                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
-                            <Ionicons name="people" size={18} color={theme.colors.primary} />
-                          </View>
-                          <View style={styles.featureTextContainer}>
-                            <SWText style={styles.featureLabel}>Capacity</SWText>
-                            <SWText style={styles.featureValue}>{van.seatingCapacity} seats</SWText>
-                          </View>
-                        </View>
-
-                        {/* AC */}
-                        <View style={styles.featureItem}>
-                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
-                            <Ionicons 
-                              name={van.acCondition ? "snow" : "close-circle"} 
-                              size={18} 
-                              color={theme.colors.primary}
-                            />
-                          </View>
-                          <View style={styles.featureTextContainer}>
-                            <SWText style={styles.featureLabel}>AC Status</SWText>
-                            <SWText style={styles.featureValue}>
-                              {van.acCondition ? "Available" : "Not Available"}
-                            </SWText>
-                          </View>
-                        </View>
-                      </View>
-
-                      <View style={styles.featuresRow}>
-                        {/* Driver */}
-                        <View style={styles.featureItem}>
-                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
-                            <Ionicons name="car-sport" size={18} color={theme.colors.primary} />
-                          </View>
-                          <View style={styles.featureTextContainer}>
-                            <SWText style={styles.featureLabel}>Driver</SWText>
-                            <SWText style={styles.featureValue}>
-                              {van.hasDriver ? "Available" : "Not Available"}
-                            </SWText>
-                          </View>
-                        </View>
-
-                        {/* Assistant */}
-                        <View style={styles.featureItem}>
-                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
-                            <Ionicons name="person-add" size={18} color={theme.colors.primary} />
-                          </View>
-                          <View style={styles.featureTextContainer}>
-                            <SWText style={styles.featureLabel}>Assistant</SWText>
-                            <SWText style={styles.featureValue}>
-                              {van.hasAssistant ? "Available" : "Not Available"}
-                            </SWText>
-                          </View>
-                        </View>
-                      </View>
-                    </View>
-
-                    {/* Route & Pricing Row */}
-                    <View style={styles.routePriceRow}>
-                      <View style={styles.routeInfo}>
-                        <Ionicons name="navigate-circle" size={16} color="#FF9800" />
-                        {van.Path ? (
-                          <SWText style={styles.routeText}>
-                            {van.Path.totalDistance.toFixed(1)} km • {van.Path.estimatedDuration} min
-                          </SWText>
-                        ) : (
-                          <SWText style={styles.routeText}>Route not assigned</SWText>
-                        )}
-                      </View>
-                      
-                      <View style={styles.priceTag}>
-                        <SWText style={styles.priceLabel}>Estimated Fare</SWText>
-                        <SWText style={styles.priceAmount}>
-                          {`Rs. ${van.estimatedFare.toFixed(2)}`}
-                        </SWText>
-                      </View>
-                    </View>
-
-                    {/* Ratings Row */}
-                    <View style={styles.ratingsRow}>
-                      <View style={styles.ratingItem}>
-                        <Ionicons name="star" size={14} color="#FFD700" />
-                        <SWText style={styles.ratingText}>
-                          {`Private: Rs. ${van.privateRating}/km`}
-                        </SWText>
-                      </View>
-                      <View style={styles.ratingDivider} />
-                      <View style={styles.ratingItem}>
-                        <Ionicons name="star" size={14} color="#FFD700" />
-                        <SWText style={styles.ratingText}>
-                          {`Student: Rs. ${van.studentRating}/month`}
-                        </SWText>
-                      </View>
-                    </View>
-
-                    {/* Action Buttons */}
-                    <View style={styles.buttonContainer}>
-                      {/* Request Button Row */}
-                      <View style={styles.buttonRow}>
-                        {van.requestStatus === 'PENDING' ? (
-                          <>
-                            <Button
-                              title="Request Pending"
-                              varient="outlined-secondary"
-                              disabled={true}
-                            />
-                            <SWText style={styles.pendingText}>Your request is being reviewed</SWText>
-                          </>
-                        ) : (
-                          <Button
-                            title="Request This Van"
-                            varient="secondary"
-                            onPress={() => handleRequest(van.id, van.estimatedFare)}
-                          />
-                        )}
-                      </View>
-
-                      {/* More Info Button Row */}
-                      <Link
-                        href={`/parent/van-details/${van.id}`}
-                        asChild
-                      >
-                        <TouchableOpacity style={styles.moreInfoButton}>
-                          <Ionicons 
-                            name="information-circle-outline" 
-                            size={18} 
-                            color={theme.colors.primary} 
-                          />
-                          <SWText style={[
-                            styles.moreInfoText, 
-                            { color: theme.colors.primary }
-                          ]}>
-                            More Info
-                          </SWText>
-                        </TouchableOpacity>
-                      </Link>
-                    </View>
-                  </View>
-                ))
-              ) : (
-                <View style={styles.noVansContainer}>
-                  <View style={styles.noVansContent}>
-                    <Ionicons name="bus-outline" size={80} color="#ccc" />
-                    <SWText style={styles.noVansTitle}>No Vans Available</SWText>
-                    <SWText style={styles.noVansText}>
-                      Currently, there are no school vans operating in proximity to your child's school journey.
-                    </SWText>
-                  </View>
-                </View>
-              )}
-            </View>
-          </>
-          )}
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
-
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
   
   container: {
     flex: 1,
@@ -621,6 +395,252 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     maxWidth: '80%', // Constrain text width for better readability
   },
+  loadingBackgroundContainer: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+      padding: theme.spacing.lg,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    loadingContainer: {
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    loadingText: {
+      marginTop: theme.spacing.md,
+      fontSize: theme.fontSizes.medium,
+      color: theme.colors.textgreydark,
+    },
 });
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <ScrollView style={styles.scrollView}>
+
+        <View style={[styles.header, { backgroundColor : theme.colors.primary } ]}>
+          <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+            <Ionicons name="arrow-back" size={24} color="white" />
+          </TouchableOpacity>
+          <SWText uberBold style={styles.headerTitle}>School Van Booking</SWText>
+        </View>
+
+        {/* If van request exists */}
+        {vanRequest && vanRequest.van ? (
+          <View style={styles.vanCard}>
+            <SWText h2>Current Request</SWText>
+            <SWText style={styles.vanName}>
+              {vanRequest.van.makeAndModel} ({vanRequest.van.licensePlateNumber})
+            </SWText>
+            <SWText>Status: {vanRequest.status}</SWText>
+            
+            <Spacer/>
+
+            <Button
+              title="Delete Request"
+              varient="outlined-secondary"
+              onPress={handleDelete}
+            />
+          </View>
+        ) : (
+          <>
+            <View style={styles.pickedSection}>
+              <View style={styles.titleContainer}>
+                <SWText h2>Available School Vans</SWText>
+              </View>
+              <Spacer/>
+              {schoolVans.length > 0 ? (
+                schoolVans.map((van) => (
+                  <View key={van.id} style={styles.vanCard}>
+                    {/* Header Section with Image and Basic Info */}
+                    <View style={styles.cardHeader}>
+                      {van.photoUrl && (
+                        <Image
+                          source={{ uri: van.photoUrl }}
+                          style={styles.vanImage}
+                          resizeMode="cover"
+                        />
+                      )}
+                      
+                      <View style={styles.headerInfo}>
+                        <SWText style={styles.vanName}>
+                          {van.makeAndModel}
+                        </SWText>
+                        <SWText style={styles.licensePlate}>
+                          {van.registrationNumber}
+                        </SWText>
+                        
+                        {/* Owner Info */}
+                        <View style={styles.ownerRow}>
+                          <Ionicons name="person-circle-outline" size={16} color="#666" />
+                          <SWText style={styles.ownerText}>
+                            {`${van.UserProfile_Van_ownerIdToUserProfile?.firstname || ''} ${van.UserProfile_Van_ownerIdToUserProfile?.lastname || ''}`}
+                          </SWText>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Key Features - 2x2 Grid */}
+                    <View style={styles.featuresGrid}>
+                      <View style={styles.featuresRow}>
+                        {/* Seats */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons name="people" size={18} color={theme.colors.primary} />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>Capacity</SWText>
+                            <SWText style={styles.featureValue}>{van.seatingCapacity} seats</SWText>
+                          </View>
+                        </View>
+
+                        {/* AC */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons 
+                              name={van.acCondition ? "snow" : "close-circle"} 
+                              size={18} 
+                              color={theme.colors.primary}
+                            />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>AC Status</SWText>
+                            <SWText style={styles.featureValue}>
+                              {van.acCondition ? "Available" : "Not Available"}
+                            </SWText>
+                          </View>
+                        </View>
+                      </View>
+
+                      <View style={styles.featuresRow}>
+                        {/* Driver */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons name="car-sport" size={18} color={theme.colors.primary} />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>Driver</SWText>
+                            <SWText style={styles.featureValue}>
+                              {van.hasDriver ? "Available" : "Not Available"}
+                            </SWText>
+                          </View>
+                        </View>
+
+                        {/* Assistant */}
+                        <View style={styles.featureItem}>
+                          <View style={[styles.featureIcon, { backgroundColor: theme.colors.primaryLight }]}>
+                            <Ionicons name="person-add" size={18} color={theme.colors.primary} />
+                          </View>
+                          <View style={styles.featureTextContainer}>
+                            <SWText style={styles.featureLabel}>Assistant</SWText>
+                            <SWText style={styles.featureValue}>
+                              {van.hasAssistant ? "Available" : "Not Available"}
+                            </SWText>
+                          </View>
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Route & Pricing Row */}
+                    <View style={styles.routePriceRow}>
+                      <View style={styles.routeInfo}>
+                        <Ionicons name="navigate-circle" size={16} color="#FF9800" />
+                        {van.Path ? (
+                          <SWText style={styles.routeText}>
+                            {van.Path.totalDistance.toFixed(1)} km • {van.Path.estimatedDuration} min
+                          </SWText>
+                        ) : (
+                          <SWText style={styles.routeText}>Route not assigned</SWText>
+                        )}
+                      </View>
+                      
+                      <View style={styles.priceTag}>
+                        <SWText style={styles.priceLabel}>Estimated Fare</SWText>
+                        <SWText style={styles.priceAmount}>
+                          {`Rs. ${van.estimatedFare.toFixed(2)}`}
+                        </SWText>
+                      </View>
+                    </View>
+
+                    {/* Ratings Row */}
+                    <View style={styles.ratingsRow}>
+                      <View style={styles.ratingItem}>
+                        <Ionicons name="star" size={14} color="#FFD700" />
+                        <SWText style={styles.ratingText}>
+                          {`Private: Rs. ${van.privateRating}/km`}
+                        </SWText>
+                      </View>
+                      <View style={styles.ratingDivider} />
+                      <View style={styles.ratingItem}>
+                        <Ionicons name="star" size={14} color="#FFD700" />
+                        <SWText style={styles.ratingText}>
+                          {`Student: Rs. ${van.studentRating}/month`}
+                        </SWText>
+                      </View>
+                    </View>
+
+                    {/* Action Buttons */}
+                    <View style={styles.buttonContainer}>
+                      {/* Request Button Row */}
+                      <View style={styles.buttonRow}>
+                        {van.requestStatus === 'PENDING' ? (
+                          <>
+                            <Button
+                              title="Request Pending"
+                              varient="outlined-secondary"
+                              disabled={true}
+                            />
+                            <SWText style={styles.pendingText}>Your request is being reviewed</SWText>
+                          </>
+                        ) : (
+                          <Button
+                            title="Request This Van"
+                            varient="secondary"
+                            onPress={() => handleRequest(van.id, van.estimatedFare)}
+                          />
+                        )}
+                      </View>
+
+                      {/* More Info Button Row */}
+                      <Link
+                        href={`/parent/van-details/${van.id}`}
+                        asChild
+                      >
+                        <TouchableOpacity style={styles.moreInfoButton}>
+                          <Ionicons 
+                            name="information-circle-outline" 
+                            size={18} 
+                            color={theme.colors.primary} 
+                          />
+                          <SWText style={[
+                            styles.moreInfoText, 
+                            { color: theme.colors.primary }
+                          ]}>
+                            More Info
+                          </SWText>
+                        </TouchableOpacity>
+                      </Link>
+                    </View>
+                  </View>
+                ))
+              ) : (
+                <View style={styles.noVansContainer}>
+                  <View style={styles.noVansContent}>
+                    <Ionicons name="bus-outline" size={80} color="#ccc" />
+                    <SWText style={styles.noVansTitle}>No Vans Available</SWText>
+                    <SWText style={styles.noVansText}>
+                      Currently, there are no school vans operating in proximity to your child's school journey.
+                    </SWText>
+                  </View>
+                </View>
+              )}
+            </View>
+          </>
+          )}
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+
 
 export default SchoolVanScreen;
