@@ -26,8 +26,8 @@ import Constants from 'expo-constants';
 const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const PrivateHire = () => {
-  // Store warning from search endpoint
-  const [searchWarning, setSearchWarning] = useState('');
+  // We now handle warnings directly at the van level
+  // (removed global search warning state)
   
   // Helper to get place name from coordinates
   const getPlaceName = async (coords: LatLng, cb: (name: string) => void) => {
@@ -59,12 +59,13 @@ const PrivateHire = () => {
     acCondition: boolean;
     photoUrl: string;
     ownerId: string;
-  privateRating: number;
-  averageRating: number;
-  contactNo: string;
-  routeStart: string;
-  pickupDistance: number;
-  tripDistance: number;
+    privateRating: number;
+    averageRating: number;
+    contactNo: string;
+    routeStart: string;
+    pickupDistance: number;
+    tripDistance: number;
+    warning?: string; // Optional warning message from the server
   };
   const [pickupCoords, setPickupCoords] = useState<LatLng | null>(null);
   const [destinationCoords, setDestinationCoords] = useState<LatLng | null>(null);
@@ -618,6 +619,17 @@ const PrivateHire = () => {
       Alert.alert('Missing Information', 'Please fill in all required fields');
       return;
     }
+    
+    const passengerCount = Number(formData.passengers);
+    if (isNaN(passengerCount) || passengerCount <= 0) {
+      Alert.alert('Invalid Input', 'Please enter a valid number of passengers');
+      return;
+    }
+    
+    if (passengerCount > 50) {
+      Alert.alert('Validation Error', 'Maximum number of passengers allowed is 50');
+      return;
+    }
 
     setIsSearching(true);
     // Prepare payload for van search (no userId, no vanId, no fare, no status)
@@ -648,7 +660,7 @@ const PrivateHire = () => {
 
   const data = await response.json();
   setAvailableVans(data.vans || []);
-  setSearchWarning(data.warning || '');
+  // Each van already includes its own warning if needed
   setShowVanSelection(true);
     } catch (error) {
       console.error('Van search failed:', error.message);
@@ -667,6 +679,15 @@ const PrivateHire = () => {
   const confirmRequest = async () => {
     setIsRequesting(true);
     let userId = null;
+    
+    // Validate passenger count again as a safeguard
+    const passengerCount = Number(formData.passengers);
+    if (isNaN(passengerCount) || passengerCount <= 0 || passengerCount > 50) {
+      Alert.alert('Validation Error', 'Please enter a valid number of passengers (1-50)');
+      setIsRequesting(false);
+      return;
+    }
+    
     try {
       const session = await AsyncStorage.getItem('user_session');
       if (session) {
@@ -1032,13 +1053,22 @@ const PrivateHire = () => {
           </View>
 
           <View style={styles.inputGroup}>
-            <SWText style={styles.inputLabel}>Number of Passengers *</SWText>
+            <SWText style={styles.inputLabel}>Number of Passengers * (Max 50)</SWText>
             <TextInput
               style={styles.textInput}
               placeholder="How many people?"
               keyboardType="numeric"
               value={formData.passengers}
-              onChangeText={(text) => setFormData({...formData, passengers: text})}
+              onChangeText={(text) => {
+                // Only allow numbers
+                const numericText = text.replace(/[^0-9]/g, '');
+                // Validate maximum 50 passengers
+                if (numericText === '' || (parseInt(numericText) <= 50)) {
+                  setFormData({...formData, passengers: numericText});
+                } else {
+                  Alert.alert('Validation Error', 'Maximum number of passengers allowed is 50');
+                }
+              }}
             />
           </View>
 
@@ -1094,6 +1124,8 @@ const PrivateHire = () => {
             </SWText>
             
           </View>
+            {/* No general warning display here - only show warnings in individual van cards */}
+            
             <View style={{ backgroundColor: '#fffbe6', borderRadius: 8, padding: 12, marginBottom: 16 }}>
             <SWText style={{ color: '#856404', fontSize: 15, textAlign: 'center' }}>
               Please note: The estimated fare may vary depending on your length of stay. For final pricing and further arrangements, kindly contact the van owner directly.
@@ -1130,6 +1162,22 @@ const PrivateHire = () => {
                 <SWText style={{ fontSize: 13, color: '#666' }}>
                   <Ionicons name="location" size={14} color="#888" /> Pickup: {van.pickupDistance ? van.pickupDistance.toFixed(1) : '-'} km | Trip: {van.tripDistance ? van.tripDistance.toFixed(1) : '-'} km
                 </SWText>
+                
+                {/* Display warning if present */}
+                {van.warning && (
+                  <View style={{ 
+                    backgroundColor: '#FFF3CD', 
+                    borderWidth: 1, 
+                    borderColor: '#FFEEBA', 
+                    borderRadius: 6, 
+                    padding: 8,
+                    marginTop: 6 
+                  }}>
+                    <SWText style={{ fontSize: 13, color: '#856404', fontWeight: '500' }}>
+                      <Ionicons name="warning" size={14} color="#856404" /> {van.warning}
+                    </SWText>
+                  </View>
+                )}
               </View>
             </View>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingBottom: 12 }}>
@@ -1155,14 +1203,7 @@ const PrivateHire = () => {
               />
               
             </View>
-            {/* Capacity warning below card */}
-          {searchWarning.includes(van.registrationNumber) && (
-            <View style={{paddingHorizontal: 16, paddingBottom: 8, marginTop: -16}}>
-              <SWText style={{ color: '#ea5a5aff', fontSize: 14, fontWeight: 'bold', textAlign: 'left' , marginTop : 10}}>
-                * Capacity not Enough
-              </SWText>
-            </View>
-          )}
+            {/* We're only showing warnings that come directly with each van */}
           </View>
           
         </React.Fragment>
@@ -1366,13 +1407,13 @@ const PrivateHire = () => {
             {selectedVan && (
               <>
                 <SWText style={styles.modalText}>
-                  You're about to request <SWText style={styles.modalBold}>{selectedVan.name || selectedVan.VanName || 'Van'}</SWText> for your trip to <SWText style={styles.modalBold}>{formData.destination}</SWText>.
+                  You&apos;re about to request <SWText style={styles.modalBold}>{selectedVan.makeAndModel || 'Van'}</SWText> for your trip to <SWText style={styles.modalBold}>{formData.destination}</SWText>.
                 </SWText>
                 <SWText style={styles.modalDetails}>
                   • Departure: {formData.departureDate}
                   {formData.returnDate && `\n• Return: ${formData.returnDate}`}
                   {`\n• Passengers: ${formData.passengers}`}
-                  {`\n• Driver: ${selectedVan.driver || selectedVan.DriverName || '-'}`}
+                  {`\n• Registration: ${selectedVan.registrationNumber}`}
                 </SWText>
                 <View style={styles.modalActions}>
                   <TouchableOpacity

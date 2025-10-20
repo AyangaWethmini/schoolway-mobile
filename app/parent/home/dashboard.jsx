@@ -181,20 +181,20 @@ const Dashboard = () => {
             </ScrollView>
           </View>
           
-          <View style={styles.privateHireButtonContainer}>
+          <TouchableOpacity 
+            style={styles.privateHireButtonContainer}
+            onPress={() => router.push('/parent/privateHire')}
+            activeOpacity={0.7}
+          >
             <View>
-              <SWText uberBold xl center darkPrimary >Find private hires</SWText>
+              <SWText uberBold xl darkPrimary>Find private hires</SWText>
+              <SWText style={styles.privateHireSubtext}>Book a van for special trips</SWText>
             </View>
             
-            <View>
-              <TouchableOpacity 
-                onPress={() => router.push('/parent/privateHire')}
-                activeOpacity={0.8}
-              >
-                <ChevronRight size={20} color={theme.colors.accentblue} />
-              </TouchableOpacity>
+            <View style={styles.privateHireIconContainer}>
+              <ChevronRight size={24} color={theme.colors.accentblue} />
             </View>
-          </View>
+          </TouchableOpacity>
           <Spacer/>
 
           <View style={styles.section}>
@@ -412,8 +412,32 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   privateHireButtonContainer: {
-    flexDirection:'row',
-    justifyContent:'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginVertical: 10,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#F0F0F0',
+  },
+  privateHireSubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  privateHireIconContainer: {
+    backgroundColor: '#F3F4F6',
+    borderRadius: 30,
+    padding: 8,
   },
 });
