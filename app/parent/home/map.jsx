@@ -114,11 +114,14 @@ const ParentMap = () => {
         showsMyLocationButton={true}
       >
         {children.map((child) => {
-
           const session = sessions.find(s => 
             s.sessionStudents?.some(ss => ss.childId === child.id)
           );          
           const loc = getChildLocation(child, session);
+
+          if (!loc || !loc.latitude || !loc.longitude || isNaN(loc.latitude) || isNaN(loc.longitude)) {
+            return null; // Skip rendering if invalid
+          }
 
           return (
             <Marker key={child.id} coordinate={loc} title={child.name}>

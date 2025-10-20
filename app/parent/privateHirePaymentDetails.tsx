@@ -1,8 +1,8 @@
-import React from 'react';
-import SWText from '../components/SWText';
-import { useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import SWText from '../components/SWText';
 
 
 const PrivateHirePaymentDetails: React.FC = () => {
@@ -83,12 +83,6 @@ const PrivateHirePaymentDetails: React.FC = () => {
         <View style={styles.divider} />
         <SWText style={styles.totalLabel}>Total Amount to Pay</SWText>
         <SWText style={styles.totalValue}>Rs. {totalAmount.toLocaleString()}</SWText>
-      </View>
-      {/* Pay Now Button */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.payButton} onPress={handlePayNow}>
-          <SWText style={styles.payButtonText}>Pay Now</SWText>
-        </TouchableOpacity>
       </View>
     </View>
   );
