@@ -4,7 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../auth/AuthContext';
 import Loading3 from '../../../components/LoadingComponents/Loading4';
 import SWText from '../../../components/SWText';
@@ -20,6 +20,7 @@ const DriverProfileOverview = () => {
   const { theme } = useTheme();
   const [driverData, setDriverData] = useState({user: null});
   const [isLoading, setIsLoading] = useState(true);
+  const [showQR, setShowQR] = useState(false);
   const isFocused = useIsFocused();
   
   const styles = StyleSheet.create({
@@ -235,6 +236,47 @@ const DriverProfileOverview = () => {
       color: '#7f8c8d',
       marginTop: 8,
     },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: 'white',
+      padding: 24,
+      borderRadius: 16,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    qrContainer: {
+      padding: 16,
+      backgroundColor: 'white',
+      borderRadius: 8,
+    },
+    qrImage: {
+      width: 250,
+      height: 250,
+    },
+    qrModalText: {
+      marginTop: 16,
+      color: '#666',
+    },
+    qrButton: {
+      width: 60,
+      height: 60,
+      backgroundColor: '#ecf0f1',
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   });
 
   useEffect(() => {
@@ -244,7 +286,7 @@ const DriverProfileOverview = () => {
         const response = await fetch(`${API_URL}/mobile/driver/profile/${user.id}`);
         const data = await response.json();
         setDriverData(data);
-        console.log('Driver profile data : accessed');
+        console.log('Driver profile data : retrieved successfully', data);
         // console.log('Driver Data:', data);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -284,6 +326,33 @@ const DriverProfileOverview = () => {
     }
   };
 
+  const QRModal = () => (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={showQR}
+      onRequestClose={() => setShowQR(false)}
+    >
+      <Pressable 
+        style={styles.modalOverlay}
+        onPress={() => setShowQR(false)}
+      >
+        <View style={styles.modalContent}>
+          <View style={styles.qrContainer}>
+            <Image
+              source={{ uri: driverData.user.DriverProfile?.Qrcode }}
+              style={styles.qrImage}
+              resizeMode="contain"
+            />
+          </View>
+          <SWText style={styles.qrModalText} sm>
+            Scan this QR code to verify driver
+          </SWText>
+        </View>
+      </Pressable>
+    </Modal>
+  );
+
   if (isLoading || !driverData.user) {
     return (
       // <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -298,6 +367,8 @@ const DriverProfileOverview = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <QRModal />
+
       <TouchableOpacity style={styles.editButton} onPress={() => router.push('./DriverComponents/EditProfile')}>
         <FontAwesome6 name="pencil" size={16} color="#7f8c8d" />
       </TouchableOpacity>
@@ -390,17 +461,13 @@ const DriverProfileOverview = () => {
         </View>
 
         <View style={styles.qrSection}>
-          <View style={{ 
-            width: 60, 
-            height: 60, 
-            backgroundColor: '#ecf0f1', 
-            borderRadius: 8,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
+          <TouchableOpacity 
+            style={styles.qrButton}
+            onPress={() => setShowQR(true)}
+          >
             <Ionicons name="qr-code-sharp" size={40} color="#7f8c8d" />
-          </View>
-          <SWText style={styles.qrText} xs>Scan for verification</SWText>
+          </TouchableOpacity>
+          <SWText style={styles.qrText} xs>Tap to show QR code</SWText>
         </View>
       </View>
 
@@ -462,6 +529,7 @@ const DriverProfileOverview = () => {
           </View>
         </View>
       </View>
+
     </ScrollView>
   );
 };
