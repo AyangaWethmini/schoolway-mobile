@@ -21,6 +21,7 @@ const TravelPage = () => {
   const { theme } = useTheme();
   const [user, setUser] = useState(null);
   const router = useRouter();
+  const [routeType,setRouteType] = useState("MORNING_PICKUP");
 
   const [studentsToPickup, setStudentsToPickup] = useState([]);
   const [pickedUpStudents, setPickedUpStudents] = useState([]);
@@ -31,6 +32,10 @@ const TravelPage = () => {
     try {
       const session = await AsyncStorage.getItem('user_session');
       if (!session) return;
+      const sessionData = await AsyncStorage.getItem('current_session');
+      const parsedSession = JSON.parse(sessionData);
+
+      setRouteType(parsedSession.routeType)
 
       const parsedUser = JSON.parse(session);
       setUser(parsedUser.user);
@@ -287,7 +292,7 @@ const TravelPage = () => {
         </TouchableOpacity>
         <View style={styles.headerContent}>
           <Text style={[styles.title, { color: theme.colors.textwhite }]}>Active Trip</Text>
-          <Text style={[styles.subtitle, { color: theme.colors.textwhite }]}>Kaluthara → Colombo</Text>
+          <Text style={[styles.subtitle, { color: theme.colors.textwhite }]}>{routeType === 'EVENING_DROPOFF' ? 'Evening Dropoff':  "Morning Pickup"}</Text>
         </View>
         <View style={{ width: 28 }} />
       </View>
