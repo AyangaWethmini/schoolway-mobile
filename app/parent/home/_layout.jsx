@@ -12,7 +12,8 @@ const DashboardLayout = () => {
         <ParentProtected>
             <Tabs 
                 screenOptions={{
-                    headerShown: false, // Disable the fixed header
+                    headerShown: false,
+                    headerBackVisible: false,
                     tabBarStyle: { 
                         backgroundColor: '#ffffff',
                         paddingTop: 5,
@@ -40,6 +41,7 @@ const DashboardLayout = () => {
                     name="dashboard" 
                     options={{ 
                         title: 'Home', 
+                        headerShown: false,
                         tabBarIcon: ({focused}) => (
                             <Ionicons name={"home"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive}/>
                         ) 
@@ -49,6 +51,7 @@ const DashboardLayout = () => {
                     name="map" 
                     options={{ 
                         title: 'Map',
+                        headerShown: false,
                         tabBarIcon: ({focused}) => (
                             <FontAwesome6 name="map-location-dot" size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                         )
@@ -58,6 +61,7 @@ const DashboardLayout = () => {
                     name="payments" 
                     options={{ 
                         title: 'Payments',
+                        headerShown: false,
                         tabBarIcon: ({focused}) => (
                             <Ionicons name="wallet" size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                         )
@@ -66,7 +70,8 @@ const DashboardLayout = () => {
                 <Tabs.Screen 
                     name="profile" 
                     options={{ 
-                        title: 'Profile', 
+                        title: 'Profile',
+                        headerShown: false,
                         tabBarIcon: ({focused}) => (
                             <Ionicons name={"person"} size={24} color={focused ? theme.iconActiveBlue : theme.iconInactive} />
                         )

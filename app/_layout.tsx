@@ -88,7 +88,11 @@ function AppNavigator() {
           <Stack.Screen name="(signup)/steps" />
           <Stack.Screen name="login/login" />
           <Stack.Screen name="driver" />
-          </Stack>
+          {/* Add these new routes */}
+          <Stack.Screen name="parent/home" />
+          <Stack.Screen name="parent/vansearch/[id]" />
+          <Stack.Screen name="parent/van-details/[vanId]" />
+        </Stack>
       ) : (
         <SplashScreenSchoolway />
       )}

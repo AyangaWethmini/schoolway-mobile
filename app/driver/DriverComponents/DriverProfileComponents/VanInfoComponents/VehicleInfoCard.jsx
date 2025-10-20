@@ -207,7 +207,14 @@ const VehicleInfoCard = () => {
           <SWText style={styles.statLabel} xs>Schools</SWText>
         </View>
         <View style={styles.statItem}>
-          <SWText style={styles.statValue}>{vehicleData.stats?.rating || 'N/A'}</SWText>
+          {/* <SWText style={styles.statValue}>{vehicleData.stats?.rating || 'N/A'}</SWText> */}
+          
+          <SWText style={styles.statValue}>
+            {vehicleData.stats?.rating != null
+              ? Number(vehicleData.stats.rating).toFixed(1)
+              : 'N/A'}
+          </SWText>
+
           <SWText style={styles.statLabel} xs>Rating</SWText>
         </View>
       </View>

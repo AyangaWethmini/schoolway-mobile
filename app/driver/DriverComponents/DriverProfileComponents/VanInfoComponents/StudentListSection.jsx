@@ -1,6 +1,6 @@
 import { FontAwesome } from '@expo/vector-icons';
 import { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../../auth/AuthContext';
 import GradientBackground from '../../../../components/GradientBackground';
 import SWText from '../../../../components/SWText';
@@ -29,6 +29,14 @@ const StudentListSection = () => {
       } finally {
         setLoading(false);
       }
+    }
+  };
+
+  const handleCall = async (phoneNumber) => {
+    try {
+      await Linking.openURL(`tel:${phoneNumber}`);
+    } catch (error) {
+      console.error('Error making phone call:', error);
     }
   };
 
@@ -82,6 +90,7 @@ const StudentListSection = () => {
       alignItems: 'center',
       justifyContent: 'center',
       marginRight: 12,
+      overflow: 'hidden', // This ensures the image stays within the circular boundary
     },
     studentInitials: {
       color: '#ffffff',
@@ -124,19 +133,31 @@ const StudentListSection = () => {
           ) : students.length > 0 ? (
             students.map((student, index) => (
               <View key={student.id} style={[styles.studentItem, index === students.length - 1 && { borderBottomWidth: 0 }]}>
-                {/* <View style={styles.studentAvatar}>
-                  <SWText style={styles.studentInitials} sm uberBold>{student.name.charAt(0)}</SWText>
-                </View>
-                 */}
-                <GradientBackground style={styles.studentAvatar}>
-                  <SWText style={styles.studentInitials} sm uberBold>{student.name.charAt(0)}</SWText>
-                </GradientBackground>
+                {student.profilePic ? (
+                  <Image 
+                    source={{ uri: student.profilePic }}
+                    style={styles.studentAvatar}
+                  />
+                ) : (
+                  <GradientBackground style={styles.studentAvatar}>
+                    <SWText style={styles.studentInitials} sm uberBold>
+                      {student.name.charAt(0)}
+                    </SWText>
+                  </GradientBackground>
+                )}
 
                 <View style={styles.studentInfo}>
                   <SWText style={styles.studentName} md uberBold>{student.name}</SWText>
-                  <SWText style={styles.studentDetails} sm>{student.grade}  •  Pickup: {student.pickupLocation}</SWText>
+                  <SWText style={styles.studentDetails} sm>
+                    {student.grade}  •  Pickup: {student.pickupLocation}  •  Dropoff: {student.dropoffLocation}
+                  </SWText>
                 </View>
-                <FontAwesome name="phone" size={16} color={theme.colors.primary} />
+                <TouchableOpacity 
+                  onPress={() => handleCall(student.parentContact)}
+                  style={{ padding: 8 }}
+                >
+                  <FontAwesome name="phone" size={16} color={theme.colors.primary} />
+                </TouchableOpacity>
               </View>
             ))
           ) : (

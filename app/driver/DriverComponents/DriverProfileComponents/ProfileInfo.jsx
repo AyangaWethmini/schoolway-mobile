@@ -4,7 +4,7 @@ import { useIsFocused } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useAuth } from '../../../auth/AuthContext';
 import Loading3 from '../../../components/LoadingComponents/Loading4';
 import SWText from '../../../components/SWText';
@@ -20,6 +20,7 @@ const DriverProfileOverview = () => {
   const { theme } = useTheme();
   const [driverData, setDriverData] = useState({user: null});
   const [isLoading, setIsLoading] = useState(true);
+  const [showQR, setShowQR] = useState(false);
   const isFocused = useIsFocused();
   
   const styles = StyleSheet.create({
@@ -235,6 +236,47 @@ const DriverProfileOverview = () => {
       color: '#7f8c8d',
       marginTop: 8,
     },
+    modalOverlay: {
+      flex: 1,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    modalContent: {
+      backgroundColor: 'white',
+      padding: 24,
+      borderRadius: 16,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+    },
+    qrContainer: {
+      padding: 16,
+      backgroundColor: 'white',
+      borderRadius: 8,
+    },
+    qrImage: {
+      width: 250,
+      height: 250,
+    },
+    qrModalText: {
+      marginTop: 16,
+      color: '#666',
+    },
+    qrButton: {
+      width: 60,
+      height: 60,
+      backgroundColor: '#ecf0f1',
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
   });
 
   useEffect(() => {
@@ -244,7 +286,7 @@ const DriverProfileOverview = () => {
         const response = await fetch(`${API_URL}/mobile/driver/profile/${user.id}`);
         const data = await response.json();
         setDriverData(data);
-        console.log('Driver profile data : accessed');
+        console.log('Driver profile data : retrieved successfully', data);
         // console.log('Driver Data:', data);
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -284,6 +326,33 @@ const DriverProfileOverview = () => {
     }
   };
 
+  const QRModal = () => (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={showQR}
+      onRequestClose={() => setShowQR(false)}
+    >
+      <Pressable 
+        style={styles.modalOverlay}
+        onPress={() => setShowQR(false)}
+      >
+        <View style={styles.modalContent}>
+          <View style={styles.qrContainer}>
+            <Image
+              source={{ uri: driverData.user.DriverProfile?.Qrcode }}
+              style={styles.qrImage}
+              resizeMode="contain"
+            />
+          </View>
+          <SWText style={styles.qrModalText} sm>
+            Scan this QR code to verify driver
+          </SWText>
+        </View>
+      </Pressable>
+    </Modal>
+  );
+
   if (isLoading || !driverData.user) {
     return (
       // <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
@@ -298,6 +367,8 @@ const DriverProfileOverview = () => {
 
   return (
     <ScrollView style={styles.container}>
+      <QRModal />
+
       <TouchableOpacity style={styles.editButton} onPress={() => router.push('./DriverComponents/EditProfile')}>
         <FontAwesome6 name="pencil" size={16} color="#7f8c8d" />
       </TouchableOpacity>
@@ -343,7 +414,7 @@ const DriverProfileOverview = () => {
               {driverData.user.firstname} {driverData.user.lastname}
             </SWText>
             <SWText style={styles.driverId} sm>
-              ID: {driverData.user.driverProfile?.id || 'PENDING'}
+              ID: {driverData.user.DriverProfile?.id || 'PENDING'}
             </SWText>
             <View style={[styles.statusBadge, { backgroundColor: status.color }]}>
               <SWText style={styles.statusText} xs bold>{status.text}</SWText>
@@ -352,10 +423,10 @@ const DriverProfileOverview = () => {
         </View>
 
         <View style={styles.detailsGrid}>
-          <View style={styles.detailItem}>
+          {/* <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>License ID</SWText>
-            <SWText style={styles.detailValue} sm>{driverData.user.driverProfile?.licenseId || 'N/A'}</SWText>
-          </View>
+            <SWText style={styles.detailValue} sm>{driverData.user.DriverProfile?.licenseId || 'N/A'}</SWText>
+          </View> */}
           <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>NIC Number</SWText>
             <SWText style={styles.detailValue} sm>{driverData.user.nic || 'N/A'}</SWText>
@@ -371,29 +442,32 @@ const DriverProfileOverview = () => {
           <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>Van Service</SWText>
             <SWText style={styles.detailValue} sm>
-              {driverData.user.driverProfile?.hasVan ? 'Enrolled' : 'Not Enrolled'}
+              {driverData.user.DriverProfile?.hasVan === 1 ? 'Enrolled' : 'Not Enrolled'}
             </SWText>
           </View>
           <View style={styles.detailItem}>
             <SWText style={styles.detailLabel} xs>Experience</SWText>
             <SWText style={styles.detailValue} sm>
-              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)} Years
+              {getYearsOfExperience(driverData.user.DriverProfile?.startedDriving)} Years
             </SWText>
           </View>
+          
+        <View style={styles.detailItem}>
+          <SWText style={styles.detailLabel} xs>Languages</SWText>
+          <SWText style={styles.detailValue} sm>
+            {driverData.user.DriverProfile?.languages?.join(', ') || 'N/A'}
+          </SWText>
+        </View>
         </View>
 
         <View style={styles.qrSection}>
-          <View style={{ 
-            width: 60, 
-            height: 60, 
-            backgroundColor: '#ecf0f1', 
-            borderRadius: 8,
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}>
+          <TouchableOpacity 
+            style={styles.qrButton}
+            onPress={() => setShowQR(true)}
+          >
             <Ionicons name="qr-code-sharp" size={40} color="#7f8c8d" />
-          </View>
-          <SWText style={styles.qrText} xs>Scan for verification</SWText>
+          </TouchableOpacity>
+          <SWText style={styles.qrText} xs>Tap to show QR code</SWText>
         </View>
       </View>
 
@@ -406,30 +480,28 @@ const DriverProfileOverview = () => {
         
         <View style={styles.licenseDetails}>
           <View style={styles.detailItem}>
-            <SWText style={styles.detailLabel} xs>License Types</SWText>
-            <SWText style={styles.detailValue} sm>
-              {driverData.user.driverProfile?.licenseType?.join(', ') || 'N/A'}
-            </SWText>
+            <SWText style={styles.detailLabel} xs>License ID</SWText>
+            <SWText style={styles.detailValue} sm>{driverData.user.DriverProfile?.licenseId || 'N/A'}</SWText>
           </View>
           <View style={styles.detailItem}>
-            <SWText style={styles.detailLabel} xs>Expiry Date</SWText>
+            <SWText style={styles.detailLabel} xs>License Types</SWText>
             <SWText style={styles.detailValue} sm>
-              {formatDate(driverData.user.driverProfile?.licenseExpiry)}
+              {driverData.user.DriverProfile?.licenseType?.join(', ') || 'N/A'}
             </SWText>
           </View>
+         
         </View>
-        
-        <View style={styles.detailItem}>
-          <SWText style={styles.detailLabel} xs>Languages</SWText>
-          <SWText style={styles.detailValue} sm>
-            {driverData.user.driverProfile?.languages?.join(', ') || 'N/A'}
-          </SWText>
-        </View>
+         <View style={styles.detailItem}>
+            <SWText style={styles.detailLabel} xs>Expiry Date</SWText>
+            <SWText style={styles.detailValue} sm>
+              {formatDate(driverData.user.DriverProfile?.licenseExpiry)}
+            </SWText>
+          </View>
 
         {/* ID Images Collapsible Section */}
         <IdImagesSection 
-          frontImage={driverData.user.driverProfile?.licenseFront}
-          backImage={driverData.user.driverProfile?.licenseBack}
+          frontImage={driverData.user.DriverProfile?.licenseFront}
+          backImage={driverData.user.DriverProfile?.licenseBack}
         />
       </View>
 
@@ -439,24 +511,25 @@ const DriverProfileOverview = () => {
         <View style={styles.statsContainer}>
           <View style={styles.statItem}>
             <SWText style={styles.statValue}>
-              {driverData.user.driverProfile?.rating?.toFixed(1) || '0.0'}
+              {driverData.user.DriverProfile?.averageRating?.toFixed(1) || '0.0'}
             </SWText>
             <SWText style={styles.statLabel} xs>Rating</SWText>
           </View>
           <View style={styles.statItem}>
             <SWText style={styles.statValue} xl uberBold>
-              {driverData.user.driverProfile?.ratingCount || '0'}
+              {driverData.user.DriverProfile?.totalReviews || '0'}
             </SWText>
             <SWText style={styles.statLabel} xs>Reviews</SWText>
           </View>
           <View style={styles.statItem}>
             <SWText style={styles.statValue}>
-              {getYearsOfExperience(driverData.user.driverProfile?.startedDriving)}
+              {getYearsOfExperience(driverData.user.DriverProfile?.startedDriving)}
             </SWText>
             <SWText style={styles.statLabel} xs>Years Exp.</SWText>
           </View>
         </View>
       </View>
+
     </ScrollView>
   );
 };

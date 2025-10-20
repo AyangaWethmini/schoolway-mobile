@@ -1,8 +1,13 @@
 import { FontAwesome } from '@expo/vector-icons';
-import { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import Constants from 'expo-constants';
+import { useEffect, useState } from 'react';
+import { Image, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useAuth } from '../../../auth/AuthContext';
 import SWText from '../../../components/SWText';
 import { useTheme } from '../../../theme/ThemeContext';
+
+// Add API_URL constant at the top
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
 
 const DocumentItem = ({ 
   name, 
@@ -79,8 +84,11 @@ const DocumentItem = ({
 
 const LicenseAndVehicleCheckups = () => {
   const { theme } = useTheme();
+  const { user } = useAuth();
   const [showLicenseInfo, setShowLicenseInfo] = useState(false);
   const [showVehicleCheckups, setShowVehicleCheckups] = useState(false);
+  const [licenseData, setLicenseData] = useState(null);
+  const [isLicenseLoading, setIsLicenseLoading] = useState(true);
   
   // Mock data - in real app this would come from API or state
   const licenseExpiryDate = "2024-07-15"; // Format: YYYY-MM-DD
@@ -143,6 +151,128 @@ const LicenseAndVehicleCheckups = () => {
     return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
   };
   
+  // Add helper functions
+  const getLicenseStatusColor = (status) => {
+    switch (status) {
+      case 'expired': return '#e74c3c';
+      case 'expiring_soon': return '#FF6B00';
+      case 'warning': return '#f39c12';
+      case 'valid': return '#27ae60';
+      default: return '#7f8c8d';
+    }
+  };
+
+  const getLicenseStatusText = (status) => {
+    switch (status) {
+      case 'expired': return 'License Expired';
+      case 'expiring_soon': return 'Expiring Soon';
+      case 'warning': return 'Renewal Recommended';
+      case 'valid': return 'Valid';
+      default: return 'Unknown Status';
+    }
+  };
+
+  const handleViewImage = (imageUrl) => {
+    // Implement image viewing functionality
+    console.log('View image:', imageUrl);
+  };
+
+  const handleUploadLicense = () => {
+    // Implement license upload functionality
+    console.log('Upload new license');
+  };
+
+  // Add useEffect to fetch license data
+  useEffect(() => {
+    const fetchLicenseData = async () => {
+      setIsLicenseLoading(true);
+      try {
+        const response = await fetch(`${API_URL}/mobile/driver/licenses/${user.id}`);
+        const data = await response.json();
+        setLicenseData(data.license);
+      } catch (error) {
+        console.error('Error fetching license data:', error);
+      } finally {
+        setIsLicenseLoading(false);
+      }
+    };
+
+    if (showLicenseInfo) {
+      fetchLicenseData();
+    }
+  }, [showLicenseInfo, user.id]);
+
+  // Update the license section content
+  const renderLicenseContent = () => {
+    if (isLicenseLoading) {
+      return <SWText style={styles.alertInfo} sm>Loading license information...</SWText>;
+    }
+
+    if (!licenseData) {
+      return <SWText style={styles.alertInfo} sm>Failed to load license information.</SWText>;
+    }
+
+    return (
+      <>
+        <View style={styles.alertStatus}>
+          <View style={[styles.statusDot, { backgroundColor: getLicenseStatusColor(licenseData.status) }]} />
+          <SWText style={[styles.statusText, { color: getLicenseStatusColor(licenseData.status) }]} sm uberBold>
+            {getLicenseStatusText(licenseData.status)}
+          </SWText>
+        </View>
+        
+        <SWText style={styles.dateInfo} sm>
+          <SWText sm>License ID:</SWText> {licenseData.id}
+        </SWText>
+
+        <SWText style={styles.dateInfo} sm>
+          <SWText sm>Expiry Date:</SWText> {formatDate(licenseData.expiryDate)}
+        </SWText>
+
+        <SWText style={styles.dateInfo} sm>
+          <SWText sm>License Types:</SWText> {licenseData.type.join(", ")}
+        </SWText>
+        
+        {licenseData.daysUntilExpiry > 0 ? (
+          <SWText style={styles.alertInfo} sm>
+            Your driving license will expire in {licenseData.daysUntilExpiry} days. 
+            {licenseData.daysUntilExpiry <= 30 ? ' Please renew it as soon as possible.' : ' Plan for renewal ahead of time.'}
+          </SWText>
+        ) : (
+          <SWText style={styles.alertInfo} sm>
+            Your driving license has expired. You must renew it immediately before continuing to drive.
+          </SWText>
+        )}
+
+        <View style={styles.imageRow}>
+          <TouchableOpacity style={styles.licenseImage} onPress={() => handleViewImage(licenseData.images.front)}>
+            <Image 
+              source={{ uri: licenseData.images.front }}
+              style={styles.licenseImagePreview}
+            />
+            <SWText style={styles.imageLabel} xs>Front</SWText>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.licenseImage} onPress={() => handleViewImage(licenseData.images.back)}>
+            <Image 
+              source={{ uri: licenseData.images.back }}
+              style={styles.licenseImagePreview}
+            />
+            <SWText style={styles.imageLabel} xs>Back</SWText>
+          </TouchableOpacity>
+        </View>
+        
+        {(licenseData.daysUntilExpiry <= 30 || licenseData.daysUntilExpiry < 0) && (
+          <TouchableOpacity 
+            style={styles.actionButton} 
+            onPress={() => handleUploadLicense()}
+          >
+            <SWText style={styles.actionButtonText} sm uberBold>Upload New License Document</SWText>
+          </TouchableOpacity>
+        )}
+      </>
+    );
+  };
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -257,12 +387,40 @@ const LicenseAndVehicleCheckups = () => {
     criticalText: {
       color: '#721c24',
     },
+    imageRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginTop: 16,
+      marginBottom: 16,
+    },
+    licenseImage: {
+      width: '48%',
+      aspectRatio: 1.6,
+      borderRadius: 8,
+      overflow: 'hidden',
+      backgroundColor: '#f1f1f1',
+    },
+    licenseImagePreview: {
+      width: '100%',
+      height: '100%',
+      resizeMode: 'cover',
+    },
+    imageLabel: {
+      position: 'absolute',
+      bottom: 8,
+      left: 8,
+      color: '#ffffff',
+      backgroundColor: 'rgba(0,0,0,0.5)',
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+    }
   });
 
   return (
     <ScrollView style={styles.container}>
       {/* Warning Cards for Critical States */}
-      {(licenseAlertLevel === 'expired' || checkupAlertLevel === 'critical') && (
+      {/* {(licenseAlertLevel === 'expired' || checkupAlertLevel === 'critical') && (
         <View style={[styles.warningCard, licenseAlertLevel === 'expired' && styles.criticalCard]}>
           <FontAwesome 
             name="exclamation-triangle" 
@@ -276,7 +434,7 @@ const LicenseAndVehicleCheckups = () => {
             }
           </SWText>
         </View>
-      )}
+      )} */}
 
       {/* License Status Section */}
       <View style={styles.sectionCard}>
@@ -297,38 +455,7 @@ const LicenseAndVehicleCheckups = () => {
         
         {showLicenseInfo && (
           <View style={styles.sectionContent}>
-            <View style={styles.alertStatus}>
-              <View style={[styles.statusDot, { backgroundColor: licenseAlertColor }]} />
-              <SWText style={[styles.statusText, { color: licenseAlertColor }]} sm uberBold>
-                {licenseAlertLevel === 'expired' ? 'License Expired' :
-                 licenseAlertLevel === 'urgent' ? 'Expiring Soon' :
-                 licenseAlertLevel === 'warning' ? 'Renewal Recommended' : 'Valid'}
-              </SWText>
-            </View>
-            
-            <SWText style={styles.dateInfo} sm>
-              <SWText uberBold>Expiry Date:</SWText> {formatDate(licenseExpiryDate)}
-            </SWText>
-            
-            {daysUntilExpiry > 0 ? (
-              <SWText style={styles.alertInfo} sm>
-                Your driving license will expire in {daysUntilExpiry} days. 
-                {daysUntilExpiry <= 30 ? ' Please renew it as soon as possible.' : ' Plan for renewal ahead of time.'}
-              </SWText>
-            ) : (
-              <SWText style={styles.alertInfo} sm>
-                Your driving license has expired. You must renew it immediately before continuing to drive.
-              </SWText>
-            )}
-            
-            {(daysUntilExpiry <= 30 || daysUntilExpiry < 0) && (
-              <TouchableOpacity 
-                style={styles.actionButton} 
-                onPress={() => console.log('Upload new license document')}
-              >
-                <SWText style={styles.actionButtonText} sm uberBold>Upload New License Document</SWText>
-              </TouchableOpacity>
-            )}
+            {renderLicenseContent()}
           </View>
         )}
       </View>
@@ -363,11 +490,11 @@ const LicenseAndVehicleCheckups = () => {
             </View>
             
             <SWText style={styles.dateInfo} sm>
-              <SWText uberBold>Last Checkup:</SWText> {formatDate(lastCheckupDate)}
+              <SWText sm>Last Checkup:</SWText> {formatDate(lastCheckupDate)}
             </SWText>
             
             <SWText style={styles.dateInfo} sm>
-              <SWText uberBold>Next Due:</SWText> {formatDate(nextCheckupDate)}
+              <SWText sm>Next Due:</SWText> {formatDate(nextCheckupDate)}
             </SWText>
             
             {daysUntilNextCheckup > 0 ? (
