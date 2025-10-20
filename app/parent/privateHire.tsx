@@ -777,6 +777,8 @@ const PrivateHire = () => {
         return theme.colors.statusblue || '#2196F3';
       case 'cancelled':
         return theme.colors.statusgrey || '#757575';
+      case 'rejected':
+        return '#d32f2f'; // Red color for rejected status
       default:
         return '#757575';
     }
@@ -790,6 +792,8 @@ const PrivateHire = () => {
         return theme.colors.statusbackgroundblue || '#E3F2FD';
       case 'cancelled':
         return theme.colors.statusbackgroundgrey || '#F5F5F5';
+      case 'rejected':
+        return '#FFEBEE'; // Light red background for rejected status
       default:
         return '#F5F5F5';
     }
@@ -1255,11 +1259,23 @@ const PrivateHire = () => {
           <SWText style={{ textAlign: 'center', marginTop: 32 }}>No bookings found.</SWText>
         ) : (
           [...hireHistory].sort((a, b) => {
-            // Sort: accepted first, then others, cancelled last
-            const aCancelled = a.status && a.status.toLowerCase() === 'cancelled';
-            const bCancelled = b.status && b.status.toLowerCase() === 'cancelled';
-            if (aCancelled && !bCancelled) return 1;
-            if (!aCancelled && bCancelled) return -1;
+            // Sort: accepted first, then others, cancelled/rejected last
+            const aLowPriority = a.status && (a.status.toLowerCase() === 'cancelled' || a.status.toLowerCase() === 'rejected');
+            const bLowPriority = b.status && (b.status.toLowerCase() === 'cancelled' || b.status.toLowerCase() === 'rejected');
+            
+            // Put rejected and cancelled at the bottom
+            if (aLowPriority && !bLowPriority) return 1; 
+            if (!aLowPriority && bLowPriority) return -1;
+            
+            // If both are rejected, put rejected after cancelled
+            if (aLowPriority && bLowPriority) {
+              const aRejected = a.status && a.status.toLowerCase() === 'rejected';
+              const bRejected = b.status && b.status.toLowerCase() === 'rejected';
+              if (aRejected && !bRejected) return 1;
+              if (!aRejected && bRejected) return -1;
+            }
+            
+            // For normal priority items, prioritize accepted with final fare
             const aHasFinalAccepted = a.finalFare !== null && a.finalFare !== undefined && a.status && a.status.toLowerCase() === 'accepted';
             const bHasFinalAccepted = b.finalFare !== null && b.finalFare !== undefined && b.status && b.status.toLowerCase() === 'accepted';
             if (aHasFinalAccepted === bHasFinalAccepted) return 0;
@@ -1336,8 +1352,8 @@ const PrivateHire = () => {
                 )}
                 
               </View>
-              {/* Optionally show cancel button for pending bookings */}
-              {hire.status && hire.status.toLowerCase() !== 'cancelled' && (
+              {/* Optionally show cancel button for pending bookings, but not for cancelled or rejected */}
+              {hire.status && hire.status.toLowerCase() !== 'cancelled' && hire.status.toLowerCase() !== 'rejected' && (
                 <View style={{ flexDirection: 'row', justifyContent: 'flex-end', marginTop: 12 }}>
                   <TouchableOpacity style={[styles.cancelButton, { minWidth: 100 }]}
                    onPress={async () => {
