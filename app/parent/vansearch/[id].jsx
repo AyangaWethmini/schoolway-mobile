@@ -66,90 +66,7 @@ const SchoolVanScreen = ({ navigation }) => {
     fetchData();
   }, [id]); // Add id to dependency array
 
-  if (loading) {
-    return (
-      <View style={styles.loadingBackgroundContainer}>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={'blue'} />
-          <SWText style={styles.loadingText}>Loading...</SWText>
-        </View>
-      </View>
-    );
-  }
-
-  const handleBack = () => {
-    router.back();
-  };
-
-  const handleRequest = async (vanId,estimatedFare) => {
-    try {
-
-      const childId = id ;
-
-      console.log("Creating request for vanId:", vanId, "and childId:", childId);
-
-      const res = await fetch(`${API_URL}/vans/child/van-request`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(
-          { vanId, childId , estimatedFare}
-        ),
-      });
-
-      if (!res.ok) throw new Error("Failed to create request");
-
-      const data = await res.json();
-      console.log("Van request created:", data);
-      setVanRequest(data);
-      alert("Request sent successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Error sending request");
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      const childId = id;
-
-      const res = await fetch(`${API_URL}/vans/child/van-request/childRequest/${childId}`, {
-        method: "DELETE",
-      });
-
-      if (!res.ok) throw new Error("Failed to delete request");
-
-      setVanRequest(null); // reset UI
-      alert("Request deleted successfully!");
-    } catch (err) {
-      console.error(err);
-      alert("Error deleting request");
-    }
-  };
-
-  const renderDriverImages = (drivers) => {
-    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'];
-    
-    return (
-      <View style={styles.driversContainer}>
-        {drivers.map((driver, index) => (
-          <View
-            key={driver.id}
-            style={[
-              styles.driverAvatar,
-              { 
-                marginLeft: index > 0 ? -8 : 0,
-                backgroundColor: colors[driver.id % colors.length]
-              },
-            ]}
-          >
-            <SWText style={styles.driverInitial}>{driver.initial}</SWText>
-          </View>
-        ))}
-      </View>
-    );
-  };
-
-  const styles = StyleSheet.create({
+   const styles = StyleSheet.create({
   
   container: {
     flex: 1,
@@ -412,6 +329,91 @@ const SchoolVanScreen = ({ navigation }) => {
       color: theme.colors.textgreydark,
     },
 });
+
+  if (loading) {
+    return (
+      <View style={styles.loadingBackgroundContainer}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={'blue'} />
+          <SWText style={styles.loadingText}>Loading...</SWText>
+        </View>
+      </View>
+    );
+  }
+
+  const handleBack = () => {
+    router.back();
+  };
+
+  const handleRequest = async (vanId,estimatedFare) => {
+    try {
+
+      const childId = id ;
+
+      console.log("Creating request for vanId:", vanId, "and childId:", childId);
+
+      const res = await fetch(`${API_URL}/vans/child/van-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          { vanId, childId , estimatedFare}
+        ),
+      });
+
+      if (!res.ok) throw new Error("Failed to create request");
+
+      const data = await res.json();
+      console.log("Van request created:", data);
+      setVanRequest(data);
+      alert("Request sent successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Error sending request");
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      const childId = id;
+
+      const res = await fetch(`${API_URL}/vans/child/van-request/childRequest/${childId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Failed to delete request");
+
+      setVanRequest(null); // reset UI
+      alert("Request deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting request");
+    }
+  };
+
+  const renderDriverImages = (drivers) => {
+    const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FECA57'];
+    
+    return (
+      <View style={styles.driversContainer}>
+        {drivers.map((driver, index) => (
+          <View
+            key={driver.id}
+            style={[
+              styles.driverAvatar,
+              { 
+                marginLeft: index > 0 ? -8 : 0,
+                backgroundColor: colors[driver.id % colors.length]
+              },
+            ]}
+          >
+            <SWText style={styles.driverInitial}>{driver.initial}</SWText>
+          </View>
+        ))}
+      </View>
+    );
+  };
+
+ 
 
   return (
     <SafeAreaView style={styles.container}>
