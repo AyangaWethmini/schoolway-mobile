@@ -207,7 +207,7 @@ const SchoolVanScreen = ({ navigation }) => {
                         <View style={styles.ownerRow}>
                           <Ionicons name="person-circle-outline" size={16} color="#666" />
                           <SWText style={styles.ownerText}>
-                            {van.UserProfile_Van_ownerIdToUserProfile?.firstname} {van.UserProfile_Van_ownerIdToUserProfile?.lastname}
+                            {`${van.UserProfile_Van_ownerIdToUserProfile?.firstname || ''} ${van.UserProfile_Van_ownerIdToUserProfile?.lastname || ''}`}
                           </SWText>
                         </View>
                       </View>
@@ -278,17 +278,19 @@ const SchoolVanScreen = ({ navigation }) => {
                     <View style={styles.routePriceRow}>
                       <View style={styles.routeInfo}>
                         <Ionicons name="navigate-circle" size={16} color="#FF9800" />
-                        <SWText style={styles.routeText}>
-                          {van.Path 
-                            ? `${van.Path.totalDistance.toFixed(1)} km • ${van.Path.estimatedDuration} min`
-                            : 'Route not assigned'}
-                        </SWText>
+                        {van.Path ? (
+                          <SWText style={styles.routeText}>
+                            {van.Path.totalDistance.toFixed(1)} km • {van.Path.estimatedDuration} min
+                          </SWText>
+                        ) : (
+                          <SWText style={styles.routeText}>Route not assigned</SWText>
+                        )}
                       </View>
                       
                       <View style={styles.priceTag}>
                         <SWText style={styles.priceLabel}>Estimated Fare</SWText>
                         <SWText style={styles.priceAmount}>
-                          Rs. {van.estimatedFare.toFixed(2)}
+                          {`Rs. ${van.estimatedFare.toFixed(2)}`}
                         </SWText>
                       </View>
                     </View>
@@ -298,14 +300,14 @@ const SchoolVanScreen = ({ navigation }) => {
                       <View style={styles.ratingItem}>
                         <Ionicons name="star" size={14} color="#FFD700" />
                         <SWText style={styles.ratingText}>
-                          Private: Rs. {van.privateRating}/km
+                          {`Private: Rs. ${van.privateRating}/km`}
                         </SWText>
                       </View>
                       <View style={styles.ratingDivider} />
                       <View style={styles.ratingItem}>
                         <Ionicons name="star" size={14} color="#FFD700" />
                         <SWText style={styles.ratingText}>
-                          Student: Rs. {van.studentRating}/month
+                          {`Student: Rs. ${van.studentRating}/month`}
                         </SWText>
                       </View>
                     </View>
@@ -356,11 +358,13 @@ const SchoolVanScreen = ({ navigation }) => {
                 ))
               ) : (
                 <View style={styles.noVansContainer}>
-                  <Ionicons name="bus-outline" size={80} color="#ccc" /> {/* Increased icon size */}
-                  <SWText style={styles.noVansTitle}>No Vans Available</SWText>
-                  <SWText style={styles.noVansText}>
-                    Currently, there are no school vans operating in proximity to your child's school journey.
-                  </SWText>
+                  <View style={styles.noVansContent}>
+                    <Ionicons name="bus-outline" size={80} color="#ccc" />
+                    <SWText style={styles.noVansTitle}>No Vans Available</SWText>
+                    <SWText style={styles.noVansText}>
+                      Currently, there are no school vans operating in proximity to your child's school journey.
+                    </SWText>
+                  </View>
                 </View>
               )}
             </View>
@@ -585,15 +589,22 @@ const styles = StyleSheet.create({
     fontStyle: 'italic'
   },
   noVansContainer: {
-    flex: 1, // Add this
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 32,
+    minHeight: 500, // Increased height to ensure vertical centering
+  },
+  noVansContent: {
     backgroundColor: '#fff',
     borderRadius: 12,
-    marginTop: 20,
-    marginBottom: 20, // Add this for better spacing
-    minHeight: 400, // Add this to ensure container has enough height
+    padding: 32,
+    alignItems: 'center', // Center children horizontally
+    width: '100%', // Take full width
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   noVansTitle: {
     fontSize: 18,
@@ -601,12 +612,14 @@ const styles = StyleSheet.create({
     color: '#666',
     marginTop: 16,
     marginBottom: 8,
+    textAlign: 'center',
   },
   noVansText: {
     fontSize: 14,
     color: '#888',
     textAlign: 'center',
     lineHeight: 20,
+    maxWidth: '80%', // Constrain text width for better readability
   },
 });
 
