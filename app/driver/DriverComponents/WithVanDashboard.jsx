@@ -138,9 +138,6 @@ const WithVanDashboard = () => {
         <ActivityIndicator color={theme.colors.accentblue} />
       ) : dashboardData ? (
         <View style={styles.routeInfo}>
-          <SWText style={styles.routeSchool} md uberBold>
-            {dashboardData.plan.route}
-          </SWText>
           <SWText style={styles.routeStudents} sm>
            You’ll be picking up {dashboardData.plan.pickupCount} students along the route
           </SWText>

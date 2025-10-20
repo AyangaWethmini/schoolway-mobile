@@ -5,12 +5,11 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
-    ActivityIndicator,
-    FlatList,
-    StatusBar,
-    StyleSheet,
-    TouchableOpacity,
-    View
+  ActivityIndicator,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View
 } from "react-native";
 import SWText from "../components/SWText";
 
@@ -99,22 +98,36 @@ const NotificationScreen = () => {
       </LinearGradient>
 
       {/* Notifications list */}
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => renderItem(item)}
-        contentContainerStyle={notifications.length === 0 ? styles.emptyList : styles.listContent}
-        ListEmptyComponent={
-          loading ? (
-            <ActivityIndicator size="large" color="#0099cc" style={{ marginTop: 50 }} />
-          ) : (
-            <View style={styles.emptyContainer}>
-              <Ionicons name="notifications-off-outline" size={64} color="#ccc" />
-              <SWText style={styles.emptyText}>No notifications yet</SWText>
+      <View style={notifications.length === 0 ? styles.emptyList : styles.listContent}>
+        {loading ? (
+          <ActivityIndicator size="large" color="#0099cc" style={{ marginTop: 50 }} />
+        ) : notifications.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Ionicons name="notifications-off-outline" size={64} color="#ccc" />
+            <SWText style={styles.emptyText}>No notifications yet</SWText>
+          </View>
+        ) : (
+          notifications.map((item) => (
+            <View
+              key={item.id}
+              style={[
+                styles.notificationCard,
+                !item.read && styles.unreadNotification,
+              ]}
+            >
+              <View style={styles.iconContainer}>{renderIcon(item.type)}</View>
+              <View style={{ flex: 1 }}>
+                <SWText uberBold style={styles.title}>{item.title}</SWText>
+                <SWText style={styles.message}>{item.message}</SWText>
+                <SWText style={styles.date}>
+                  {new Date(item.createdAt).toLocaleString()}
+                </SWText>
+              </View>
             </View>
-          )
-        }
-      />
+          ))
+        )}
+      </View>
+
     </View>
   );
 };
