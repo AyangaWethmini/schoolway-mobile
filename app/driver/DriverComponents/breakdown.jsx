@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { getApps } from 'firebase/app';
 import { getDatabase, onValue, ref } from 'firebase/database';
@@ -16,6 +17,9 @@ import {
 } from 'react-native';
 import Spacer from '../../components/Spacer';
 import { useTheme } from '../../theme/ThemeContext';
+
+const API_URL = Constants.expoConfig?.extra?.apiUrl;
+
 
 const BreakdownPage = () => {
   const router = useRouter();
@@ -44,9 +48,11 @@ const BreakdownPage = () => {
 
   const fetchDriverAndVanDetails = async (driverId) => {
     try {
-      const res = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/api/van-details?driverId=${driverId}`);
+      const res = await fetch(`${API_URL}/van-details/driverId/${driverId}`);
       if (!res.ok) throw new Error("Failed to fetch driver/van details");
       const data = await res.json();
+
+      console.log("data", data);
       return data;
     } catch (error) {
       console.error("Error fetching details:", error);
@@ -106,20 +112,24 @@ const BreakdownPage = () => {
             )
           : 0;
 
+        console.log("VAn ",van);
+
         const details = await fetchDriverAndVanDetails(van.driverId);
+        
+        console.log("details",details);
 
         return {
           id: van.driverId,
           ownerName: details?.driver?.name || van.driverName,
-          vehicleModel: details?.van?.makeAndModel || 'Unknown Model',
-          vehicleNumber: details?.van?.registrationNumber || 'N/A',
+          vehicleModel: details?.van?.makeAndModel || 'KDH Model',
+          vehicleNumber: details?.van?.registrationNumber || '125',
           capacity: details?.van?.seatingCapacity || 0,
           distance: `${dist.toFixed(2)} km`,
           arrivalTime: `${Math.round((dist / 40) * 60)} mins`,
           rating: details?.driver?.rating || 4.7,
           profileImage: details?.driver?.profilePic || 'https://i.pravatar.cc/150?img=11',
-          route: van.routeType || 'Unknown Route',
-          phoneNumber: details?.driver?.contact || van.driverContact || '+94 71 000 0000',
+          route: van.routeType || 'Morning pickup',
+          phoneNumber: details?.driver?.contact || van.driverContact || '+94 71 454 45653',
         };
       })
     );
